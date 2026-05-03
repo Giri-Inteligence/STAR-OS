@@ -20,8 +20,6 @@ with st.sidebar:
     st.subheader("📅 JANELAS DE GOVERNANÇA")
     lp_val = st.number_input("Média Longo Prazo (Meses)", value=12, min_value=1)
     cp_val = st.number_input("Média Curto Prazo (Meses)", value=3, min_value=1)
-    st.markdown("---")
-    st.warning("Postura Crítica: Ações baseadas estritamente em desvios de média móvel.")
 
 st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
 
@@ -35,38 +33,44 @@ def format_br(val):
 
 if uploaded_file:
     df_raw = pd.read_excel(uploaded_file)
-    all_cols = df_raw.columns.tolist()
     
-    # Identifica colunas de meses (Ignora colunas que o cliente já somou como 'TOTAL')
-    col_meses = [c for c in all_cols if any(m in c.upper() for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c.upper()]
-    # Colunas de Dimensão (Texto)
-    col_dimensoes = [c for c in all_cols if c not in col_meses and c != 'EMPRESA']
+    # FILTRAGEM INTELIGENTE DE COLUNAS
+    # Identifica colunas de meses
+    col_meses = [c for c in df_raw.columns if any(m in c.upper() for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c.upper()]
+    
+    # Identifica dimensões categóricas (Texto) - Exclui 'EMPRESA' e colunas numéricas como 'CADASTRO'
+    col_dimensoes = [c for c in df_raw.columns if df_raw[c].dtype == 'object' and c != 'EMPRESA' and c not in col_meses]
 
     with st.sidebar:
-        st.subheader("📂 ANÁLISE MULTIDIMENSIONAL")
-        dims_selecionadas = st.multiselect("Selecione as chaves de governança (Vendedor, Segmento, Cidade...)", col_gestao if 'col_gestao' in locals() else col_dimensoes)
-        st.info("O sistema cruzará as informações para gerar a visão de performance.")
+        st.markdown("---")
+        st.subheader("📂 CHAVES DE GOVERNANÇA")
+        st.write("Selecione as dimensões para cruzamento:")
+        
+        dims_selecionadas = []
+        for col in col_dimensoes:
+            if st.checkbox(col, key=f"chk_{col}"):
+                dims_selecionadas.append(col)
+        
+        st.markdown("---")
+        st.warning("Postura Crítica: A análise cruzada aumenta a precisão do diagnóstico de causa raiz.")
 
     if not dims_selecionadas:
-        st.error("Selecione ao menos uma dimensão na barra lateral para processar a matriz.")
+        st.info("Aguardando seleção das chaves de governança na barra lateral.")
     else:
-        # Limpeza e Cálculo
         df = df_raw.copy()
         for col in col_meses:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
-        # Janelas Deslizantes
         cols_cp = col_meses[-cp_val:]
         cols_lp = col_meses[-(lp_val + cp_val):-cp_val]
         
-        # Agrupamento Dinâmico por Múltiplas Dimensões
+        # AGRUPAMENTO MULTIDIMENSIONAL
         chaves = ['EMPRESA'] + dims_selecionadas
         df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
         df_agrupado['MEDIA_LP'] = (df_agrupado[cols_lp].sum(axis=1) / len(cols_lp)).round(0)
         df_agrupado['MEDIA_CP'] = (df_agrupado[cols_cp].sum(axis=1) / len(cols_cp)).round(0)
 
-        # MOTOR DE STATUS STAR
         def engine_star(row):
             lp, cp = row['MEDIA_LP'], row['MEDIA_CP']
             if cp == 0: return "⚫ INATIVO", lp, "RECUPERAÇÃO: Sem compra há 90 dias. Visita imediata e diagnóstico de Churn."
@@ -76,7 +80,6 @@ if uploaded_file:
 
         df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*df_agrupado.apply(engine_star, axis=1))
 
-        # EXIBIÇÃO FINAL
         exibir = chaves + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
         
         st.subheader("Matriz de Decisão Tática")
