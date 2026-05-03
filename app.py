@@ -1,74 +1,10 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-from datetime import datetime
-import math
-
-# 1. DESIGN EXECUTIVO GIRI
-st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
-
-st.markdown("""
-    <style>
-    .stApp { background: linear-gradient(135deg, #001220 0%, #002d4a 100%); color: #ffffff; }
-    .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px; }
-    h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
-    
-    /* Centralização e Estética da Tabela */
-    div[data-testid="stDataFrame"] td, div[data-testid="stTable"] td { 
-        text-align: center !important; 
-        vertical-align: middle !important; 
-    }
-    div[data-testid="stDataFrame"] th, div[data-testid="stTable"] th { 
-        text-align: center !important; 
-        font-weight: bold !important; 
-        text-transform: uppercase;
-    }
-    
-    /* CORREÇÃO DOS RETÂNGULOS DE INDICADORES */
-    div[data-testid="stTextInput"] input {
-        height: 100px !important; /* Altura ampliada para permitir duas linhas se necessário */
-        font-size: 16px !important;
-        font-weight: bold !important;
-        text-align: center !important;
-        white-space: normal !important; /* Permite quebra de linha */
-        line-height: 1.2 !important;
-        padding: 10px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-# --- FUNÇÕES DE APOIO ---
-def format_executivo(val):
-    if pd.isna(val) or val == 0: return "-"
-    # Formatação com separador de milhar como ponto, sem decimais
-    return f"{int(val):,}".replace(",", ".")
-
-def get_working_days(start_date, end_date):
-    days = pd.date_range(start_date, end_date)
-    return len(days[days.dayofweek < 5])
-
-# --- INTERFACE DE NAVEGAÇÃO ---
-st.sidebar.markdown("## GIRI | ARCHITECTURE")
-menu = st.sidebar.radio("CENTRO DE COMANDO", ["Dashboard Inicial", "Matriz STAR (Clientes)", "Desempenho (Vendedores)"])
-
-if menu == "Dashboard Inicial":
-    st.title("Giri Strategic Hub")
-    st.markdown("### Escolha a ferramenta de governança:")
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown('<div class="main-card"><h4>📍 Matriz STAR</h4>Análise tática de faturamento por cliente.</div>', unsafe_allow_html=True)
-    with c2:
-        st.markdown('<div class="main-card"><h4>📊 Desempenho</h4>Governança de ritmo e tendência individual.</div>', unsafe_allow_html=True)
-
-elif menu == "Matriz STAR (Clientes)":
-    st.title("Matriz STAR-OS | Gestão de Carteira")
-    st.info("Módulo de Clientes Ativo.")
-
+# --- ABA DE DESEMPENHO INDIVIDUAL (V30) ---
 elif menu == "Desempenho (Vendedores)":
-    st.title("GOVERNANÇA DE DESEMPENHO | STAR-OS")
+    st.title("Governança de Performance | STAR-OS")
+    st.markdown("### 1. CONFIGURAÇÃO DA RÉGUA COMERCIAL")
     
+    # Bloco de Tempo Automático
     hoje = datetime.now()
-    # Para testes ou uso real conforme o calendário da Tamoyo
     primeiro_dia = hoje.replace(day=1)
     if hoje.month == 12: ultimo_dia = hoje.replace(day=31)
     else: ultimo_dia = (hoje.replace(month=hoje.month+1, day=1) - pd.Timedelta(days=1))
@@ -76,54 +12,58 @@ elif menu == "Desempenho (Vendedores)":
     d_uteis_totais = get_working_days(primeiro_dia, ultimo_dia)
     d_uteis_hoje = get_working_days(primeiro_dia, hoje)
 
-    st.markdown('<div class="main-card">', unsafe_allow_html=True)
-    st.markdown("### 1. CONFIGURAÇÃO DA RÉGUA COMERCIAL")
-    col_v, col_t = st.columns([2, 1])
-    vendedor_nome = col_v.text_input("Nome do Vendedor", placeholder="Digite o nome do consultor...")
-    col_t.metric("Dias Úteis (Mês / Hoje)", f"{d_uteis_totais} / {d_uteis_hoje}")
-    
-    st.write("Defina os 5 indicadores estratégicos e suas metas:")
-    ind_list = []
-    c1, c2, c3, c4, c5 = st.columns(5)
-    cols_ind = [c1, c2, c3, c4, c5]
-    
-    # Lista de sugestões baseada no seu padrão Tamoyo
-    sugestoes = ["CLIENTES ATIVOS", "CLIENTES REATIVADOS", "NOVOS CLIENTES COM VENDA", "ORÇAMENTOS GERADOS", "FATURAMENTO"]
-
-    for i, col in enumerate(cols_ind):
-        with col:
-            nome_i = st.text_input(f"Indicador {i+1}", value=sugestoes[i], key=f"n_{i}")
-            # Step=1.0 e format="%.0f" garantem números inteiros sem vírgula no input
-            meta_i = st.number_input(f"Meta {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"m_{i}")
-            real_i = st.number_input(f"Realizado {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"r_{i}")
+    with st.expander("⚙️ DEFINIR INDICADORES E METAS DO MÊS", expanded=True):
+        col_ind1, col_ind2 = st.columns([2, 1])
+        vendedor_nome = col_ind1.text_input("Nome do Vendedor", placeholder="Digite o nome do consultor...")
+        
+        # Definição dos 5 Indicadores
+        st.write("Defina os 5 indicadores estratégicos:")
+        ind_list = []
+        c1, c2, c3, c4, c5 = st.columns(5)
+        cols_ind = [c1, c2, c3, c4, c5]
+        
+        for i, col in enumerate(cols_ind):
+            nome_i = col.text_input(f"Indicador {i+1}", value=f"IND {i+1}", key=f"nome_ind_{i}")
+            meta_i = col.number_input(f"Meta {i+1}", min_value=0.01, key=f"meta_ind_{i}")
+            real_i = col.number_input(f"Realizado {i+1}", min_value=0.0, key=f"real_ind_{i}")
             ind_list.append({"NOME": nome_i, "META": meta_i, "REALIZADO": real_i})
-    st.markdown('</div>', unsafe_allow_html=True)
 
+    # --- PROCESSAMENTO DOS DADOS ---
     if vendedor_nome:
-        st.markdown(f"### 2. ANÁLISE DE DESEMPENHO: {vendedor_nome.upper()}")
+        st.markdown(f"### 2. ANÁLISE DE ROTA: {vendedor_nome.upper()}")
+        
         resultados = []
         for item in ind_list:
-            # Lógica de Arredondamento para Cima (Teto)
-            v_esperado = math.ceil((item["META"] / d_uteis_totais) * d_uteis_hoje)
+            # Cálculo de Rota e Tendência
+            v_esperado = (item["META"] / d_uteis_totais) * d_uteis_hoje
+            percentual_rota = (item["REALIZADO"] / v_esperado) if v_esperado > 0 else 0
+            tendencia_final = (item["REALIZADO"] / d_uteis_hoje) * d_uteis_totais if d_uteis_hoje > 0 else 0
             
-            # Cálculo de Eficiência e Tendência (Arredondada para cima)
-            rota_raw = (item["REALIZADO"] / v_esperado) if v_esperado > 0 else 0
-            tendencia = math.ceil((item["REALIZADO"] / d_uteis_hoje) * d_uteis_totais) if d_uteis_hoje > 0 else 0
-            
-            if rota_raw >= 1.0: status = "🟢 NO RITMO"
-            elif rota_raw >= 0.85: status = "🟡 ATENÇÃO"
+            # Definição de Status Visual
+            if percentual_rota >= 1.0: status = "🟢 NO RITMO"
+            elif percentual_rota >= 0.85: status = "🟡 ATENÇÃO"
             else: status = "🚨 CRÍTICO"
             
             resultados.append({
-                "INDICADOR": item["NOME"].upper(),
-                "META MENSAL": format_executivo(item["META"]),
-                "ESPERADO HOJE": format_executivo(v_esperado),
-                "REALIZADO": format_executivo(item["REALIZADO"]),
-                "ROTA": f"{round(rota_raw * 100, 1)}%",
-                "TENDÊNCIA": format_executivo(tendencia),
+                "INDICADOR": item["NOME"],
+                "META MENSAL": item["META"],
+                "ESPERADO (D+" + str(d_uteis_hoje) + ")": round(v_esperado, 2),
+                "REALIZADO": item["REALIZADO"],
+                "EFICIÊNCIA (ROTA)": f"{round(percentual_rota * 100, 1)}%",
+                "PROJEÇÃO FINAL": round(tendencia_final, 2),
                 "STATUS": status
             })
+
+        df_performance = pd.DataFrame(resultados)
         
-        # Exibição em tabela centralizada e negrito
-        df_perf = pd.DataFrame(resultados)
-        st.table(df_perf)
+        # Exibição Estilizada
+        st.table(df_performance)
+        
+        # Insight de Governança
+        st.markdown("---")
+        st.subheader("💡 ORIENTAÇÃO PARA O GESTOR")
+        for res in resultados:
+            if "🚨" in res["STATUS"]:
+                st.error(f"**{res['INDICADOR']}**: O vendedor está muito abaixo do esperado. "
+                         f"Risco de entregar apenas {format_br(res['PROJEÇÃO FINAL'])} contra uma meta de {format_br(res['META MENSAL'])}. "
+                         "Exigir plano de ação imediato.")
