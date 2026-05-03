@@ -35,17 +35,25 @@ def format_br(val):
 
 def engine_star(row, lp_val, cp_val):
     lp, cp = row['MEDIA_LP'], row['MEDIA_CP']
-    # Regra de Inatividade
+    
+    # REGRA 0: INATIVIDADE (Churn Detectado)
     if cp == 0: 
-        return "⚫ INATIVO", lp, "REATIVAÇÃO: Cliente sem compra há 90 dias. Visita imediata."
-    # Regra de Queda (Sensibilidade 5%)
+        return "⚫ INATIVO", lp, "REATIVAÇÃO: Cliente sem compra há 90 dias. Visita imediata e diagnóstico de causa raiz."
+    
+    # REGRA 1: QUEDA ACENTUADA (Severidade > 20%)
+    if cp < (lp * 0.80):
+        return "🚨 QUEDA ACENTUADA", lp, "INTERVENÇÃO IMEDIATA: Colapso de volume detectado (>20%). Exige ação de diretoria e defesa de share."
+        
+    # REGRA 2: QUEDA (Sensibilidade 5% a 20%)
     if cp < (lp * 0.95): 
-        return "🔴 QUEDA", lp, "DEFESA: Desvio negativo detectado. Investigar concorrência."
-    # Regra de Crescimento (Sensibilidade 5%)
+        return "🔴 QUEDA", lp, "DEFESA: Desvio negativo detectado. Investigar concorrência ou falha pontual."
+    
+    # REGRA 3: CRESCIMENTO (Sensibilidade > 5%)
     if cp > (lp * 1.05): 
-        return "🟢 CRESCIMENTO", int(cp * 1.10), "EXPANSÃO: Tração positiva detectada. Aplicar Upsell."
-    # Estabilidade
-    return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Ritual de atendimento e blindagem."
+        return "🟢 CRESCIMENTO", int(cp * 1.10), "EXPANSÃO: Tração positiva detectada. Aplicar técnica de Upsell."
+    
+    # REGRA 4: ESTABILIDADE (+/- 5%)
+    return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Ritual de atendimento e blindagem de conta."
 
 if uploaded_file:
     df_raw = pd.read_excel(uploaded_file)
@@ -80,13 +88,12 @@ if uploaded_file:
         df_agrupado['MEDIA_LP'] = (df_agrupado[cols_lp].sum(axis=1) / len(cols_lp)).round(0)
         df_agrupado['MEDIA_CP'] = (df_agrupado[cols_cp].sum(axis=1) / len(cols_cp)).round(0)
 
-        # Aplicação do motor de status com a nova sensibilidade de 5%
         res = df_agrupado.apply(lambda row: engine_star(row, lp_val, cp_val), axis=1)
         df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*res)
 
         colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
         
-        st.subheader("Matriz de Decisão com Evidência e Volume")
+        st.subheader("Matriz de Decisão Tática")
         format_map = {col: format_br for col in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}
         
         st.dataframe(
@@ -97,4 +104,4 @@ if uploaded_file:
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df_agrupado[colunas_exibicao].to_excel(writer, index=False, sheet_name='STAR_OS')
-        st.download_button("📥 BAIXAR PLANO DE TRABALHO", output.getvalue(), "Plano_STAR_Giri.xlsx")
+        st.download_button("📥 EXPORTAR PLANO DE TRABALHO", output.getvalue(), "Plano_STAR_Giri.xlsx")
