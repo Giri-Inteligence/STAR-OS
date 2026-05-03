@@ -12,7 +12,6 @@ st.markdown("""
     .stApp { background: linear-gradient(135deg, #001220 0%, #002d4a 100%); color: #ffffff; }
     [data-testid="stSidebar"] { min-width: 220px !important; max-width: 220px !important; }
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 12px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
-    h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
     
     div[data-testid="stTable"] table { width: 100% !important; table-layout: fixed !important; }
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { 
@@ -25,8 +24,6 @@ st.markdown("""
     div[data-testid="stTable"] th:nth-child(1), div[data-testid="stTable"] td:nth-child(1) { width: 25% !important; text-align: left !important; }
     div[data-testid="stTable"] th:nth-child(7), div[data-testid="stTable"] td:nth-child(7) { width: 15% !important; }
     div[data-testid="stTable"] th { font-weight: bold !important; border-bottom: 2px solid rgba(255,255,255,0.1) !important; }
-
-    .stTextInput input, .stNumberInput input { height: 35px !important; font-size: 13px !important; text-align: center !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -35,15 +32,29 @@ def format_executivo(val):
     if pd.isna(val) or val == 0: return "0"
     return f"{int(val):,}".replace(",", ".")
 
-def get_working_days(start_date, end_date):
-    days = pd.date_range(start_date, end_date)
+def get_working_days(start, end):
+    # Calcula dias úteis excluindo o dia final se ele for hoje (dia em curso)
+    if start > end: return 0
+    days = pd.date_range(start, end)
     return len(days[days.dayofweek < 5])
 
-# --- INICIALIZAÇÃO ---
-if 'pagina_ativa' not in st.session_state:
-    st.session_state.pagina_ativa = 'Dashboard'
+# --- LÓGICA DE TEMPO (DOMINGO, 03/05/2026) ---
+hoje = datetime.now()
+primeiro_dia = hoje.replace(day=1)
+ultimo_dia = (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
 
-# --- NAVEGAÇÃO LATERAL ---
+d_uteis_totais = get_working_days(primeiro_dia, ultimo_dia)
+
+# RIGOR: Se hoje é final de semana ou feriado, ou se ainda não passou um dia útil completo
+# O cálculo de dias transcorridos deve considerar apenas dias úteis ENCERRADOS.
+# Para o dia atual em curso, ele só entra no cálculo amanhã.
+d_uteis_transcorridos = get_working_days(primeiro_dia, hoje)
+if hoje.weekday() < 5: # Se for segunda a sexta
+    d_uteis_transcorridos = max(0, d_uteis_transcorridos - 1)
+
+# --- INTERFACE ---
+if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
+
 with st.sidebar:
     st.markdown("## GIRI | ARCHITECTURE")
     if st.session_state.pagina_ativa != 'Dashboard':
@@ -57,24 +68,6 @@ with st.sidebar:
         equipe = [v.strip().upper() for v in nomes_raw.split('\n') if v.strip()]
         vendedor_selecionado = st.selectbox("CONSULTOR:", equipe)
 
-# --- LÓGICA DE TEMPO ---
-hoje = datetime.now()
-primeiro_dia = hoje.replace(day=1)
-# Cálculo do último dia do mês corrente
-if hoje.month == 12:
-    ultimo_dia = hoje.replace(year=hoje.year + 1, month=1, day=1) - pd.Timedelta(days=1)
-else:
-    ultimo_dia = hoje.replace(month=hoje.month + 1, day=1) - pd.Timedelta(days=1)
-
-d_uteis_totais = get_working_days(primeiro_dia, ultimo_dia)
-d_uteis_transcorridos = get_working_days(primeiro_dia, hoje)
-
-# Ajuste: Se hoje for dia útil, a meta "esperada" é até ontem (dia útil anterior)
-if hoje.weekday() < 5:
-    d_uteis_transcorridos = max(0, d_uteis_transcorridos - 1)
-# Se hoje for sábado (5) ou domingo (6), d_uteis_transcorridos já reflete os dias úteis passados corretamente.
-
-# --- TELAS ---
 if st.session_state.pagina_ativa == 'Dashboard':
     st.title("Giri Strategic Hub")
     c1, c2 = st.columns(2)
@@ -87,7 +80,7 @@ if st.session_state.pagina_ativa == 'Dashboard':
 
 elif st.session_state.pagina_ativa == 'Desempenho':
     st.title(f"GOVERNANÇA: {vendedor_selecionado}")
-    st.markdown(f'<div class="main-card">📅 Meta baseada em **{d_uteis_transcorridos}** dias úteis transcorridos de **{d_uteis_totais}**.</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="main-card">📅 Meta baseada em **{d_uteis_transcorridos}** dias úteis passados de **{d_uteis_totais}**.</div>', unsafe_allow_html=True)
     
     cols = st.columns(5)
     ind_list = []
@@ -100,12 +93,18 @@ elif st.session_state.pagina_ativa == 'Desempenho':
             r = st.number_input(f"Realizado", min_value=0.0, step=1.0, format="%.0f", key=f"r_{i}_{vendedor_selecionado}")
             ind_list.append({"NOME": n, "META": m, "REALIZADO": r})
 
-    # TABELA DE DIAGNÓSTICO
     resultados = []
     for item in ind_list:
+        # Se dias transcorridos = 0, esperado = 0.
         v_esp = math.ceil((item["META"] / d_uteis_totais) * d_uteis_transcorridos) if d_uteis_totais > 0 else 0
-        rota = (item["REALIZADO"] / v_esp) if v_esp > 0 else (1.0 if item["REALIZADO"] > 0 else 0.0)
-        tend = math.ceil((item["REALIZADO"] / d_uteis_transcorridos) * d_uteis_totais) if d_uteis_transcorridos > 0 else item["REALIZADO"]
+        
+        # Lógica de Rota: se o esperado é zero, qualquer realizado acima de zero é 100% de eficiência.
+        if v_esp == 0:
+            rota = 1.0 if item["REALIZADO"] >= 0 else 0.0
+            tend = item["REALIZADO"] if d_uteis_transcorridos == 0 else math.ceil((item["REALIZADO"] / d_uteis_transcorridos) * d_uteis_totais)
+        else:
+            rota = item["REALIZADO"] / v_esp
+            tend = math.ceil((item["REALIZADO"] / d_uteis_transcorridos) * d_uteis_totais)
         
         status = "🟢 NO RITMO" if (v_esp == 0) or rota >= 1.0 else "🟡 ATENÇÃO" if rota >= 0.85 else "🚨 CRÍTICO"
         
