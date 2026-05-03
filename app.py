@@ -3,7 +3,7 @@ import pandas as pd
 import xlsxwriter
 from io import BytesIO
 
-# 1. DESIGN EXECUTIVO GIRI
+# 1. DESIGN EXECUTIVO GIRI (DASHBOARD)
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
@@ -35,24 +35,14 @@ def format_br(val):
 
 def engine_star(row, lp_val, cp_val):
     lp, cp = row['MEDIA_LP'], row['MEDIA_CP']
-    
-    # REGRA 0: INATIVIDADE (Meta Zero para Diagnóstico)
     if cp == 0: 
         return "⚫ INATIVO", 0, "DIAGNÓSTICO: Cliente sem compra há 90 dias. Retomar contato e entender o ocorrido antes de ofertar."
-    
-    # REGRA 1: QUEDA ACENTUADA (Severidade > 20%)
     if cp < (lp * 0.80):
         return "🚨 QUEDA ACENTUADA", lp, "INTERVENÇÃO IMEDIATA: Colapso de volume (>20%). Exige ação de diretoria e defesa de share."
-        
-    # REGRA 2: QUEDA (Sensibilidade 5% a 20%)
     if cp < (lp * 0.95): 
         return "🔴 QUEDA", lp, "DEFESA: Desvio negativo detectado. Investigar concorrência ou falha pontual."
-    
-    # REGRA 3: CRESCIMENTO (Meta de 5% sobre o Curto Prazo)
     if cp > (lp * 1.05): 
-        return "🟢 CRESCIMENTO", int(cp * 1.05), "EXPANSÃO: Tração positiva detectada. Manter rampa com meta de 5% sobre o realizado recente."
-    
-    # REGRA 4: ESTABILIDADE (+/- 5%)
+        return "🟢 CRESCIMENTO", int(cp * 1.05), "EXPANSÃO: Tração positiva detectada. Meta de 5% sobre o realizado recente."
     return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Ritual de atendimento e blindagem de conta."
 
 if uploaded_file:
@@ -73,14 +63,12 @@ if uploaded_file:
 
     if dims_selecionadas or not dimensoes_reais:
         col_meses = [c for c in cols if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
-        
         df = df_raw.copy()
         for col in col_meses:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
         cols_cp = col_meses[-cp_val:]
         cols_lp = col_meses[-(lp_val + cp_val):-cp_val]
-        
         chaves = ['EMPRESA'] + dims_selecionadas
         df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
@@ -95,13 +83,33 @@ if uploaded_file:
         
         st.subheader("Matriz de Decisão Tática")
         format_map = {col: format_br for col in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}
-        
-        st.dataframe(
-            df_agrupado[colunas_exibicao].sort_values('TOTAL_ACUMULADO', ascending=False).style.format(format_map),
-            use_container_width=True
-        )
+        st.dataframe(df_agrupado[colunas_exibicao].sort_values('TOTAL_ACUMULADO', ascending=False).style.format(format_map), use_container_width=True)
 
+        # 2. ENGENHARIA ESTÉTICA DO EXCEL (DESIGN GIRI)
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df_agrupado[colunas_exibicao].to_excel(writer, index=False, sheet_name='STAR_OS')
-        st.download_button("📥 EXPORTAR PLANO DE TRABALHO", output.getvalue(), "Plano_STAR_Giri.xlsx")
+            df_agrupado[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
+            workbook = writer.book
+            worksheet = writer.sheets['MATRIZ_STAR']
+
+            # Definição de Formatos
+            header_fmt = workbook.add_format({
+                'bold': True, 'font_color': 'white', 'bg_color': '#001220',
+                'border': 1, 'border_color': 'white', 'align': 'center', 'valign': 'vcenter'
+            })
+            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'vcenter'})
+            text_fmt = workbook.add_format({'align': 'center', 'valign': 'vcenter'})
+            left_fmt = workbook.add_format({'align': 'left', 'valign': 'vcenter'})
+
+            # Aplicação dos Formatos nas Colunas
+            for col_num, value in enumerate(colunas_exibicao):
+                worksheet.write(0, col_num, value, header_fmt)
+                # Define largura e alinhamento
+                if value == 'AÇÃO':
+                    worksheet.set_column(col_num, col_num, 60, left_fmt)
+                elif value in chaves:
+                    worksheet.set_column(col_num, col_num, 25, left_fmt)
+                else:
+                    worksheet.set_column(col_num, col_num, 15, num_fmt)
+
+        st.download_button("📥 EXPORTAR PLANO EXECUTIVO (DESIGN GIRI)", output.getvalue(), "Plano_STAR_Giri.xlsx")
