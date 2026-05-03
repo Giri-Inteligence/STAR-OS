@@ -14,7 +14,6 @@ st.markdown("""
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 12px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
     h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    /* TABELA: CONTROLE HORIZONTAL TOTAL */
     div[data-testid="stTable"] table { width: 100% !important; table-layout: fixed !important; }
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { 
         text-align: center !important; 
@@ -22,12 +21,9 @@ st.markdown("""
         font-size: 13px !important;
         padding: 10px 5px !important;
         white-space: nowrap !important;
-        overflow: hidden;
     }
-
     div[data-testid="stTable"] th:nth-child(1), div[data-testid="stTable"] td:nth-child(1) { width: 25% !important; text-align: left !important; }
     div[data-testid="stTable"] th:nth-child(7), div[data-testid="stTable"] td:nth-child(7) { width: 15% !important; }
-
     div[data-testid="stTable"] th { font-weight: bold !important; border-bottom: 2px solid rgba(255,255,255,0.1) !important; }
 
     .stTextInput input, .stNumberInput input { height: 35px !important; font-size: 13px !important; text-align: center !important; }
@@ -40,14 +36,14 @@ def format_executivo(val):
     return f"{int(val):,}".replace(",", ".")
 
 def get_working_days(start_date, end_date):
-    # Considera apenas segunda a sexta como dias úteis
     days = pd.date_range(start_date, end_date)
     return len(days[days.dayofweek < 5])
 
-# --- INICIALIZAÇÃO E NAVEGAÇÃO ---
+# --- INICIALIZAÇÃO ---
 if 'pagina_ativa' not in st.session_state:
     st.session_state.pagina_ativa = 'Dashboard'
 
+# --- NAVEGAÇÃO LATERAL ---
 with st.sidebar:
     st.markdown("## GIRI | ARCHITECTURE")
     if st.session_state.pagina_ativa != 'Dashboard':
@@ -57,24 +53,26 @@ with st.sidebar:
     
     if st.session_state.pagina_ativa == 'Desempenho':
         st.markdown("---")
-        nomes_raw = st.text_area("EQUIPE:", "MÁRIO\nJOÃO\nCARLOS", height=100)
+        nomes_raw = st.text_area("EQUIPE:", "JOÃO\nCARLOS\nMARIA", height=100)
         equipe = [v.strip().upper() for v in nomes_raw.split('\n') if v.strip()]
         vendedor_selecionado = st.selectbox("CONSULTOR:", equipe)
 
-# --- LÓGICA DE TEMPO REAL (DOMINGO 03/05/2026) ---
+# --- LÓGICA DE TEMPO ---
 hoje = datetime.now()
-primeiro_dia_mes = hoje.replace(day=1)
-ultimo_dia_mes = (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
+primeiro_dia = hoje.replace(day=1)
+# Cálculo do último dia do mês corrente
+if hoje.month == 12:
+    ultimo_dia = hoje.replace(year=hoje.year + 1, month=1, day=1) - pd.Timedelta(days=1)
+else:
+    ultimo_dia = hoje.replace(month=hoje.month + 1, day=1) - pd.Timedelta(days=1)
 
-d_uteis_totais = get_working_days(primeiro_dia_mes, ultimo_dia_mes)
+d_uteis_totais = get_working_days(primeiro_dia, ultimo_dia)
+d_uteis_transcorridos = get_working_days(primeiro_dia, hoje)
 
-# A MUDANÇA: Dias transcorridos EXCLUINDO o dia de hoje, pois a meta de hoje só conta ao final do expediente
-# Se hoje for final de semana, o contador não sobe.
-d_uteis_transcorridos = get_working_days(primeiro_dia_mes, hoje)
-# Se hoje for dia útil, subtraímos 1 para refletir que o dia ainda está em curso (meta esperada até ontem)
-# Ou mantemos 0 se estivermos no início do mês sem dias úteis passados.
-if hoje.dayofweek < 5:
+# Ajuste: Se hoje for dia útil, a meta "esperada" é até ontem (dia útil anterior)
+if hoje.weekday() < 5:
     d_uteis_transcorridos = max(0, d_uteis_transcorridos - 1)
+# Se hoje for sábado (5) ou domingo (6), d_uteis_transcorridos já reflete os dias úteis passados corretamente.
 
 # --- TELAS ---
 if st.session_state.pagina_ativa == 'Dashboard':
@@ -109,7 +107,7 @@ elif st.session_state.pagina_ativa == 'Desempenho':
         rota = (item["REALIZADO"] / v_esp) if v_esp > 0 else (1.0 if item["REALIZADO"] > 0 else 0.0)
         tend = math.ceil((item["REALIZADO"] / d_uteis_transcorridos) * d_uteis_totais) if d_uteis_transcorridos > 0 else item["REALIZADO"]
         
-        status = "🟢 NO RITMO" if (v_esp == 0 and item["REALIZADO"] >= 0) or rota >= 1.0 else "🟡 ATENÇÃO" if rota >= 0.85 else "🚨 CRÍTICO"
+        status = "🟢 NO RITMO" if (v_esp == 0) or rota >= 1.0 else "🟡 ATENÇÃO" if rota >= 0.85 else "🚨 CRÍTICO"
         
         resultados.append({
             "INDICADOR": item["NOME"].upper(),
