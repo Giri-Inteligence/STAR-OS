@@ -20,11 +20,10 @@ st.markdown("""
         font-size: 16px !important;
     }
 
-    /* AMPLIAÇÃO DOS RETÂNGULOS DOS INDICADORES (ALTURA FIXA GENEROSA) */
-    /* Este seletor foca apenas nos inputs que estão dentro das colunas (Indicadores) */
+    /* ALTURA DE 240PX EXCLUSIVA PARA OS TÍTULOS DOS INDICADORES */
     [data-testid="column"] .stTextInput input {
-        height: 120px !important; 
-        font-size: 18px !important;
+        height: 240px !important; 
+        font-size: 20px !important;
         font-weight: bold !important;
         text-align: center !important;
         white-space: normal !important;
@@ -32,14 +31,15 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        line-height: 1.2 !important;
+        line-height: 1.4 !important;
+        padding: 20px !important;
     }
 
-    /* AJUSTE PARA O NOME DO VENDEDOR (ALTURA PADRÃO) */
-    /* Este seletor garante que o campo do vendedor não fique gigante */
+    /* MANUTENÇÃO DA ALTURA PADRÃO PARA O NOME DO VENDEDOR */
     .main-card > div > div > .stTextInput input {
         height: 45px !important;
         text-align: left !important;
+        font-size: 16px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -66,7 +66,6 @@ if menu == "Dashboard Inicial":
 
 elif menu == "Matriz STAR (Clientes)":
     st.title("Matriz STAR-OS | Gestão de Carteira")
-    # (Mantém a lógica da Matriz STAR já configurada anteriormente)
     st.info("Módulo de Clientes Ativo.")
 
 elif menu == "Desempenho (Vendedores)":
@@ -95,7 +94,6 @@ elif menu == "Desempenho (Vendedores)":
 
     for i, col in enumerate(cols_ind):
         with col:
-            # Inputs com altura de 120px via CSS
             nome_i = st.text_input(f"Indicador {i+1}", value=sugestoes[i], key=f"n_{i}")
             meta_i = st.number_input(f"Meta {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"m_{i}")
             real_i = st.number_input(f"Realizado {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"r_{i}")
