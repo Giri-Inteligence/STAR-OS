@@ -28,15 +28,17 @@ uploaded_file = st.file_uploader("Upload da Base de Faturamento", type=['xlsx'])
 st.markdown('</div>', unsafe_allow_html=True)
 
 def format_br(val):
-    try: return f"{int(val):,.0f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    try:
+        if pd.isna(val): return "-"
+        return f"{int(val):,.0f}".replace(",", "X").replace(".", ",").replace("X", ".")
     except: return val
 
 if uploaded_file:
     df_raw = pd.read_excel(uploaded_file)
     cols = [str(c).upper() for c in df_raw.columns]
-    df_raw.columns = cols # Normaliza para evitar erro de caixa alta/baixa
+    df_raw.columns = cols 
 
-    # FILTRO RÍGIDO: Só aceitamos o que é FOCO (Vendedor, Segmento, Cidade)
+    # FILTRO DE FOCO (Whitelist)
     focos_permitidos = ["VENDEDOR", "SEGMENTO", "CIDADE", "REGIAO", "UF"]
     dimensoes_reais = [c for c in cols if any(f in c for f in focos_permitidos)]
 
@@ -47,22 +49,19 @@ if uploaded_file:
         for d in dimensoes_reais:
             if st.checkbox(d, key=f"chk_{d}"):
                 dims_selecionadas.append(d)
-        
-        if not dimensoes_reais:
-            st.error("Colunas de Vendedor, Segmento ou Cidade não detectadas.")
 
-    if dims_selecionadas:
-        # Identifica meses
+    if dims_selecionadas or not dimensoes_reais:
+        # Identifica colunas de faturamento
         col_meses = [c for c in cols if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
         
         df = df_raw.copy()
         for col in col_meses:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
+        # Cálculo de Médias
         cols_cp = col_meses[-cp_val:]
         cols_lp = col_meses[-(lp_val + cp_val):-cp_val]
         
-        # Agrupamento pelas chaves escolhidas
         chaves = ['EMPRESA'] + dims_selecionadas
         df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
@@ -71,13 +70,28 @@ if uploaded_file:
 
         def engine_star(row):
             lp, cp = row['MEDIA_LP'], row['MEDIA_CP']
-            if cp == 0: return "⚫ INATIVO", lp, "REATIVAÇÃO: Visita imediata necessária."
-            if cp < (lp * 0.85): return "🔴 QUEDA", lp, "DEFESA: Investigar perda de share."
+            if cp == 0: return "⚫ INATIVO", lp, "REATIVAÇÃO: Cliente sem compra há 90 dias. Visita imediata."
+            if cp < (lp * 0.85): return "🔴 QUEDA", lp, "DEFESA: Perda de share. Investigar concorrência."
             if cp > (lp * 1.15): return "🟢 CRESCIMENTO", int(cp * 1.10), "EXPANSÃO: Aplicar Upsell."
             return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Blindagem de conta."
 
         df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*df_agrupado.apply(engine_star, axis=1))
 
-        st.subheader("Matriz de Decisão Tática")
-        exibir = chaves + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
-        st.dataframe(df_agrupado[exibir].sort_values('MEDIA_LP', ascending=False).style.format({"MEDIA_LP": format_br, "MEDIA_CP": format_br, "META": format_br}), use_container_width=True)
+        # EXIBIÇÃO: HISTÓRICO + DIAGNÓSTICO
+        # Reordenamos para que o histórico venha ANTES das médias para dar contexto
+        colunas_exibicao = chaves + col_meses + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
+        
+        st.subheader("Matriz de Decisão com Evidência Histórica")
+        
+        # Formatação dinâmica para todas as colunas de valores
+        format_map = {col: format_br for col in col_meses + ['MEDIA_LP', 'MEDIA_CP', 'META']}
+        
+        st.dataframe(
+            df_agrupado[colunas_exibicao].sort_values('MEDIA_LP', ascending=False).style.format(format_map),
+            use_container_width=True
+        )
+
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df_agrupado.to_excel(writer, index=False, sheet_name='STAR_EVIDENCIA')
+        st.download_button("📥 BAIXAR PLANO COM HISTÓRICO", output.getvalue(), "Plano_STAR_Giri.xlsx")
