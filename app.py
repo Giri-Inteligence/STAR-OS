@@ -1,110 +1,116 @@
 import streamlit as st
 
-# 1. ARQUITETURA VISUAL GIRI - REFINAMENTO C-LEVEL
+# 1. DESIGN EXECUTIVO GIRI - ALTA DENSIDADE
 st.set_page_config(page_title="Giri Architecture Hub", layout="wide")
 
 st.markdown("""
     <style>
-    /* GRADIENTE RADIAL SOFISTICADO (ELIMINA O FUNDO CHAPADO) */
+    /* FUNDO GRADIENTE RADIAL REFINADO */
     .stApp { 
         background: radial-gradient(circle at center, #001f3f 0%, #001220 70%, #000810 100%); 
         color: #ffffff; 
     }
     
-    /* MENU LATERAL MINIMALISTA */
-    [data-testid="stSidebar"] { 
-        min-width: 240px !important; 
-        max-width: 240px !important; 
-        background-color: rgba(0, 8, 16, 0.5) !important;
-    }
+    /* MENU LATERAL */
+    [data-testid="stSidebar"] { min-width: 220px !important; max-width: 220px !important; }
     
-    /* CARDS DE NAVEGAÇÃO */
-    .main-card { 
-        background: rgba(255, 255, 255, 0.02); 
-        backdrop-filter: blur(25px); 
-        border-radius: 12px; 
-        padding: 60px 40px; 
-        border: 1px solid rgba(255, 255, 255, 0.05); 
-        margin-bottom: 20px; 
+    /* GRID DE FERRAMENTAS - CARDS COMPACTOS */
+    .tool-card { 
+        background: rgba(255, 255, 255, 0.03); 
+        backdrop-filter: blur(15px); 
+        border-radius: 10px; 
+        padding: 25px; 
+        border: 1px solid rgba(255, 255, 255, 0.08); 
         text-align: center;
-        transition: transform 0.3s ease;
+        height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
     }
     
-    .main-card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+    .tool-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
     }
-    
-    /* TÍTULO CENTRALIZADO E MINIMALISTA */
+
     .title-center {
         text-align: center;
-        font-family: 'Inter', sans-serif;
         text-transform: uppercase;
-        letter-spacing: 4px;
+        letter-spacing: 3px;
         color: #f0f2f6 !important;
-        margin-top: 80px;
-        margin-bottom: 60px;
+        margin-top: 50px;
+        margin-bottom: 50px;
         font-weight: 700;
-        font-size: 2.2rem;
+        font-size: 1.8rem;
     }
 
-    h4 { 
-        text-transform: uppercase; 
-        letter-spacing: 2px; 
-        margin-bottom: 10px;
-        color: #ffffff;
-        font-weight: 500;
-    }
+    h4 { text-transform: uppercase; letter-spacing: 1px; font-size: 1rem; margin-bottom: 10px; color: #ffffff; }
+    p { color: rgba(255,255,255,0.5); font-size: 0.8rem; line-height: 1.2; margin: 0; }
 
-    /* BOTÕES EXECUTIVOS */
+    /* BOTÕES INVISÍVEIS PARA TORNAR O CARD CLICÁVEL */
     .stButton button {
+        background-color: transparent !important;
+        border: none !important;
+        color: transparent !important;
+        height: 180px !important;
         width: 100% !important;
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        color: #ffffff !important;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        padding: 10px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        border-radius: 4px;
-    }
-    
-    .stButton button:hover {
-        border: 1px solid #ffffff !important;
-        background-color: rgba(255, 255, 255, 0.1) !important;
+        position: absolute;
+        top: -180px;
+        z-index: 10;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- BRANDING LATERAL ---
 with st.sidebar:
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("## GIRI | ARCHITECTURE")
+    st.markdown("<br> ## GIRI | ARCHITECTURE", unsafe_allow_html=True)
     st.markdown("---")
-    st.caption("v5.0 | Strategic Governance")
+    st.caption("v5.1 | Hub Estratégico")
 
-# --- CORPO DO DASHBOARD ---
-st.markdown('<h1 class="title-center">DASHBOARD ESTRATÉGICO</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="title-center">Dashboard Estratégico</h1>', unsafe_allow_html=True)
 
-# Grid de Navegação
-c1, c2 = st.columns(2)
+# 2. GRID DINÂMICO (3 COLUNAS PARA ESCALABILIDADE)
+# Aqui podemos expandir para 4 colunas conforme as 13 ferramentas entrarem
+cols = st.columns(3)
 
-with c1:
+# FERRAMENTA 1
+with cols[0]:
     st.markdown("""
-        <div class="main-card">
+        <div class="tool-card">
             <h4>📍 Matriz STAR</h4>
-            <p style='color: rgba(255,255,255,0.5); font-size: 0.9rem;'>Governança e Diagnóstico de Carteira</p>
+            <p>Diagnóstico de Carteira e Governança de Churn</p>
         </div>
     """, unsafe_allow_html=True)
-    st.button("ACESSAR MATRIZ STAR")
+    if st.button("Acessar 1", key="btn_star"):
+        pass # Lógica de navegação
 
-with c2:
+# FERRAMENTA 2
+with cols[1]:
     st.markdown("""
-        <div class="main-card">
+        <div class="tool-card">
             <h4>📊 Matriz de Desempenho</h4>
-            <p style='color: rgba(255,255,255,0.5); font-size: 0.9rem;'>Gestão de Ritmo e Eficiência Individual</p>
+            <p>Gestão de Ritmo e Eficiência Individual</p>
         </div>
     """, unsafe_allow_html=True)
-    st.button("ACESSAR DESEMPENHO")
+    if st.button("Acessar 2", key="btn_desempenho"):
+        pass
+
+# FERRAMENTA 3 (ESPAÇO PARA FUTURA FERRAMENTA)
+with cols[2]:
+    st.markdown("""
+        <div class="tool-card">
+            <h4>⚙️ Arquitetura Comercial</h4>
+            <p>Estruturação de Processos e Playbooks</p>
+        </div>
+    """, unsafe_allow_html=True)
+    if st.button("Acessar 3", key="btn_arch"):
+        pass
+
+# Próxima linha de ferramentas (Exemplo de como escalar)
+st.markdown("<br>", unsafe_allow_html=True)
+cols2 = st.columns(3)
+with cols2[0]:
+    st.markdown('<div class="tool-card"><h4>🚀 Pipeline Predictor</h4><p>Previsibilidade de Receita B2B</p></div>', unsafe_allow_html=True)
+    st.button("Acessar 4", key="btn_pipe")
