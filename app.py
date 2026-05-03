@@ -13,30 +13,28 @@ st.markdown("""
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px; }
     h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
     
-    /* Centralização Total da Tabela */
+    /* Centralização Total da Tabela de Análise */
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { 
         text-align: center !important; 
         vertical-align: middle !important; 
-        font-size: 18px !important;
-        padding: 15px !important;
+        font-size: 16px !important;
+        padding: 12px !important;
     }
-    div[data-testid="stTable"] th { font-weight: bold !important; }
+    div[data-testid="stTable"] th { font-weight: bold !important; text-transform: uppercase; }
 
-    /* FORÇAR 240PX NOS TÍTULOS DOS INDICADORES */
+    /* RETÂNGULOS DOS INDICADORES: 120PX (EQUILÍBRIO VISUAL) */
     [data-testid="column"] .stTextInput input {
-        height: 240px !important; 
-        font-size: 22px !important;
+        height: 120px !important; 
+        font-size: 18px !important;
         font-weight: bold !important;
         text-align: center !important;
         white-space: normal !important;
-        line-height: 1.4 !important;
-        background-color: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
+        line-height: 1.2 !important;
     }
 
-    /* Manter Nome do Vendedor Padrão */
+    /* Ajuste Nome do Vendedor */
     .vendedor-input .stTextInput input {
-        height: 50px !important;
+        height: 45px !important;
         text-align: left !important;
     }
     </style>
@@ -87,7 +85,7 @@ if menu == "Desempenho (Vendedores)":
             ind_list.append({"NOME": n, "META": m, "REALIZADO": r})
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # REMOVI A TRAVA: A tabela agora aparece sempre
+    # A análise aparece sempre para garantir a continuidade da reunião
     st.markdown(f"### 2. ANÁLISE DE DESEMPENHO: {vendedor_nome.upper()}")
     resultados = []
     for item in ind_list:
@@ -102,8 +100,8 @@ if menu == "Desempenho (Vendedores)":
             "META MENSAL": format_executivo(item["META"]),
             "ESPERADO HOJE": format_executivo(v_esperado),
             "REALIZADO": format_executivo(item["REALIZADO"]),
-            "ROTA": f"{round(rota * 100, 1)}%",
-            "TENDÊNCIA": format_executivo(tendencia),
+            "EFICIÊNCIA (ROTA)": f"{round(rota * 100, 1)}%",
+            "PROJEÇÃO FINAL": format_executivo(tendencia),
             "STATUS": status
         })
     
