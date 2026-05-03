@@ -17,7 +17,6 @@ st.markdown("""
 with st.sidebar:
     st.markdown("## GIRI | ARCHITECTURE")
     st.markdown("---")
-    st.subheader("📅 JANELAS DE GOVERNANÇA")
     lp_val = st.number_input("Longo Prazo (Meses)", value=12)
     cp_val = st.number_input("Curto Prazo (Meses)", value=3)
 
@@ -36,14 +35,14 @@ def format_br(val):
 def engine_star(row, lp_val, cp_val):
     lp, cp = row['MEDIA_LP'], row['MEDIA_CP']
     if cp == 0: 
-        return "⚫ INATIVO", 0, "DIAGNÓSTICO: Cliente sem compra há 90 dias. Retomar contato e entender o ocorrido antes de ofertar."
+        return "⚫ INATIVO", 0, "DIAGNÓSTICO: Cliente sem compra há 90 dias. Retomar contato e entender o ocorrido."
     if cp < (lp * 0.80):
-        return "🚨 QUEDA ACENTUADA", lp, "INTERVENÇÃO IMEDIATA: Colapso de volume (>20%). Exige ação de diretoria e defesa de share."
+        return "🚨 QUEDA ACENTUADA", lp, "INTERVENÇÃO IMEDIATA: Colapso de volume (>20%). Exige ação de diretoria."
     if cp < (lp * 0.95): 
-        return "🔴 QUEDA", lp, "DEFESA: Desvio negativo detectado. Investigar concorrência ou falha pontual."
+        return "🔴 QUEDA", lp, "DEFESA: Desvio negativo detectado. Investigar concorrência."
     if cp > (lp * 1.05): 
-        return "🟢 CRESCIMENTO", int(cp * 1.05), "EXPANSÃO: Tração positiva detectada. Meta de 5% sobre o realizado recente."
-    return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Ritual de atendimento e blindagem de conta."
+        return "🟢 CRESCIMENTO", int(cp * 1.05), "EXPANSÃO: Tração positiva. Meta de 5% sobre o realizado recente."
+    return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Blindagem de conta."
 
 if uploaded_file:
     df_raw = pd.read_excel(uploaded_file)
@@ -54,12 +53,8 @@ if uploaded_file:
     dimensoes_reais = [c for c in cols if any(f in c for f in focos_permitidos)]
 
     with st.sidebar:
-        st.markdown("---")
         st.subheader("📂 CHAVES DE GOVERNANÇA")
-        dims_selecionadas = []
-        for d in dimensoes_reais:
-            if st.checkbox(d, key=f"chk_{d}"):
-                dims_selecionadas.append(d)
+        dims_selecionadas = [d for d in dimensoes_reais if st.checkbox(d, key=f"chk_{d}")]
 
     if dims_selecionadas or not dimensoes_reais:
         col_meses = [c for c in cols if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
@@ -67,49 +62,49 @@ if uploaded_file:
         for col in col_meses:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
-        cols_cp = col_meses[-cp_val:]
-        cols_lp = col_meses[-(lp_val + cp_val):-cp_val]
         chaves = ['EMPRESA'] + dims_selecionadas
         df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
         df_agrupado['TOTAL_ACUMULADO'] = df_agrupado[col_meses].sum(axis=1).round(0)
-        df_agrupado['MEDIA_LP'] = (df_agrupado[cols_lp].sum(axis=1) / len(cols_lp)).round(0)
-        df_agrupado['MEDIA_CP'] = (df_agrupado[cols_cp].sum(axis=1) / len(cols_cp)).round(0)
+        df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses[-(lp_val + cp_val):-cp_val]].sum(axis=1) / lp_val).round(0)
+        df_agrupado['MEDIA_CP'] = (df_agrupado[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
 
         res = df_agrupado.apply(lambda row: engine_star(row, lp_val, cp_val), axis=1)
         df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*res)
 
-        # CRITICAL FIX: Ordenação mandatória antes da exibição e exportação
         df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
+        # Reordenando: Total Acumulado logo após os meses
         colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
         
         st.subheader("Matriz de Decisão Tática")
-        format_map = {col: format_br for col in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}
-        st.dataframe(df_final[colunas_exibicao].style.format(format_map), use_container_width=True)
+        st.dataframe(df_final[colunas_exibicao].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
 
-        # ENGENHARIA ESTÉTICA E ORDENADA DO EXCEL
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            # Exportamos o df_final que já contém a ordenação correta
             df_final[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
-            workbook = writer.book
-            worksheet = writer.sheets['MATRIZ_STAR']
+            workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
 
-            header_fmt = workbook.add_format({
-                'bold': True, 'font_color': 'white', 'bg_color': '#001220',
-                'border': 1, 'border_color': 'white', 'align': 'center', 'valign': 'vcenter'
-            })
-            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'vcenter'})
-            text_fmt = workbook.add_format({'align': 'center', 'valign': 'vcenter'})
-            left_fmt = workbook.add_format({'align': 'left', 'valign': 'vcenter'})
+            # FORMATOS EXECUTIVOS
+            header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'border_color': 'white', 'align': 'center'})
+            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center'})
+            left_fmt = workbook.add_format({'align': 'left'})
+            
+            # FORMATOS CONDICIONAIS
+            fmt_queda = workbook.add_format({'font_color': '#C00000', 'bold': True, 'align': 'left'})
+            fmt_queda_ac = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006', 'bold': True, 'align': 'left'})
+            fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'align': 'left'})
 
             for col_num, value in enumerate(colunas_exibicao):
                 worksheet.write(0, col_num, value, header_fmt)
-                if value == 'AÇÃO':
-                    worksheet.set_column(col_num, col_num, 60, left_fmt)
-                elif value in chaves:
-                    worksheet.set_column(col_num, col_num, 25, left_fmt)
+                if value == 'STATUS':
+                    worksheet.set_column(col_num, col_num, 20, left_fmt)
+                    # Aplicação de Formatação Condicional na coluna STATUS
+                    worksheet.conditional_format(1, col_num, len(df_final), col_num, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
+                    worksheet.conditional_format(1, col_num, len(df_final), col_num, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
+                    worksheet.conditional_format(1, col_num, len(df_final), col_num, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
+                elif value in ['AÇÃO', 'EMPRESA'] + dims_selecionadas:
+                    worksheet.set_column(col_num, col_num, 30, left_fmt)
                 else:
                     worksheet.set_column(col_num, col_num, 15, num_fmt)
 
-        st.download_button("📥 EXPORTAR PLANO EXECUTIVO (ORDENADO POR VOLUME)", output.getvalue(), "Plano_STAR_Giri.xlsx")
+        st.download_button("📥 EXPORTAR PLANO EXECUTIVO GIRI", output.getvalue(), "Plano_STAR_Giri.xlsx")
