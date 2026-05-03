@@ -29,28 +29,28 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 def format_br(val):
     try:
-        if pd.isna(val): return "-"
+        if pd.isna(val) or val == 0: return "-"
         return f"{int(val):,.0f}".replace(",", "X").replace(".", ",").replace("X", ".")
     except: return val
 
 def engine_star(row, lp_val, cp_val):
     lp, cp = row['MEDIA_LP'], row['MEDIA_CP']
     
-    # REGRA 0: INATIVIDADE (Churn Detectado)
+    # REGRA 0: INATIVIDADE (Meta Zero para Diagnóstico)
     if cp == 0: 
-        return "⚫ INATIVO", lp, "REATIVAÇÃO: Cliente sem compra há 90 dias. Visita imediata e diagnóstico de causa raiz."
+        return "⚫ INATIVO", 0, "DIAGNÓSTICO: Cliente sem compra há 90 dias. Retomar contato e entender o ocorrido antes de ofertar."
     
     # REGRA 1: QUEDA ACENTUADA (Severidade > 20%)
     if cp < (lp * 0.80):
-        return "🚨 QUEDA ACENTUADA", lp, "INTERVENÇÃO IMEDIATA: Colapso de volume detectado (>20%). Exige ação de diretoria e defesa de share."
+        return "🚨 QUEDA ACENTUADA", lp, "INTERVENÇÃO IMEDIATA: Colapso de volume (>20%). Exige ação de diretoria e defesa de share."
         
     # REGRA 2: QUEDA (Sensibilidade 5% a 20%)
     if cp < (lp * 0.95): 
         return "🔴 QUEDA", lp, "DEFESA: Desvio negativo detectado. Investigar concorrência ou falha pontual."
     
-    # REGRA 3: CRESCIMENTO (Sensibilidade > 5%)
+    # REGRA 3: CRESCIMENTO (Meta de 5% sobre o Curto Prazo)
     if cp > (lp * 1.05): 
-        return "🟢 CRESCIMENTO", int(cp * 1.10), "EXPANSÃO: Tração positiva detectada. Aplicar técnica de Upsell."
+        return "🟢 CRESCIMENTO", int(cp * 1.05), "EXPANSÃO: Tração positiva detectada. Manter rampa com meta de 5% sobre o realizado recente."
     
     # REGRA 4: ESTABILIDADE (+/- 5%)
     return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Ritual de atendimento e blindagem de conta."
