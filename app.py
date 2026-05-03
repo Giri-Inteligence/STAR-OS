@@ -58,13 +58,16 @@ if uploaded_file:
         for col in col_meses:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
-        # Cálculo de Médias
+        # Cálculo de Médias e Acumulado
         cols_cp = col_meses[-cp_val:]
         cols_lp = col_meses[-(lp_val + cp_val):-cp_val]
         
         chaves = ['EMPRESA'] + dims_selecionadas
         df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
+        # Injeção do Total Acumulado do Período Medido
+        df_agrupado['TOTAL_ACUMULADO'] = df_agrupado[col_meses].sum(axis=1).round(0)
+        
         df_agrupado['MEDIA_LP'] = (df_agrupado[cols_lp].sum(axis=1) / len(cols_lp)).round(0)
         df_agrupado['MEDIA_CP'] = (df_agrupado[cols_cp].sum(axis=1) / len(cols_cp)).round(0)
 
@@ -77,21 +80,19 @@ if uploaded_file:
 
         df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*df_agrupado.apply(engine_star, axis=1))
 
-        # EXIBIÇÃO: HISTÓRICO + DIAGNÓSTICO
-        # Reordenamos para que o histórico venha ANTES das médias para dar contexto
-        colunas_exibicao = chaves + col_meses + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
+        # EXIBIÇÃO: HISTÓRICO + TOTAL ACUMULADO + DIAGNÓSTICO
+        colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
         
-        st.subheader("Matriz de Decisão com Evidência Histórica")
+        st.subheader("Matriz de Decisão com Evidência e Volume")
         
-        # Formatação dinâmica para todas as colunas de valores
-        format_map = {col: format_br for col in col_meses + ['MEDIA_LP', 'MEDIA_CP', 'META']}
+        format_map = {col: format_br for col in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}
         
         st.dataframe(
-            df_agrupado[colunas_exibicao].sort_values('MEDIA_LP', ascending=False).style.format(format_map),
+            df_agrupado[colunas_exibicao].sort_values('TOTAL_ACUMULADO', ascending=False).style.format(format_map),
             use_container_width=True
         )
 
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df_agrupado.to_excel(writer, index=False, sheet_name='STAR_EVIDENCIA')
-        st.download_button("📥 BAIXAR PLANO COM HISTÓRICO", output.getvalue(), "Plano_STAR_Giri.xlsx")
+            df_agrupado[colunas_exibicao].to_excel(writer, index=False, sheet_name='STAR_EVIDENCIA')
+        st.download_button("📥 BAIXAR PLANO COM ACUMULADO", output.getvalue(), "Plano_STAR_Giri.xlsx")
