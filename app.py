@@ -6,16 +6,16 @@ from io import BytesIO
 # 1. DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
-# CSS para quebra de texto na tabela do Streamlit
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #001220 0%, #002d4a 100%); color: #ffffff; }
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px; }
     h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
-    /* Forçar quebra de linha em colunas de texto no Streamlit */
+    /* Ajuste forçado de quebra de texto para a Matrix na tela */
     div[data-testid="stDataFrame"] td {
-        white-space: normal !important;
+        white-space: pre-wrap !important;
         word-wrap: break-word !important;
+        min-width: 300px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -28,10 +28,6 @@ with st.sidebar:
 
 st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
 
-st.markdown('<div class="main-card">', unsafe_allow_html=True)
-uploaded_file = st.file_uploader("Upload da Base de Faturamento", type=['xlsx'])
-st.markdown('</div>', unsafe_allow_html=True)
-
 def format_br(val):
     try:
         if pd.isna(val) or val == 0: return "-"
@@ -39,35 +35,38 @@ def format_br(val):
     except: return val
 
 def engine_star(row, lp, cp):
+    # Estrutura com quebras de linha explícitas para a tela e Excel
     if cp == 0: 
         return "⚫ INATIVO", 0, (
-            "OBJETIVO: Diagnóstico de Churn e Reconexão. \n"
-            "AÇÃO: Reestabelecer contato sem viés de venda. \n"
-            "ORIENTAÇÃO: Identifique o motivo real da parada. Valide se a dor que resolvíamos ainda existe ou se ele tem novas prioridades."
+            "OBJETIVO: Diagnóstico de Churn e Reconexão.\n"
+            "AÇÃO: Reestabelecer contato sem viés de venda.\n"
+            "ORIENTAÇÃO: Identifique o motivo real da parada. Valide se a dor ainda existe."
         )
     if cp < (lp * 0.80):
         return "🚨 QUEDA ACENTUADA", lp, (
-            "OBJETIVO: Contenção de Perda e Defesa de Share. \n"
-            "AÇÃO: Investigar entrada de concorrência ou falha de serviço. \n"
-            "ORIENTAÇÃO: Foque no negócio dele. Entenda onde a operação do cliente está perdendo fôlego e apresente-se para recuperar esse fôlego."
+            "OBJETIVO: Contenção de Perda e Defesa de Share.\n"
+            "AÇÃO: Investigar entrada de concorrência ou falha de serviço.\n"
+            "ORIENTAÇÃO: Foque no negócio dele. Entenda onde ele perde margem e apresente solução."
         )
     if cp < (lp * 0.95): 
         return "🔴 QUEDA", lp, (
-            "OBJETIVO: Estabilização de Giro. \n"
-            "AÇÃO: Identificar se a queda é sazonal ou substituição de mix. \n"
-            "ORIENTAÇÃO: Sugira ajustes que ajudem o cliente a reduzir perdas e manter o custo operacional sob controle."
+            "OBJETIVO: Estabilização de Giro.\n"
+            "AÇÃO: Identificar se a queda é sazonal ou substituição de mix.\n"
+            "ORIENTAÇÃO: Sugira ajustes que ajudem o cliente a reduzir perdas e manter o custo."
         )
     if cp > (lp * 1.05): 
         return "🟢 CRESCIMENTO", int(cp * 1.05), (
-            "OBJETIVO: Expansão de Share e Upsell. \n"
-            "AÇÃO: Analisar mix de clientes similares e elevar Ticket Médio. \n"
-            "ORIENTAÇÃO: Recomende itens complementares explicando como isso ajuda o cliente a atrair novos consumidores ou melhorar a margem."
+            "OBJETIVO: Expansão de Share e Upsell.\n"
+            "AÇÃO: Analisar mix de clientes similares e elevar Ticket Médio.\n"
+            "ORIENTAÇÃO: Recomende itens complementares explicando o ganho de margem para ele."
         )
     return "🔵 ESTÁVEL", int(lp * 1.05), (
-        "OBJETIVO: Manutenção e Blindagem. \n"
-        "AÇÃO: Prevenir inércia e validar satisfação. \n"
-        "ORIENTAÇÃO: Confirme se os objetivos de curto prazo dele estão sendo atingidos. Prospecte necessidades futuras para novos projetos."
+        "OBJETIVO: Manutenção e Blindagem.\n"
+        "AÇÃO: Prevenir inércia e validar satisfação.\n"
+        "ORIENTAÇÃO: Confirme se os objetivos dele estão sendo atingidos e prospecte novos projetos."
     )
+
+uploaded_file = st.file_uploader("Upload da Base de Faturamento", type=['xlsx'])
 
 if uploaded_file:
     df_raw = pd.read_excel(uploaded_file)
@@ -107,29 +106,33 @@ if uploaded_file:
             df_final[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
             workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
 
-            # Formatos com 'text_wrap': True
-            header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
-            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'vcenter'})
-            left_wrap_fmt = workbook.add_format({'align': 'left', 'valign': 'vcenter', 'text_wrap': True})
-            left_fmt = workbook.add_format({'align': 'left', 'valign': 'vcenter'})
-            
-            fmt_queda = workbook.add_format({'font_color': '#C00000', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-            fmt_queda_ac = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-            fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+            bold_part = workbook.add_format({'bold': True, 'align': 'left', 'valign': 'top', 'text_wrap': True})
+            header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center'})
+            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'top'})
+            wrap_fmt = workbook.add_format({'text_wrap': True, 'valign': 'top', 'align': 'left'})
 
+            # Escrever cabeçalho
             for col_num, value in enumerate(colunas_exibicao):
                 worksheet.write(0, col_num, value, header_fmt)
-                if value == 'AÇÃO':
-                    worksheet.set_column(col_num, col_num, 60, left_wrap_fmt) # Coluna larga com quebra
-                elif value in ['STATUS', 'EMPRESA'] + dims_selecionadas:
-                    worksheet.set_column(col_num, col_num, 30, left_fmt)
-                else:
-                    worksheet.set_column(col_num, col_num, 15, num_fmt)
 
-            # Reaplicar formatos condicionais no Status (agora com valign vcenter)
-            col_status_idx = colunas_exibicao.index('STATUS')
-            worksheet.conditional_format(1, col_status_idx, len(df_final), col_status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
-            worksheet.conditional_format(1, col_status_idx, len(df_final), col_status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
-            worksheet.conditional_format(1, col_status_idx, len(df_final), col_status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
+            # Escrever dados com lógica de negrito na coluna AÇÃO
+            acao_idx = colunas_exibicao.index('AÇÃO')
+            for row_num, row_data in enumerate(df_final[colunas_exibicao].values):
+                for col_num, cell_value in enumerate(row_data):
+                    if col_num == acao_idx:
+                        # Quebra o texto e aplica negrito apenas nos rótulos
+                        parts = cell_value.split('\n')
+                        rich_text = []
+                        for p in parts:
+                            if ':' in p:
+                                label, content = p.split(':', 1)
+                                rich_text.extend([bold_part, label + ':', wrap_fmt, content + '\n'])
+                        worksheet.write_rich_string(row_num + 1, col_num, *rich_text, wrap_fmt)
+                    else:
+                        fmt = num_fmt if isinstance(cell_value, (int, float)) else wrap_fmt
+                        worksheet.write(row_num + 1, col_num, cell_value, fmt)
 
-        st.download_button("📥 EXPORTAR PLANO EXECUTIVO GIRI", output.getvalue(), "Plano_STAR_Giri.xlsx")
+            worksheet.set_column(acao_idx, acao_idx, 50)
+            worksheet.set_column(0, acao_idx-1, 20)
+
+        st.download_button("📥 EXPORTAR PLANO COM NEGRITO E QUEBRA", output.getvalue(), "Plano_STAR_Giri.xlsx")
