@@ -24,11 +24,15 @@ st.markdown("""
         text-transform: uppercase;
     }
     
-    /* Altura Dupla para Inputs de Indicadores */
+    /* CORREÇÃO DOS RETÂNGULOS DE INDICADORES */
     div[data-testid="stTextInput"] input {
-        height: 70px !important;
-        font-size: 18px !important;
+        height: 100px !important; /* Altura ampliada para permitir duas linhas se necessário */
+        font-size: 16px !important;
         font-weight: bold !important;
+        text-align: center !important;
+        white-space: normal !important; /* Permite quebra de linha */
+        line-height: 1.2 !important;
+        padding: 10px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -36,6 +40,7 @@ st.markdown("""
 # --- FUNÇÕES DE APOIO ---
 def format_executivo(val):
     if pd.isna(val) or val == 0: return "-"
+    # Formatação com separador de milhar como ponto, sem decimais
     return f"{int(val):,}".replace(",", ".")
 
 def get_working_days(start_date, end_date):
@@ -56,7 +61,6 @@ if menu == "Dashboard Inicial":
         st.markdown('<div class="main-card"><h4>📊 Desempenho</h4>Governança de ritmo e tendência individual.</div>', unsafe_allow_html=True)
 
 elif menu == "Matriz STAR (Clientes)":
-    # (Mantém a lógica anterior da Matriz STAR já validada)
     st.title("Matriz STAR-OS | Gestão de Carteira")
     st.info("Módulo de Clientes Ativo.")
 
@@ -64,6 +68,7 @@ elif menu == "Desempenho (Vendedores)":
     st.title("GOVERNANÇA DE DESEMPENHO | STAR-OS")
     
     hoje = datetime.now()
+    # Para testes ou uso real conforme o calendário da Tamoyo
     primeiro_dia = hoje.replace(day=1)
     if hoje.month == 12: ultimo_dia = hoje.replace(day=31)
     else: ultimo_dia = (hoje.replace(month=hoje.month+1, day=1) - pd.Timedelta(days=1))
@@ -82,9 +87,13 @@ elif menu == "Desempenho (Vendedores)":
     c1, c2, c3, c4, c5 = st.columns(5)
     cols_ind = [c1, c2, c3, c4, c5]
     
+    # Lista de sugestões baseada no seu padrão Tamoyo
+    sugestoes = ["CLIENTES ATIVOS", "CLIENTES REATIVADOS", "NOVOS CLIENTES COM VENDA", "ORÇAMENTOS GERADOS", "FATURAMENTO"]
+
     for i, col in enumerate(cols_ind):
         with col:
-            nome_i = st.text_input(f"Indicador {i+1}", value=f"INDICADOR {i+1}", key=f"n_{i}")
+            nome_i = st.text_input(f"Indicador {i+1}", value=sugestoes[i], key=f"n_{i}")
+            # Step=1.0 e format="%.0f" garantem números inteiros sem vírgula no input
             meta_i = st.number_input(f"Meta {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"m_{i}")
             real_i = st.number_input(f"Realizado {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"r_{i}")
             ind_list.append({"NOME": nome_i, "META": meta_i, "REALIZADO": real_i})
@@ -94,15 +103,15 @@ elif menu == "Desempenho (Vendedores)":
         st.markdown(f"### 2. ANÁLISE DE DESEMPENHO: {vendedor_nome.upper()}")
         resultados = []
         for item in ind_list:
-            # Lógica de Arredondamento para Cima (Teto) para metas inteiras
+            # Lógica de Arredondamento para Cima (Teto)
             v_esperado = math.ceil((item["META"] / d_uteis_totais) * d_uteis_hoje)
             
-            # Cálculo de Eficiência e Tendência (Arredondada)
-            rota = (item["REALIZADO"] / v_esperado) if v_esperado > 0 else 0
+            # Cálculo de Eficiência e Tendência (Arredondada para cima)
+            rota_raw = (item["REALIZADO"] / v_esperado) if v_esperado > 0 else 0
             tendencia = math.ceil((item["REALIZADO"] / d_uteis_hoje) * d_uteis_totais) if d_uteis_hoje > 0 else 0
             
-            if rota >= 1.0: status = "🟢 NO RITMO"
-            elif rota >= 0.85: status = "🟡 ATENÇÃO"
+            if rota_raw >= 1.0: status = "🟢 NO RITMO"
+            elif rota_raw >= 0.85: status = "🟡 ATENÇÃO"
             else: status = "🚨 CRÍTICO"
             
             resultados.append({
@@ -110,11 +119,11 @@ elif menu == "Desempenho (Vendedores)":
                 "META MENSAL": format_executivo(item["META"]),
                 "ESPERADO HOJE": format_executivo(v_esperado),
                 "REALIZADO": format_executivo(item["REALIZADO"]),
-                "ROTA": f"{round(rota * 100, 1)}%",
+                "ROTA": f"{round(rota_raw * 100, 1)}%",
                 "TENDÊNCIA": format_executivo(tendencia),
                 "STATUS": status
             })
         
-        # Exibição Centralizada e Negrito
+        # Exibição em tabela centralizada e negrito
         df_perf = pd.DataFrame(resultados)
         st.table(df_perf)
