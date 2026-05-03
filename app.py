@@ -3,14 +3,20 @@ import pandas as pd
 import xlsxwriter
 from io import BytesIO
 
-# 1. CONFIGURAÇÃO E DESIGN EXECUTIVO GIRI
+# 1. DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
+# CSS para quebra de texto na tabela do Streamlit
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #001220 0%, #002d4a 100%); color: #ffffff; }
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px; }
     h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
+    /* Forçar quebra de linha em colunas de texto no Streamlit */
+    div[data-testid="stDataFrame"] td {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -33,34 +39,33 @@ def format_br(val):
     except: return val
 
 def engine_star(row, lp, cp):
-    # LÓGICA DE STATUS: ORIENTAÇÃO METODOLÓGICA (MÉTODO STAR)
     if cp == 0: 
         return "⚫ INATIVO", 0, (
-            "OBJETIVO: Diagnóstico de Churn e Reconexão. "
-            "AÇÃO: Reestabelecer contato sem viés de venda. "
+            "OBJETIVO: Diagnóstico de Churn e Reconexão. \n"
+            "AÇÃO: Reestabelecer contato sem viés de venda. \n"
             "ORIENTAÇÃO: Identifique o motivo real da parada. Valide se a dor que resolvíamos ainda existe ou se ele tem novas prioridades."
         )
     if cp < (lp * 0.80):
         return "🚨 QUEDA ACENTUADA", lp, (
-            "OBJETIVO: Contenção de Perda e Defesa de Share. "
-            "AÇÃO: Investigar entrada de concorrência ou falha de serviço. "
-            "ORIENTAÇÃO: Foque no negócio dele. Entenda onde a operação do cliente está perdendo margem e apresente-se para recuperar esse fôlego."
+            "OBJETIVO: Contenção de Perda e Defesa de Share. \n"
+            "AÇÃO: Investigar entrada de concorrência ou falha de serviço. \n"
+            "ORIENTAÇÃO: Foque no negócio dele. Entenda onde a operação do cliente está perdendo fôlego e apresente-se para recuperar esse fôlego."
         )
     if cp < (lp * 0.95): 
         return "🔴 QUEDA", lp, (
-            "OBJETIVO: Estabilização de Giro. "
-            "AÇÃO: Identificar se a queda é sazonal ou substituição de mix. "
+            "OBJETIVO: Estabilização de Giro. \n"
+            "AÇÃO: Identificar se a queda é sazonal ou substituição de mix. \n"
             "ORIENTAÇÃO: Sugira ajustes que ajudem o cliente a reduzir perdas e manter o custo operacional sob controle."
         )
     if cp > (lp * 1.05): 
         return "🟢 CRESCIMENTO", int(cp * 1.05), (
-            "OBJETIVO: Expansão de Share e Upsell. "
-            "AÇÃO: Analisar mix de clientes similares e elevar Ticket Médio. "
+            "OBJETIVO: Expansão de Share e Upsell. \n"
+            "AÇÃO: Analisar mix de clientes similares e elevar Ticket Médio. \n"
             "ORIENTAÇÃO: Recomende itens complementares explicando como isso ajuda o cliente a atrair novos consumidores ou melhorar a margem."
         )
     return "🔵 ESTÁVEL", int(lp * 1.05), (
-        "OBJETIVO: Manutenção e Blindagem. "
-        "AÇÃO: Prevenir inércia e validar satisfação. "
+        "OBJETIVO: Manutenção e Blindagem. \n"
+        "AÇÃO: Prevenir inércia e validar satisfação. \n"
         "ORIENTAÇÃO: Confirme se os objetivos de curto prazo dele estão sendo atingidos. Prospecte necessidades futuras para novos projetos."
     )
 
@@ -102,24 +107,29 @@ if uploaded_file:
             df_final[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
             workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
 
-            header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center'})
-            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center'})
-            left_fmt = workbook.add_format({'align': 'left'})
+            # Formatos com 'text_wrap': True
+            header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
+            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'vcenter'})
+            left_wrap_fmt = workbook.add_format({'align': 'left', 'valign': 'vcenter', 'text_wrap': True})
+            left_fmt = workbook.add_format({'align': 'left', 'valign': 'vcenter'})
             
-            fmt_queda = workbook.add_format({'font_color': '#C00000', 'bold': True, 'align': 'left'})
-            fmt_queda_ac = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006', 'bold': True, 'align': 'left'})
-            fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'align': 'left'})
+            fmt_queda = workbook.add_format({'font_color': '#C00000', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+            fmt_queda_ac = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+            fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
 
             for col_num, value in enumerate(colunas_exibicao):
                 worksheet.write(0, col_num, value, header_fmt)
-                if value == 'STATUS':
-                    worksheet.set_column(col_num, col_num, 20, left_fmt)
-                    worksheet.conditional_format(1, col_num, len(df_final), col_num, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
-                    worksheet.conditional_format(1, col_num, len(df_final), col_num, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
-                    worksheet.conditional_format(1, col_num, len(df_final), col_num, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
-                elif value in ['AÇÃO', 'EMPRESA'] + dims_selecionadas:
-                    worksheet.set_column(col_num, col_num, 50, left_fmt)
+                if value == 'AÇÃO':
+                    worksheet.set_column(col_num, col_num, 60, left_wrap_fmt) # Coluna larga com quebra
+                elif value in ['STATUS', 'EMPRESA'] + dims_selecionadas:
+                    worksheet.set_column(col_num, col_num, 30, left_fmt)
                 else:
                     worksheet.set_column(col_num, col_num, 15, num_fmt)
+
+            # Reaplicar formatos condicionais no Status (agora com valign vcenter)
+            col_status_idx = colunas_exibicao.index('STATUS')
+            worksheet.conditional_format(1, col_status_idx, len(df_final), col_status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
+            worksheet.conditional_format(1, col_status_idx, len(df_final), col_status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
+            worksheet.conditional_format(1, col_status_idx, len(df_final), col_status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
 
         st.download_button("📥 EXPORTAR PLANO EXECUTIVO GIRI", output.getvalue(), "Plano_STAR_Giri.xlsx")
