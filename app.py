@@ -3,7 +3,7 @@ import pandas as pd
 import xlsxwriter
 from io import BytesIO
 
-# 1. DESIGN EXECUTIVO GIRI (DASHBOARD)
+# 1. DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
@@ -79,20 +79,22 @@ if uploaded_file:
         res = df_agrupado.apply(lambda row: engine_star(row, lp_val, cp_val), axis=1)
         df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*res)
 
+        # CRITICAL FIX: Ordenação mandatória antes da exibição e exportação
+        df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
         colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
         
         st.subheader("Matriz de Decisão Tática")
         format_map = {col: format_br for col in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}
-        st.dataframe(df_agrupado[colunas_exibicao].sort_values('TOTAL_ACUMULADO', ascending=False).style.format(format_map), use_container_width=True)
+        st.dataframe(df_final[colunas_exibicao].style.format(format_map), use_container_width=True)
 
-        # 2. ENGENHARIA ESTÉTICA DO EXCEL (DESIGN GIRI)
+        # ENGENHARIA ESTÉTICA E ORDENADA DO EXCEL
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df_agrupado[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
+            # Exportamos o df_final que já contém a ordenação correta
+            df_final[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
             workbook = writer.book
             worksheet = writer.sheets['MATRIZ_STAR']
 
-            # Definição de Formatos
             header_fmt = workbook.add_format({
                 'bold': True, 'font_color': 'white', 'bg_color': '#001220',
                 'border': 1, 'border_color': 'white', 'align': 'center', 'valign': 'vcenter'
@@ -101,10 +103,8 @@ if uploaded_file:
             text_fmt = workbook.add_format({'align': 'center', 'valign': 'vcenter'})
             left_fmt = workbook.add_format({'align': 'left', 'valign': 'vcenter'})
 
-            # Aplicação dos Formatos nas Colunas
             for col_num, value in enumerate(colunas_exibicao):
                 worksheet.write(0, col_num, value, header_fmt)
-                # Define largura e alinhamento
                 if value == 'AÇÃO':
                     worksheet.set_column(col_num, col_num, 60, left_fmt)
                 elif value in chaves:
@@ -112,4 +112,4 @@ if uploaded_file:
                 else:
                     worksheet.set_column(col_num, col_num, 15, num_fmt)
 
-        st.download_button("📥 EXPORTAR PLANO EXECUTIVO (DESIGN GIRI)", output.getvalue(), "Plano_STAR_Giri.xlsx")
+        st.download_button("📥 EXPORTAR PLANO EXECUTIVO (ORDENADO POR VOLUME)", output.getvalue(), "Plano_STAR_Giri.xlsx")
