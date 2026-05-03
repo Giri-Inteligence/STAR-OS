@@ -3,26 +3,27 @@ import pandas as pd
 import xlsxwriter
 from io import BytesIO
 
-# 1. DESIGN ESTRATÉGICO NAVY
+# 1. DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #001220 0%, #002d4a 100%); color: #ffffff; }
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px; }
-    h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; }
+    h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
     </style>
     """, unsafe_allow_html=True)
 
 with st.sidebar:
     st.markdown("## GIRI | INTELLIGENCE")
     st.markdown("---")
-    st.subheader("⚙️ Dimensões de Gestão")
-    st.info("O sistema foca nos indicadores de saúde (LP vs CP) e ações táticas.")
+    st.subheader("⚙️ PARÂMETROS")
     lp_val = st.number_input("Janela Longo Prazo (Meses)", value=12)
-    cp_val = 3 # Fixo conforme sua regra de 90 dias
+    cp_val = st.number_input("Janela Curto Prazo (Meses)", value=3)
+    st.markdown("---")
+    st.info("O sistema prioriza a saúde da carteira e ações táticas imediatas.")
 
-st.title("STAR-OS | MATRIZ DE GOVERNANÇA ACIONÁVEL")
+st.title("STAR-OS | MATRIZ DE GOVERNANÇA")
 
 st.markdown('<div class="main-card">', unsafe_allow_html=True)
 uploaded_file = st.file_uploader("Upload da Base de Faturamento", type=['xlsx'])
@@ -35,7 +36,9 @@ if uploaded_file:
     df = pd.read_excel(uploaded_file)
     cols = df.columns.tolist()
     
+    # Seletores de Dimensão (Vendedor e Segmento)
     with st.sidebar:
+        st.subheader("📂 DIMENSÕES")
         dim_vendedor = st.selectbox("👤 Vendedor", ["Nenhum"] + cols)
         dim_segmento = st.selectbox("🏢 Segmento", ["Nenhum"] + cols)
 
@@ -46,7 +49,7 @@ if uploaded_file:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
     if len(col_meses) >= cp_val:
-        # Lógica de Janelas: CP (últimos 3 meses) | LP (12 meses anteriores ao CP)
+        # Lógica de Janelas: CP (últimos meses) | LP (meses anteriores ao CP)
         cols_cp = col_meses[-cp_val:]
         cols_lp = col_meses[-(lp_val + cp_val):-cp_val]
         
@@ -57,21 +60,17 @@ if uploaded_file:
         def engine_star(row):
             lp, cp = row['MEDIA_LP'], row['MEDIA_CP']
             
-            # Regra de Inatividade: 0 faturamento nos últimos 90 dias (CP)
             if cp == 0: 
-                return "🔴 INATIVO", lp, "RECUPERAÇÃO CRÍTICA: Cliente sem compra há 90 dias. Agendar visita presencial para reativação imediata."
-            # Regra de Queda: CP < 85% do LP
+                return "🔴 INATIVO", lp, "REATIVAÇÃO: Cliente sem faturamento há 90 dias. Agendar visita presencial imediata."
             if cp < (lp * 0.85): 
-                return "🔴 QUEDA", lp, "DEFESA AGRESSIVA: Perda de share detectada. Investigar entrada de concorrente ou ruptura de serviço."
-            # Regra de Crescimento: CP > 115% do LP
+                return "🔴 QUEDA", lp, "DEFESA: Perda de share detectada. Investigar concorrência ou ruptura de serviço."
             if cp > (lp * 1.15): 
-                return "🟢 CRESCIMENTO", int(cp * 1.10), "EXPANSÃO: Tração positiva. Aplicar técnica de Upsell e Cross-sell para maximizar carteira."
-            # Regra de Estabilidade
-            return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Garantir rituais de atendimento e blindagem contra concorrência."
+                return "🟢 CRESCIMENTO", int(cp * 1.10), "EXPANSÃO: Tração positiva. Aplicar técnica de Upsell para maximizar carteira."
+            return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Garantir rituais de atendimento e blindagem de conta."
 
         df['STATUS'], df['META'], df['AÇÃO'] = zip(*df.apply(engine_star, axis=1))
 
-        # 3. EXIBIÇÃO FOCO NO VENDEDOR (SEM HISTÓRICO DE MESES)
+        # 3. EXIBIÇÃO FOCO NO VENDEDOR
         exibir = ['EMPRESA']
         if dim_vendedor != "Nenhum": exibir.append(dim_vendedor)
         if dim_segmento != "Nenhum": exibir.append(dim_segmento)
