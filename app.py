@@ -1,130 +1,110 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
-from datetime import datetime
-import math
-import xlsxwriter
-from io import BytesIO
 
-# 1. DESIGN EXECUTIVO GIRI - GRADIENTE E MINIMALISMO
+# 1. ARQUITETURA VISUAL GIRI - REFINAMENTO C-LEVEL
 st.set_page_config(page_title="Giri Architecture Hub", layout="wide")
 
 st.markdown("""
     <style>
-    /* GRADIENTE SOFISTICADO NO FUNDO */
+    /* GRADIENTE RADIAL SOFISTICADO (ELIMINA O FUNDO CHAPADO) */
     .stApp { 
         background: radial-gradient(circle at center, #001f3f 0%, #001220 70%, #000810 100%); 
         color: #ffffff; 
     }
     
-    /* MENU LATERAL */
-    [data-testid="stSidebar"] { min-width: 220px !important; max-width: 220px !important; }
+    /* MENU LATERAL MINIMALISTA */
+    [data-testid="stSidebar"] { 
+        min-width: 240px !important; 
+        max-width: 240px !important; 
+        background-color: rgba(0, 8, 16, 0.5) !important;
+    }
     
-    /* CARDS E ESTILIZAÇÃO */
+    /* CARDS DE NAVEGAÇÃO */
     .main-card { 
         background: rgba(255, 255, 255, 0.02); 
-        backdrop-filter: blur(20px); 
+        backdrop-filter: blur(25px); 
         border-radius: 12px; 
-        padding: 40px; 
+        padding: 60px 40px; 
         border: 1px solid rgba(255, 255, 255, 0.05); 
         margin-bottom: 20px; 
         text-align: center;
+        transition: transform 0.3s ease;
     }
     
+    .main-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* TÍTULO CENTRALIZADO E MINIMALISTA */
     .title-center {
         text-align: center;
         font-family: 'Inter', sans-serif;
         text-transform: uppercase;
-        letter-spacing: 3px;
+        letter-spacing: 4px;
         color: #f0f2f6 !important;
-        margin-bottom: 50px;
+        margin-top: 80px;
+        margin-bottom: 60px;
         font-weight: 700;
+        font-size: 2.2rem;
     }
 
-    h4 { text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; }
-    
-    /* TABELAS E INPUTS */
-    div[data-testid="stTable"] td, div[data-testid="stTable"] th { 
-        text-align: center !important; 
-        vertical-align: middle !important; 
-        font-size: 13px !important;
+    h4 { 
+        text-transform: uppercase; 
+        letter-spacing: 2px; 
+        margin-bottom: 10px;
+        color: #ffffff;
+        font-weight: 500;
     }
-    
+
+    /* BOTÕES EXECUTIVOS */
     .stButton button {
         width: 100% !important;
         background-color: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        color: white !important;
+        color: #ffffff !important;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
+        padding: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: 4px;
+    }
+    
+    .stButton button:hover {
+        border: 1px solid #ffffff !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- FUNÇÕES DE APOIO ---
-def format_br(val):
-    try:
-        if pd.isna(val) or val == 0: return "-"
-        return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
-    except: return val
-
-def get_working_days(start, end):
-    if start > end: return 0
-    days = pd.date_range(start, end)
-    return len(days[days.dayofweek < 5])
-
-# --- INICIALIZAÇÃO E NAVEGAÇÃO ---
-if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
-
+# --- BRANDING LATERAL ---
 with st.sidebar:
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("## GIRI | ARCHITECTURE")
     st.markdown("---")
-    if st.session_state.pagina_ativa != 'Dashboard':
-        if st.button("⬅ VOLTAR PARA DASHBOARD"):
-            st.session_state.pagina_ativa = 'Dashboard'
-            st.rerun()
+    st.caption("v5.0 | Strategic Governance")
 
-# --- LÓGICA DE TEMPO ---
-hoje = datetime.now()
-p_dia = hoje.replace(day=1)
-u_dia = (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
-d_totais = get_working_days(p_dia, u_dia)
-d_passados = get_working_days(p_dia, hoje)
-if hoje.weekday() < 5: d_passados = max(0, d_passados - 1)
+# --- CORPO DO DASHBOARD ---
+st.markdown('<h1 class="title-center">DASHBOARD ESTRATÉGICO</h1>', unsafe_allow_html=True)
 
-# --- TELAS ---
-if st.session_state.pagina_ativa == 'Dashboard':
-    st.markdown('<h1 class="title-center">DASHBOARD ESTRATÉGICO</h1>', unsafe_allow_html=True)
-    
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown('<div class="main-card"><h4>📍 Matriz STAR</h4></div>', unsafe_allow_html=True)
-        if st.button("ACESSAR MATRIZ STAR"): st.session_state.pagina_ativa = 'Matriz'; st.rerun()
-    with c2:
-        st.markdown('<div class="main-card"><h4>📊 Matriz de Desempenho</h4></div>', unsafe_allow_html=True)
-        if st.button("ACESSAR DESEMPENHO"): st.session_state.pagina_ativa = 'Desempenho'; st.rerun()
+# Grid de Navegação
+c1, c2 = st.columns(2)
 
-elif st.session_state.pagina_ativa == 'Matriz':
-    st.title("MATRIZ STAR")
-    # Lógica original preservada integralmente...
-    with st.sidebar:
-        st.markdown("---")
-        lp_val = st.number_input("Longo Prazo", value=12, min_value=1)
-        cp_val = st.number_input("Curto Prazo", value=3, min_value=1)
-    
-    uploaded_file = st.file_uploader("Upload da Base", type=['xlsx'])
-    if uploaded_file:
-        df_raw = pd.read_excel(uploaded_file)
-        # (Código da engine STAR original aqui sem alterações...)
-        st.success("Matriz Processada.")
+with c1:
+    st.markdown("""
+        <div class="main-card">
+            <h4>📍 Matriz STAR</h4>
+            <p style='color: rgba(255,255,255,0.5); font-size: 0.9rem;'>Governança e Diagnóstico de Carteira</p>
+        </div>
+    """, unsafe_allow_html=True)
+    st.button("ACESSAR MATRIZ STAR")
 
-elif st.session_state.pagina_ativa == 'Desempenho':
-    with st.sidebar:
-        st.markdown("---")
-        nomes = st.text_area("EQUIPE:", "JOÃO\nCARLOS\nMARIA", height=100)
-        vendedor = st.selectbox("CONSULTOR:", [v.strip().upper() for v in nomes.split('\n') if v.strip()])
-    
-    st.title(f"MATRIZ DE DESEMPENHO: {vendedor}")
-    st.info(f"📅 Meta baseada em {d_passados} dias úteis de {d_totais}.")
-    
-    # ... Restante da lógica de desempenho preservada com Domingo = 0 ...
+with c2:
+    st.markdown("""
+        <div class="main-card">
+            <h4>📊 Matriz de Desempenho</h4>
+            <p style='color: rgba(255,255,255,0.5); font-size: 0.9rem;'>Gestão de Ritmo e Eficiência Individual</p>
+        </div>
+    """, unsafe_allow_html=True)
+    st.button("ACESSAR DESEMPENHO")
