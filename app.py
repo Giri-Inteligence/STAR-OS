@@ -1,104 +1,127 @@
 import streamlit as st
 
-# 1. DESIGN EXECUTIVO GIRI - ALTA DENSIDADE E ZERO INFANTILIZAÇÃO
+# 1. DESIGN EXECUTIVO GIRI - CAMADAS DE PROFUNDIDADE (GLASSMORPHISM)
 st.set_page_config(page_title="Giri Architecture Hub", layout="wide")
 
 st.markdown("""
     <style>
-    /* FUNDO GRADIENTE RADIAL REFINADO */
+    /* FUNDO COM GRADIENTE RADIAL MAIS PROFUNDO */
     .stApp { 
-        background: radial-gradient(circle at center, #001f3f 0%, #001220 70%, #000810 100%); 
+        background: radial-gradient(circle at 50% 50%, #001f3f 0%, #000c18 60%, #00050a 100%); 
         color: #ffffff; 
     }
     
-    /* MENU LATERAL COMPACTO */
-    [data-testid="stSidebar"] { min-width: 200px !important; max-width: 200px !important; }
+    /* REMOÇÃO DE CABEÇALHOS PADRÃO */
+    header {visibility: hidden;}
     
-    /* GRID DE FERRAMENTAS - CARDS COMPACTOS E CLICÁVEIS */
+    /* MENU LATERAL ULTRA-CLEAN */
+    [data-testid="stSidebar"] { 
+        background-color: rgba(0, 0, 0, 0.3) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    /* CARDS ESTILO 'GLASS' (VIDRO) */
     .tool-card { 
-        background: rgba(255, 255, 255, 0.03); 
-        backdrop-filter: blur(15px); 
-        border-radius: 8px; 
-        padding: 20px; 
+        background: rgba(255, 255, 255, 0.01); 
+        backdrop-filter: blur(20px); 
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 4px; /* Cantos mais retos transmitem seriedade */
+        padding: 24px; 
         border: 1px solid rgba(255, 255, 255, 0.08); 
-        text-align: center;
-        height: 110px;
+        text-align: left; /* Alinhamento à esquerda é mais executivo */
+        height: 130px;
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        transition: all 0.2s ease;
-        cursor: pointer;
+        justify-content: space-between;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
     
     .tool-card:hover {
-        background: rgba(255, 255, 255, 0.07);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        transform: scale(1.02);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 20px rgba(0, 150, 255, 0.1);
     }
 
     .title-center {
         text-align: center;
         text-transform: uppercase;
-        letter-spacing: 4px;
-        color: #f0f2f6 !important;
-        margin-top: 40px;
-        margin-bottom: 40px;
-        font-weight: 700;
-        font-size: 1.6rem;
+        letter-spacing: 6px;
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 60px;
+        margin-bottom: 50px;
+        font-weight: 800;
+        font-size: 1.8rem;
+        text-shadow: 0 10px 20px rgba(0,0,0,0.5);
     }
 
-    h4 { text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.85rem; margin-bottom: 8px; color: #ffffff; font-weight: 700; }
-    p { color: rgba(255,255,255,0.4); font-size: 0.7rem; line-height: 1.2; margin: 0; font-weight: 400; text-transform: none; }
+    .card-id {
+        font-family: 'Courier New', monospace;
+        font-size: 0.6rem;
+        color: rgba(255, 255, 255, 0.2);
+        margin-bottom: 8px;
+    }
 
-    /* BOTÃO TRANSPARENTE SOBREPOSTO AO CARD */
+    h4 { 
+        text-transform: uppercase; 
+        letter-spacing: 2px; 
+        font-size: 0.85rem; 
+        margin: 0; 
+        color: #ffffff; 
+        font-weight: 700; 
+    }
+    
+    p { 
+        color: rgba(255, 255, 255, 0.4); 
+        font-size: 0.65rem; 
+        line-height: 1.4; 
+        margin-top: 8px; 
+        font-weight: 300; 
+        letter-spacing: 0.5px;
+    }
+
+    /* GATILHO INVISÍVEL */
     .stButton button {
         background-color: transparent !important;
         border: none !important;
         color: transparent !important;
-        height: 110px !important;
+        height: 130px !important;
         width: 100% !important;
         position: absolute;
-        top: -110px;
+        top: -130px;
         z-index: 10;
-    }
-    
-    .stButton button:hover {
-        background-color: transparent !important;
-        border: none !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
 with st.sidebar:
-    st.markdown("<br> ## GIRI | ARCHITECTURE", unsafe_allow_html=True)
-    st.markdown("---")
-    st.caption("v5.4 | Hub Estratégico")
+    st.markdown("<br><br><h2 style='letter-spacing:2px; font-size:1rem;'>GIRI | ARCHITECTURE</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size:0.6rem; color:grey;'>SYSTEMS GOVERNANCE v5.5</p>", unsafe_allow_html=True)
 
 st.markdown('<h1 class="title-center">Dashboard Estratégico</h1>', unsafe_allow_html=True)
 
 # GRID DE 4 COLUNAS
 cols = st.columns(4)
 
-# FERRAMENTA 1: MATRIZ STAR
-with cols[0]:
-    st.markdown('<div class="tool-card"><h4>MATRIZ STAR</h4><p>Diagnóstico de Carteira e Governança de Churn</p></div>', unsafe_allow_html=True)
-    if st.button("", key="btn_star"): 
-        st.session_state.pagina_ativa = 'Matriz'
-        st.rerun()
+# FERRAMENTAS COM DESIGN REFINADO
+tools = [
+    ("MATRIZ STAR", "DIAGNÓSTICO DE CARTEIRA E GOVERNANÇA DE CHURN", "MOD-01", "btn_star"),
+    ("MATRIZ DE DESEMPENHO", "GESTÃO DE RITMO E EFICIÊNCIA INDIVIDUAL", "MOD-02", "btn_desempenho"),
+    ("ARQUITETURA COMERCIAL", "ESTRUTURAÇÃO DE PROCESSOS E PLAYBOOKS", "MOD-03", "btn_arch"),
+    ("PIPELINE PREDICTOR", "PREVISIBILIDADE DE RECEITA B2B", "MOD-04", "btn_pipe")
+]
 
-# FERRAMENTA 2: MATRIZ DE DESEMPENHO
-with cols[1]:
-    st.markdown('<div class="tool-card"><h4>MATRIZ DE DESEMPENHO</h4><p>Gestão de Ritmo e Eficiência Individual</p></div>', unsafe_allow_html=True)
-    if st.button("", key="btn_desempenho"): 
-        st.session_state.pagina_ativa = 'Desempenho'
-        st.rerun()
-
-# FERRAMENTA 3: ARQUITETURA COMERCIAL
-with cols[2]:
-    st.markdown('<div class="tool-card"><h4>ARQUITETURA COMERCIAL</h4><p>Estruturação de Processos e Playbooks</p></div>', unsafe_allow_html=True)
-    if st.button("", key="btn_arch"): pass
-
-# FERRAMENTA 4: PIPELINE PREDICTOR
-with cols[3]:
-    st.markdown('<div class="tool-card"><h4>PIPELINE PREDICTOR</h4><p>Previsibilidade de Receita B2B</p></div>', unsafe_allow_html=True)
-    if st.button("", key="btn_pipe"): pass
+for i, (title, desc, mod_id, key) in enumerate(tools):
+    with cols[i % 4]:
+        st.markdown(f"""
+            <div class="tool-card">
+                <div>
+                    <div class="card-id">{mod_id}</div>
+                    <h4>{title}</h4>
+                </div>
+                <p>{desc}</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("", key=key):
+            if "MATRIZ STAR" in title: st.session_state.pagina_ativa = 'Matriz'
+            elif "DESEMPENHO" in title: st.session_state.pagina_ativa = 'Desempenho'
+            st.rerun()
