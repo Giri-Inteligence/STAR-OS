@@ -27,7 +27,6 @@ def get_working_days(start_date, end_date):
     days = pd.date_range(start_date, end_date)
     return len(days[days.dayofweek < 5])
 
-# --- LÓGICA MATRIZ STAR (CLIENTES) ---
 def engine_star(row, lp, cp):
     if cp == 0: 
         return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn.\nAÇÃO: Reestabelecer contato sem viés de venda.\nORIENTAÇÃO: Identifique o motivo da parada e valide se a dor ainda existe."
@@ -53,16 +52,12 @@ if menu == "Dashboard Inicial":
         st.markdown('<div class="main-card">', unsafe_allow_html=True)
         st.subheader("📍 Matriz STAR")
         st.write("Análise tática de faturamento por cliente. Foco em churn, recuperação e expansão de share.")
-        if st.button("Acessar Clientes"):
-            st.info("Use o menu lateral para selecionar 'Matriz STAR (Clientes)'")
         st.markdown('</div>', unsafe_allow_html=True)
         
     with c2:
         st.markdown('<div class="main-card">', unsafe_allow_html=True)
         st.subheader("📊 Desempenho Individual")
         st.write("Governança semanal de ritmo e tendência. Foco em atingimento de metas e desvio de rota.")
-        if st.button("Acessar Vendedores"):
-            st.info("Use o menu lateral para selecionar 'Desempenho (Vendedores)'")
         st.markdown('</div>', unsafe_allow_html=True)
 
 # 2. TELA: MATRIZ STAR
@@ -99,38 +94,57 @@ elif menu == "Matriz STAR (Clientes)":
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             st.dataframe(df_final.style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
 
-# 3. TELA: DESEMPENHO INDIVIDUAL
+# 3. TELA: DESEMPENHO INDIVIDUAL (V30)
 elif menu == "Desempenho (Vendedores)":
-    st.title("Governança de Performance | Ritmo e Tendência")
+    st.title("Governança de Performance | STAR-OS")
+    
+    # Bloco de Tempo Automático
     hoje = datetime.now()
+    primeiro_dia = hoje.replace(day=1)
+    if hoje.month == 12: ultimo_dia = hoje.replace(day=31)
+    else: ultimo_dia = (hoje.replace(month=hoje.month+1, day=1) - pd.Timedelta(days=1))
     
-    col1, col2 = st.columns(2)
-    with col1:
-        vendedor = st.text_input("Vendedor Analisado", "Equipe Geral")
-        st.info(f"📅 Referência: {hoje.strftime('%d/%m/%Y')}")
-    with col2:
-        primeiro_dia = hoje.replace(day=1)
-        if hoje.month == 12: ultimo_dia = hoje.replace(day=31)
-        else: ultimo_dia = (hoje.replace(month=hoje.month+1, day=1) - pd.Timedelta(days=1))
-        
-        d_uteis_totais = get_working_days(primeiro_dia, ultimo_dia)
-        d_uteis_hoje = get_working_days(primeiro_dia, hoje)
-        st.metric("Dias Úteis (Mês / Transcorridos)", f"{d_uteis_totais} / {d_uteis_hoje}")
+    d_uteis_totais = get_working_days(primeiro_dia, ultimo_dia)
+    d_uteis_hoje = get_working_days(primeiro_dia, hoje)
 
-    indicadores = ["FATURAMENTO", "MARGEM (%)", "MIX", "POSITIVAÇÃO", "CLIENTES NOVOS"]
-    dados = []
+    st.markdown('<div class="main-card">', unsafe_allow_html=True)
+    st.markdown("### 1. CONFIGURAÇÃO DA RÉGUA COMERCIAL")
+    col_v, col_t = st.columns([2, 1])
+    vendedor_nome = col_v.text_input("Nome do Vendedor", placeholder="Digite o nome do consultor...")
+    col_t.metric("Dias Úteis (Mês / Hoje)", f"{d_uteis_totais} / {d_uteis_hoje}")
     
-    for ind in indicadores:
-        with st.expander(f"📊 {ind}", expanded=True):
-            c1, c2 = st.columns(2)
-            meta = c1.number_input(f"Meta de {ind}", key=f"m_{ind}", min_value=0.01)
-            real = c2.number_input(f"Realizado de {ind}", key=f"r_{ind}", min_value=0.0)
-            
-            v_esperado = (meta / d_uteis_totais) * d_uteis_hoje
-            rota = (real / v_esperado) if v_esperado > 0 else 0
-            tendencia = (real / d_uteis_hoje) * d_uteis_totais if d_uteis_hoje > 0 else 0
-            
-            dados.append({"INDICADOR": ind, "META": meta, "ESPERADO": round(v_esperado, 2), "REALIZADO": real, "ROTA": f"{round(rota*100, 1)}%", "TENDÊNCIA": round(tendencia, 2)})
+    ind_list = []
+    st.write("Defina os 5 indicadores estratégicos e suas metas:")
+    c1, c2, c3, c4, c5 = st.columns(5)
+    cols_ind = [c1, c2, c3, c4, c5]
+    
+    for i, col in enumerate(cols_ind):
+        with col:
+            nome_i = st.text_input(f"Indicador {i+1}", value=f"IND {i+1}", key=f"n_{i}")
+            meta_i = st.number_input(f"Meta {i+1}", min_value=0.01, key=f"m_{i}")
+            real_i = st.number_input(f"Realizado {i+1}", min_value=0.0, key=f"r_{i}")
+            ind_list.append({"NOME": nome_i, "META": meta_i, "REALIZADO": real_i})
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    if dados:
-        st.table(pd.DataFrame(dados))
+    if vendedor_nome:
+        st.markdown(f"### 2. ANÁLISE DE ROTA: {vendedor_nome.upper()}")
+        resultados = []
+        for item in ind_list:
+            v_esperado = (item["META"] / d_uteis_totais) * d_uteis_hoje
+            percentual_rota = (item["REALIZADO"] / v_esperado) if v_esperado > 0 else 0
+            tendencia_final = (item["REALIZADO"] / d_uteis_hoje) * d_uteis_totais if d_uteis_hoje > 0 else 0
+            
+            if percentual_rota >= 1.0: status = "🟢 NO RITMO"
+            elif percentual_rota >= 0.85: status = "🟡 ATENÇÃO"
+            else: status = "🚨 CRÍTICO"
+            
+            resultados.append({
+                "INDICADOR": item["NOME"],
+                "META MENSAL": item["META"],
+                "ESPERADO HOJE": round(v_esperado, 2),
+                "REALIZADO": item["REALIZADO"],
+                "ROTA": f"{round(percentual_rota * 100, 1)}%",
+                "TENDÊNCIA": round(tendencia_final, 2),
+                "STATUS": status
+            })
+        st.table(pd.DataFrame(resultados))
