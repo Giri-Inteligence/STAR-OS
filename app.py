@@ -13,31 +13,20 @@ st.markdown("""
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px; }
     h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
     
-    /* Centralização Total da Tabela */
+    /* Centralização da Tabela de Análise */
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { 
         text-align: center !important; 
         vertical-align: middle !important; 
-        font-size: 18px !important;
-        padding: 15px !important;
+        font-size: 16px !important;
     }
-    div[data-testid="stTable"] th { font-weight: bold !important; }
+    div[data-testid="stTable"] th { font-weight: bold !important; text-transform: uppercase; }
 
-    /* FORÇAR 240PX NOS TÍTULOS DOS INDICADORES */
+    /* Indicadores: 120px de altura */
     [data-testid="column"] .stTextInput input {
-        height: 240px !important; 
-        font-size: 22px !important;
+        height: 120px !important; 
+        font-size: 18px !important;
         font-weight: bold !important;
         text-align: center !important;
-        white-space: normal !important;
-        line-height: 1.4 !important;
-        background-color: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
-    }
-
-    /* Manter Nome do Vendedor Padrão */
-    .vendedor-input .stTextInput input {
-        height: 50px !important;
-        text-align: left !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -51,44 +40,49 @@ def get_working_days(start_date, end_date):
     days = pd.date_range(start_date, end_date)
     return len(days[days.dayofweek < 5])
 
-# --- INTERFACE ---
+# --- INTERFACE DE NAVEGAÇÃO ---
 st.sidebar.markdown("## GIRI | ARCHITECTURE")
 menu = st.sidebar.radio("CENTRO DE COMANDO", ["Dashboard Inicial", "Matriz STAR (Clientes)", "Desempenho (Vendedores)"])
 
 if menu == "Desempenho (Vendedores)":
     st.title("GOVERNANÇA DE DESEMPENHO | STAR-OS")
     
+    # Gerenciamento de Tempo
     hoje = datetime.now()
     p_dia = hoje.replace(day=1)
     if hoje.month == 12: u_dia = hoje.replace(day=31)
     else: u_dia = (hoje.replace(month=hoje.month+1, day=1) - pd.Timedelta(days=1))
-    
     d_uteis_totais = get_working_days(p_dia, u_dia)
     d_uteis_hoje = get_working_days(p_dia, hoje)
 
+    # CADASTRO DA EQUIPE
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("👥 GESTÃO DE EQUIPE")
+    lista_vendedores = st.sidebar.text_area("Liste os nomes (um por linha):", "JOÃO\nMARIA\nCARLOS").split('\n')
+    vendedor_ativo = st.sidebar.selectbox("VENDEDOR EM ANÁLISE", [v.strip() for v in lista_vendedores if v.strip()])
+
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
-    st.markdown("### 1. CONFIGURAÇÃO DA RÉGUA COMERCIAL")
+    st.markdown(f"### 1. MÉTRICAS DE: {vendedor_ativo.upper()}")
     
-    st.markdown('<div class="vendedor-input">', unsafe_allow_html=True)
-    vendedor_nome = st.text_input("Nome do Vendedor", value="JOÃO", key="v_nome")
-    st.markdown('</div>', unsafe_allow_html=True)
+    col_t = st.columns(1)[0]
+    col_t.metric("Dias Úteis (Mês / Hoje)", f"{d_uteis_totais} / {d_uteis_hoje}")
     
-    st.metric("Dias Úteis (Mês / Hoje)", f"{d_uteis_totais} / {d_uteis_hoje}")
-    
+    st.write("Ajuste as metas e realizados para este consultor:")
     ind_list = []
     c1, c2, c3, c4, c5 = st.columns(5)
     sugestoes = ["CLIENTES ATIVOS", "CLIENTES REATIVADOS", "NOVOS CLIENTES COM VENDA", "ORÇAMENTOS GERADOS", "FATURAMENTO"]
 
     for i, col in enumerate([c1, c2, c3, c4, c5]):
         with col:
-            n = st.text_input(f"Indicador {i+1}", value=sugestoes[i], key=f"n_{i}")
-            m = st.number_input(f"Meta {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"m_{i}")
-            r = st.number_input(f"Realizado {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"r_{i}")
+            # Chaves únicas baseadas no vendedor ativo para não misturar os dados
+            n = st.text_input(f"Indicador {i+1}", value=sugestoes[i], key=f"n_{i}_{vendedor_ativo}")
+            m = st.number_input(f"Meta {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"m_{i}_{vendedor_ativo}")
+            r = st.number_input(f"Realizado {i+1}", min_value=0.0, step=1.0, format="%.0f", key=f"r_{i}_{vendedor_ativo}")
             ind_list.append({"NOME": n, "META": m, "REALIZADO": r})
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # REMOVI A TRAVA: A tabela agora aparece sempre
-    st.markdown(f"### 2. ANÁLISE DE DESEMPENHO: {vendedor_nome.upper()}")
+    # 2. ANÁLISE DE DESEMPENHO
+    st.markdown(f"### 2. DIAGNÓSTICO DE PERFORMANCE: {vendedor_ativo.upper()}")
     resultados = []
     for item in ind_list:
         v_esperado = math.ceil((item["META"] / d_uteis_totais) * d_uteis_hoje)
@@ -102,8 +96,8 @@ if menu == "Desempenho (Vendedores)":
             "META MENSAL": format_executivo(item["META"]),
             "ESPERADO HOJE": format_executivo(v_esperado),
             "REALIZADO": format_executivo(item["REALIZADO"]),
-            "ROTA": f"{round(rota * 100, 1)}%",
-            "TENDÊNCIA": format_executivo(tendencia),
+            "EFICIÊNCIA (ROTA)": f"{round(rota * 100, 1)}%",
+            "PROJEÇÃO FINAL": format_executivo(tendencia),
             "STATUS": status
         })
     
