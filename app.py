@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 import math
 
-# 1. DESIGN EXECUTIVO GIRI - REFINADO E COMPACTO
+# 1. DESIGN EXECUTIVO GIRI - CONTROLE HORIZONTAL ABSOLUTO
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
@@ -13,31 +13,38 @@ st.markdown("""
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 12px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
     h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    /* TABELA: CENTRALIZAÇÃO E AJUSTE DE LARGURA DA COLUNA STATUS */
+    /* TABELA: CONTROLE DE LARGURA E LINHA ÚNICA */
+    div[data-testid="stTable"] table { width: 100% !important; }
+    
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { 
         text-align: center !important; 
         vertical-align: middle !important; 
         font-size: 14px !important;
-        padding: 10px !important;
-        white-space: nowrap !important; /* Força linha única nas colunas numéricas */
+        padding: 10px 15px !important;
+        white-space: nowrap !important; /* PROIBIDO QUEBRAR LINHA */
     }
-    
-    /* Aumenta especificamente a largura da última coluna (Status) para caber em linha única */
+
+    /* AMPLIAÇÃO DA PRIMEIRA COLUNA (INDICADOR) */
+    div[data-testid="stTable"] td:first-child, div[data-testid="stTable"] th:first-child {
+        min-width: 300px !important;
+        text-align: left !important; /* Alinhamento à esquerda para nomes longos */
+    }
+
+    /* AJUSTE FINO DA ÚLTIMA COLUNA (STATUS) */
     div[data-testid="stTable"] td:last-child, div[data-testid="stTable"] th:last-child {
-        min-width: 200px !important;
-        white-space: normal !important;
+        min-width: 150px !important;
+        width: 180px !important;
     }
 
     div[data-testid="stTable"] th { font-weight: bold !important; border-bottom: 2px solid rgba(255,255,255,0.1) !important; }
 
-    /* INPUTS COMPACTOS: UMA LINHA APENAS */
+    /* INPUTS COMPACTOS */
     .stTextInput input, .stNumberInput input {
         height: 38px !important;
         text-align: center !important;
         background-color: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 6px !important;
-        font-size: 14px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -66,7 +73,7 @@ if menu == "Desempenho (Vendedores)":
     d_uteis_totais = get_working_days(p_dia, u_dia)
     d_uteis_hoje = get_working_days(p_dia, hoje)
 
-    # PERSISTÊNCIA DE EQUIPE (SESSION STATE)
+    # PERSISTÊNCIA DE EQUIPE
     st.sidebar.markdown("---")
     nomes_raw = st.sidebar.text_area("EQUIPE (UM POR LINHA):", "MÁRIO\nJOÃO\nCARLOS")
     equipe = [v.strip().upper() for v in nomes_raw.split('\n') if v.strip()]
@@ -74,26 +81,24 @@ if menu == "Desempenho (Vendedores)":
 
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
     st.markdown(f"### CONFIGURAÇÃO: {vendedor}")
-    st.info(f"📅 Mês: {hoje.strftime('%m/%Y')} | Dias Úteis: {d_uteis_totais} (Transcorridos: {d_uteis_hoje})")
+    st.info(f"📅 Mês: {hoje.strftime('%m/%Y')} | Dias Úteis: {d_uteis_totais} (Hoje: {d_uteis_hoje})")
     
     indicadores = []
     cols = st.columns(5)
-    default_inds = ["CLIENTES ATIVOS", "CLIENTES REATIVADOS", "NOVOS CLIENTES", "ORÇAMENTOS", "FATURAMENTO"]
+    default_inds = ["CLIENTES ATIVOS", "CLIENTES REATIVADOS", "NOVOS CLIENTES COM VENDA", "ORÇAMENTOS GERADOS", "FATURAMENTO"]
 
     for i, col in enumerate(cols):
         with col:
-            # Inputs Compactos com chaves de sessão por vendedor
             n = st.text_input(f"Indicador {i+1}", value=default_inds[i], key=f"n_{i}_{vendedor}")
             m = st.number_input(f"Meta", min_value=0.0, step=1.0, format="%.0f", key=f"m_{i}_{vendedor}")
             r = st.number_input(f"Realizado", min_value=0.0, step=1.0, format="%.0f", key=f"r_{i}_{vendedor}")
             indicadores.append({"NOME": n, "META": m, "REALIZADO": r})
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # ANÁLISE DE DESEMPENHO
+    # DIAGNÓSTICO
     st.markdown(f"### DIAGNÓSTICO DE PERFORMANCE: {vendedor}")
     resultados = []
     for item in indicadores:
-        # Matemática STAR: Arredondamento para cima e Rota
         v_esperado = math.ceil((item["META"] / d_uteis_totais) * d_uteis_hoje) if d_uteis_totais > 0 else 0
         rota = (item["REALIZADO"] / v_esperado) if v_esperado > 0 else 0
         tendencia = math.ceil((item["REALIZADO"] / d_uteis_hoje) * d_uteis_totais) if d_uteis_hoje > 0 else 0
