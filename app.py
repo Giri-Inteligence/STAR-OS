@@ -11,11 +11,11 @@ st.markdown("""
     .stApp { background: linear-gradient(135deg, #001220 0%, #002d4a 100%); color: #ffffff; }
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px; }
     h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
-    /* Ajuste forçado de quebra de texto para a Matrix na tela */
     div[data-testid="stDataFrame"] td {
         white-space: pre-wrap !important;
         word-wrap: break-word !important;
         min-width: 300px;
+        vertical-align: middle !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -35,7 +35,6 @@ def format_br(val):
     except: return val
 
 def engine_star(row, lp, cp):
-    # Estrutura com quebras de linha explícitas para a tela e Excel
     if cp == 0: 
         return "⚫ INATIVO", 0, (
             "OBJETIVO: Diagnóstico de Churn e Reconexão.\n"
@@ -106,21 +105,26 @@ if uploaded_file:
             df_final[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
             workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
 
-            bold_part = workbook.add_format({'bold': True, 'align': 'left', 'valign': 'top', 'text_wrap': True})
-            header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center'})
-            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'top'})
-            wrap_fmt = workbook.add_format({'text_wrap': True, 'valign': 'top', 'align': 'left'})
+            # CENTRALIZAÇÃO VERTICAL TOTAL (valign: vcenter)
+            header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
+            num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'vcenter'})
+            wrap_fmt = workbook.add_format({'text_wrap': True, 'valign': 'vcenter', 'align': 'left'})
+            bold_part = workbook.add_format({'bold': True, 'align': 'left', 'valign': 'vcenter', 'text_wrap': True})
 
-            # Escrever cabeçalho
+            # Formatos Condicionais com valign: vcenter
+            fmt_queda = workbook.add_format({'font_color': '#C00000', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+            fmt_queda_ac = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+            fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+
             for col_num, value in enumerate(colunas_exibicao):
                 worksheet.write(0, col_num, value, header_fmt)
 
-            # Escrever dados com lógica de negrito na coluna AÇÃO
             acao_idx = colunas_exibicao.index('AÇÃO')
+            status_idx = colunas_exibicao.index('STATUS')
+
             for row_num, row_data in enumerate(df_final[colunas_exibicao].values):
                 for col_num, cell_value in enumerate(row_data):
                     if col_num == acao_idx:
-                        # Quebra o texto e aplica negrito apenas nos rótulos
                         parts = cell_value.split('\n')
                         rich_text = []
                         for p in parts:
@@ -132,7 +136,12 @@ if uploaded_file:
                         fmt = num_fmt if isinstance(cell_value, (int, float)) else wrap_fmt
                         worksheet.write(row_num + 1, col_num, cell_value, fmt)
 
-            worksheet.set_column(acao_idx, acao_idx, 50)
+            worksheet.set_column(acao_idx, acao_idx, 60)
             worksheet.set_column(0, acao_idx-1, 20)
+            
+            # Reaplicação Condicional
+            worksheet.conditional_format(1, status_idx, len(df_final), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
+            worksheet.conditional_format(1, status_idx, len(df_final), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
+            worksheet.conditional_format(1, status_idx, len(df_final), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
 
-        st.download_button("📥 EXPORTAR PLANO COM NEGRITO E QUEBRA", output.getvalue(), "Plano_STAR_Giri.xlsx")
+        st.download_button("📥 EXPORTAR PLANO EXECUTIVO (ALINHAMENTO VERTICAL)", output.getvalue(), "Plano_STAR_Giri.xlsx")
