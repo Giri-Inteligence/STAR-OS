@@ -95,3 +95,22 @@ if uploaded_file:
             df.to_excel(writer, index=False, sheet_name='DIAGNOSTICO_STAR')
         
         st.download_button("📥 BAIXAR RELATÓRIO ESTRUTURADO", output.getvalue(), "Relatorio_STAR_Giri.xlsx")
+if uploaded_file:
+    df = pd.read_excel(uploaded_file) if uploaded_file.name.endswith('xlsx') else pd.read_csv(uploaded_file)
+    cols = df.columns.tolist()
+    
+    # Filtra apenas colunas que representam meses/faturamento
+    colunas_valor = [c for c in cols if any(m in c.upper() for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ', 'TOTAL'])]
+    
+    if colunas_valor:
+        # BLINDAGEM: Converte colunas de valor para numérico e preenche vazios com zero
+        for col in colunas_valor:
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+        
+        st.info(f"Análise baseada em {len(colunas_valor)} períodos de faturamento.")
+        
+        # CÁLCULO SEGURO: Usando numeric_only para evitar o TypeError
+        df['MEDIA_LP'] = df[colunas_valor].sum(axis=1, numeric_only=True) / lp_val
+        df['MEDIA_CP'] = df[colunas_valor[-3:]].sum(axis=1, numeric_only=True) / cp_val
+        
+        # ... (restante do código segue igual)
