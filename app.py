@@ -10,7 +10,7 @@ st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #001220 0%, #002d4a 100%); color: #ffffff; }
     .main-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 25px; }
-    h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+    h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -18,8 +18,8 @@ with st.sidebar:
     st.markdown("## GIRI | ARCHITECTURE")
     st.markdown("---")
     st.subheader("📅 JANELAS DE GOVERNANÇA")
-    lp_val = st.number_input("Média Longo Prazo (Meses)", value=12, min_value=1)
-    cp_val = st.number_input("Média Curto Prazo (Meses)", value=3, min_value=1)
+    lp_val = st.number_input("Longo Prazo (Meses)", value=12)
+    cp_val = st.number_input("Curto Prazo (Meses)", value=3)
 
 st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
 
@@ -33,30 +33,28 @@ def format_br(val):
 
 if uploaded_file:
     df_raw = pd.read_excel(uploaded_file)
-    
-    # FILTRAGEM INTELIGENTE DE COLUNAS
-    # Identifica colunas de meses
-    col_meses = [c for c in df_raw.columns if any(m in c.upper() for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c.upper()]
-    
-    # Identifica dimensões categóricas (Texto) - Exclui 'EMPRESA' e colunas numéricas como 'CADASTRO'
-    col_dimensoes = [c for c in df_raw.columns if df_raw[c].dtype == 'object' and c != 'EMPRESA' and c not in col_meses]
+    cols = [str(c).upper() for c in df_raw.columns]
+    df_raw.columns = cols # Normaliza para evitar erro de caixa alta/baixa
+
+    # FILTRO RÍGIDO: Só aceitamos o que é FOCO (Vendedor, Segmento, Cidade)
+    focos_permitidos = ["VENDEDOR", "SEGMENTO", "CIDADE", "REGIAO", "UF"]
+    dimensoes_reais = [c for c in cols if any(f in c for f in focos_permitidos)]
 
     with st.sidebar:
         st.markdown("---")
         st.subheader("📂 CHAVES DE GOVERNANÇA")
-        st.write("Selecione as dimensões para cruzamento:")
-        
         dims_selecionadas = []
-        for col in col_dimensoes:
-            if st.checkbox(col, key=f"chk_{col}"):
-                dims_selecionadas.append(col)
+        for d in dimensoes_reais:
+            if st.checkbox(d, key=f"chk_{d}"):
+                dims_selecionadas.append(d)
         
-        st.markdown("---")
-        st.warning("Postura Crítica: A análise cruzada aumenta a precisão do diagnóstico de causa raiz.")
+        if not dimensoes_reais:
+            st.error("Colunas de Vendedor, Segmento ou Cidade não detectadas.")
 
-    if not dims_selecionadas:
-        st.info("Aguardando seleção das chaves de governança na barra lateral.")
-    else:
+    if dims_selecionadas:
+        # Identifica meses
+        col_meses = [c for c in cols if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
+        
         df = df_raw.copy()
         for col in col_meses:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
@@ -64,7 +62,7 @@ if uploaded_file:
         cols_cp = col_meses[-cp_val:]
         cols_lp = col_meses[-(lp_val + cp_val):-cp_val]
         
-        # AGRUPAMENTO MULTIDIMENSIONAL
+        # Agrupamento pelas chaves escolhidas
         chaves = ['EMPRESA'] + dims_selecionadas
         df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
@@ -73,24 +71,13 @@ if uploaded_file:
 
         def engine_star(row):
             lp, cp = row['MEDIA_LP'], row['MEDIA_CP']
-            if cp == 0: return "⚫ INATIVO", lp, "RECUPERAÇÃO: Sem compra há 90 dias. Visita imediata e diagnóstico de Churn."
-            if cp < (lp * 0.85): return "🔴 QUEDA", lp, "DEFESA: Perda de share. Investigar concorrência ou falha logística."
-            if cp > (lp * 1.15): return "🟢 CRESCIMENTO", int(cp * 1.10), "EXPANSÃO: Tração positiva. Aplicar Cross-sell imediato."
-            return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Blindagem de conta e rituais de fidelização."
+            if cp == 0: return "⚫ INATIVO", lp, "REATIVAÇÃO: Visita imediata necessária."
+            if cp < (lp * 0.85): return "🔴 QUEDA", lp, "DEFESA: Investigar perda de share."
+            if cp > (lp * 1.15): return "🟢 CRESCIMENTO", int(cp * 1.10), "EXPANSÃO: Aplicar Upsell."
+            return "🔵 ESTÁVEL", int(lp * 1.05), "MANUTENÇÃO: Blindagem de conta."
 
         df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*df_agrupado.apply(engine_star, axis=1))
 
-        exibir = chaves + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
-        
         st.subheader("Matriz de Decisão Tática")
-        st.dataframe(
-            df_agrupado[exibir].sort_values('MEDIA_LP', ascending=False).style.format({
-                "MEDIA_LP": format_br, "MEDIA_CP": format_br, "META": format_br
-            }), 
-            use_container_width=True
-        )
-
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df_agrupado[exibir].to_excel(writer, index=False, sheet_name='STAR_GOVERNANCA')
-        st.download_button("📥 EXPORTAR PLANO DE TRABALHO", output.getvalue(), "Plano_Trabalho_Giri.xlsx")
+        exibir = chaves + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
+        st.dataframe(df_agrupado[exibir].sort_values('MEDIA_LP', ascending=False).style.format({"MEDIA_LP": format_br, "MEDIA_CP": format_br, "META": format_br}), use_container_width=True)
