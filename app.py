@@ -159,7 +159,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- CAMADA ANALÍTICA EXECUTIVA ---
+            # --- CAMADA ANALÍTICA: PARETO E SAÚDE DA BASE ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
@@ -179,52 +179,50 @@ elif st.session_state.pagina_ativa == 'Matriz':
                 c3.metric("CONTENÇÃO (QUEDA)", f"{(queda + queda_ac).round(1)}%")
                 c4.metric("CHURN (INATIVO)", f"{inativo}%")
 
-                analise_txt = f"A governança aponta que {risco_total}% da base de {total_clientes} contas analisadas apresenta sinais de erosão na receita. "
-                if cresc > 50:
-                    analise_txt += "A operação traciona a expansão com força, mas exige disciplina em rituais de retenção."
-                elif risco_total > 40:
-                    analise_txt += "A taxa de sangria é crítica e exige intervenção imediata na arquitetura comercial."
-                else:
-                    analise_txt += "O sistema opera com estabilidade primária, indicando oportunidade para desenho de upsell."
-                st.info(analise_txt)
-
                 if dims_selecionadas:
                     dim_principal = dims_selecionadas[0]
-                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 20px; margin-bottom: 10px;">DECOMPOSIÇÃO TÁTICA POR {dim_principal.upper()}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE PARETO E SAÚDE POR {dim_principal.upper()}</div>', unsafe_allow_html=True)
+                    
+                    df_pareto = df_final.groupby(dim_principal)['TOTAL_ACUMULADO'].sum().reset_index()
+                    df_pareto = df_pareto.sort_values('TOTAL_ACUMULADO', ascending=False)
+                    df_pareto['CUM_PCT'] = df_pareto['TOTAL_ACUMULADO'].cumsum() / df_pareto['TOTAL_ACUMULADO'].sum()
+                    
+                    def assign_curve(pct):
+                        if pct <= 0.80: return "CURVA A (80% DA RECEITA)"
+                        elif pct <= 0.95: return "CURVA B (15% DA RECEITA)"
+                        else: return "CURVA C (5% DA RECEITA)"
+                        
+                    df_pareto['CURVA'] = df_pareto['CUM_PCT'].apply(assign_curve)
                     
                     resumo_dim = df_final.groupby([dim_principal, 'STATUS']).size().unstack(fill_value=0)
-                    st.dataframe(resumo_dim, use_container_width=True) 
-                    
-                    st.markdown('<div style="margin-top: 15px; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5; color: #e0e0e0; background: rgba(255,255,255,0.05); padding: 15px; border-left: 3px solid #001f3f;">', unsafe_allow_html=True)
-                    st.markdown("**LAUDO EXECUTIVO:**")
-                    
                     resumo_dim['TOTAL_CONTAS'] = resumo_dim.sum(axis=1)
-                    top_dims = resumo_dim.sort_values('TOTAL_CONTAS', ascending=False).head(5)
                     
-                    for idx, row in top_dims.iterrows():
-                        tot = row['TOTAL_CONTAS']
-                        cresc_dim = row.get('🟢 CRESCIMENTO', 0)
-                        inativo_dim = row.get('⚫ INATIVO', 0)
-                        queda_dim = row.get('🔴 QUEDA', 0) + row.get('🚨 QUEDA ACENTUADA', 0)
-                        
-                        p_cresc = round((cresc_dim / tot) * 100, 1) if tot > 0 else 0
-                        p_risco = round(((inativo_dim + queda_dim) / tot) * 100, 1) if tot > 0 else 0
-                        
-                        analise_linha = f"**{idx}** (Volume: {tot} contas) — "
-                        if p_risco > 50:
-                            analise_linha += f"Erosão severa: **{p_risco}%** da base apresenta sangria de receita ou inatividade. "
-                        elif p_risco > 25:
-                            analise_linha += f"Atenção na contenção: **{p_risco}%** da carteira em declínio. "
-                        else:
-                            analise_linha += f"Risco isolado: evasão contida em {p_risco}%. "
-                            
-                        if p_cresc > 30:
-                            analise_linha += f"Motor de upsell ativo, com **{p_cresc}%** dos clientes em tração de expansão."
-                        else:
-                            analise_linha += f"Baixa alavancagem de crescimento ({p_cresc}% da base)."
-                            
-                        st.markdown(f"- {analise_linha}")
-                        
+                    df_pareto = df_pareto.merge(resumo_dim, on=dim_principal, how='left')
+                    
+                    st.markdown('<div style="margin-top: 15px; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5; color: #e0e0e0; background: rgba(255,255,255,0.05); padding: 20px; border-left: 3px solid #001f3f;">', unsafe_allow_html=True)
+                    st.markdown("**LAUDO DE DISTRIBUIÇÃO E TRAÇÃO:**")
+                    
+                    for curva in ["CURVA A (80% DA RECEITA)", "CURVA B (15% DA RECEITA)", "CURVA C (5% DA RECEITA)"]:
+                        df_c = df_pareto[df_pareto['CURVA'] == curva]
+                        if not df_c.empty:
+                            st.markdown(f"<br>**{curva}**", unsafe_allow_html=True)
+                            for _, row in df_c.iterrows():
+                                tot = row['TOTAL_CONTAS']
+                                faturamento = row['TOTAL_ACUMULADO']
+                                
+                                cresc_val = row.get('🟢 CRESCIMENTO', 0)
+                                estav_val = row.get('🔵 ESTÁVEL', 0)
+                                queda_val = row.get('🔴 QUEDA', 0) + row.get('🚨 QUEDA ACENTUADA', 0)
+                                inat_val = row.get('⚫ INATIVO', 0)
+                                
+                                p_cresc = round((cresc_val / tot * 100), 1) if tot > 0 else 0
+                                p_estav = round((estav_val / tot * 100), 1) if tot > 0 else 0
+                                p_queda = round((queda_val / tot * 100), 1) if tot > 0 else 0
+                                p_inat = round((inat_val / tot * 100), 1) if tot > 0 else 0
+                                
+                                fat_str = format_br(faturamento)
+                                st.markdown(f"- **{row[dim_principal]}** (Receita Acumulada: R$ {fat_str}) <br> &nbsp;&nbsp;&nbsp; Crescimento: {p_cresc}% | Queda: {p_queda}% | Inativo: {p_inat}% | Estável: {p_estav}%", unsafe_allow_html=True)
+                                
                     st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">MATRIZ DE DECISÃO TÁTICA BASE</div>', unsafe_allow_html=True)
