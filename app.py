@@ -310,11 +310,28 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     laudo_html += '</div>'
                     st.markdown(laudo_html, unsafe_allow_html=True)
                     
-                    # --- NOVO BLOCO: DRILL-DOWN TÁTICO ---
+                    # --- DRILL-DOWN TÁTICO COM MEMÓRIA DE ESTADO ---
                     st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 50px; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
                     
                     opcoes_filtro = ["TODOS OS SEGMENTOS"] + list(df_final[dim_principal].unique())
-                    filtro_sel = st.selectbox(f"SELECIONE A CHAVE ({dim_principal.upper()}) PARA ISOLAR A ANÁLISE:", opcoes_filtro)
+                    
+                    if 'memoria_filtro' not in st.session_state:
+                        st.session_state.memoria_filtro = "TODOS OS SEGMENTOS"
+                        
+                    indice_padrao = 0
+                    if st.session_state.memoria_filtro in opcoes_filtro:
+                        indice_padrao = opcoes_filtro.index(st.session_state.memoria_filtro)
+                        
+                    def atualizar_memoria():
+                        st.session_state.memoria_filtro = st.session_state.seletor_temp
+                        
+                    filtro_sel = st.selectbox(
+                        f"SELECIONE A CHAVE ({dim_principal.upper()}) PARA ISOLAR A ANÁLISE:", 
+                        opcoes_filtro,
+                        index=indice_padrao,
+                        key="seletor_temp",
+                        on_change=atualizar_memoria
+                    )
                     
                     if filtro_sel != "TODOS OS SEGMENTOS":
                         df_exibicao = df_final[df_final[dim_principal] == filtro_sel]
