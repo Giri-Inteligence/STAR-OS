@@ -28,7 +28,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- FUNÇÕES DE MOTOR TÁTICO ---
+# --- MOTOR TÁTICO STAR (CONSOLIDADO) ---
 def format_br(val):
     try:
         if pd.isna(val) or val == 0: return "0"
@@ -81,14 +81,13 @@ if st.session_state.pagina_ativa == 'Matriz':
             df_ag['MEDIA_LP'] = (df_ag[p_meses].sum(axis=1) / len(p_meses)).round(0)
             df_ag['MEDIA_CP'] = (df_ag[col_m[-cp_val:]].sum(axis=1) / cp_val).round(0)
             
-            # Pareto e Curva ABC
             df_ag = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
             df_ag['CURVA'] = (df_ag['TOTAL_ACUMULADO'].cumsum() / df_ag['TOTAL_ACUMULADO'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
             
             res = df_ag.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
             df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
 
-            # --- BLOCO 1: INFOGRÁFICOS ---
+            # --- BLOCO 1: INFOGRÁFICOS RESTAURADOS ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE TRAÇÃO E SAÚDE POR SEGMENTO</div>', unsafe_allow_html=True)
             df_p = df_ag.groupby(dim_p)[['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP']].sum().reset_index().sort_values('TOTAL_ACUMULADO', ascending=False)
             df_p['CURVA_SEG'] = (df_p['TOTAL_ACUMULADO'].cumsum() / df_p['TOTAL_ACUMULADO'].sum()).apply(lambda x: 'CURVA A' if x <= 0.8 else ('CURVA B' if x <= 0.95 else 'CURVA C'))
@@ -102,11 +101,6 @@ if st.session_state.pagina_ativa == 'Matriz':
                     if curva == "CURVA C":
                         html_infog += f'<div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);padding:15px;border-radius:8px;margin-top:20px;color:#888;">{curva}: R$ {format_br(df_c["TOTAL_ACUMULADO"].sum())} acumulados.</div>'
                         continue
-                    if curva == "CURVA B" and len(df_c) > 3:
-                        top3, outros = df_c.head(3), df_c.iloc[3:]
-                        outros_ag = pd.DataFrame([{dim_p: "OUTROS (AGRUPADOS)", 'TOTAL_ACUMULADO': outros['TOTAL_ACUMULADO'].sum(), 'MEDIA_LP': outros['MEDIA_LP'].sum(), 'MEDIA_CP': outros['MEDIA_CP'].sum()}])
-                        for cs in ['🟢 CRESCIMENTO', '🔵 ESTÁVEL', '🔴 QUEDA', '🚨 QUEDA ACENTUADA', '⚫ INATIVO']: outros_ag[cs] = outros[cs].sum() if cs in outros.columns else 0
-                        df_c = pd.concat([top3, outros_ag], ignore_index=True)
                     
                     html_infog += f'<div style="color:#fff;font-weight:800;margin:25px 0 10px 0;letter-spacing:1.5px;font-size:0.95rem;">{curva}</div>'
                     for _, row in df_c.iterrows():
@@ -160,7 +154,6 @@ if st.session_state.pagina_ativa == 'Matriz':
                         elif "🔴 QUEDA" in s_v: t_f = st_q
                         elif "CRESCIMENTO" in s_v: t_f = st_c
                         elif "ESTÁVEL" in s_v: t_f = st_e
-                        
                         for c_idx, c_n in enumerate(cols_v):
                             v = row[c_n]
                             if c_idx == st_idx: ws.write(r_idx+1, c_idx, v, t_f)
