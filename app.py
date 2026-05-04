@@ -159,7 +159,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- CAMADA ANALÍTICA: PARETO AVANÇADO ---
+            # --- CAMADA ANALÍTICA: PARETO E TICKET MÉDIO MENSAL ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
@@ -202,13 +202,14 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     st.markdown('<div style="margin-top: 15px; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5; color: #e0e0e0; background: rgba(255,255,255,0.05); padding: 20px; border-left: 3px solid #001f3f;">', unsafe_allow_html=True)
                     st.markdown("**LAUDO DE DISTRIBUIÇÃO E TRAÇÃO:**")
                     
+                    meses_analisados = len(col_meses)
+                    
                     for curva in ["CURVA A (80% DA RECEITA)", "CURVA B (15% DA RECEITA)", "CURVA C (5% DA RECEITA)"]:
                         df_c = df_pareto[df_pareto['CURVA'] == curva].copy()
                         
                         if not df_c.empty:
                             st.markdown(f"<br>**{curva}**", unsafe_allow_html=True)
                             
-                            # Filtro da Curva B: Top 3 e Agrupamento
                             if curva == "CURVA B (15% DA RECEITA)" and len(df_c) > 3:
                                 df_top3 = df_c.iloc[:3].copy()
                                 df_others = df_c.iloc[3:].copy()
@@ -226,7 +227,8 @@ elif st.session_state.pagina_ativa == 'Matriz':
                             for _, row in df_c.iterrows():
                                 tot = row['TOTAL_CONTAS']
                                 faturamento = row['TOTAL_ACUMULADO']
-                                ticket_medio = faturamento / tot if tot > 0 else 0
+                                
+                                ticket_medio_mensal = (faturamento / tot) / meses_analisados if (tot > 0 and meses_analisados > 0) else 0
                                 
                                 cresc_val = row.get('🟢 CRESCIMENTO', 0)
                                 estav_val = row.get('🔵 ESTÁVEL', 0)
@@ -239,9 +241,9 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 p_inat = round((inat_val / tot * 100), 1) if tot > 0 else 0
                                 
                                 fat_str = format_br(faturamento)
-                                tm_str = format_br(ticket_medio)
+                                tm_str = format_br(ticket_medio_mensal)
                                 
-                                st.markdown(f"- **{row[dim_principal]}** (Receita Acumulada: R$ {fat_str} | Ticket Médio: R$ {tm_str}) <br> &nbsp;&nbsp;&nbsp; Crescimento: {p_cresc}% ({int(cresc_val)}) | Queda: {p_queda}% ({int(queda_val)}) | Inativo: {p_inat}% ({int(inat_val)}) | Estável: {p_estav}% ({int(estav_val)})", unsafe_allow_html=True)
+                                st.markdown(f"- **{row[dim_principal]}** (Receita Acumulada: R$ {fat_str} | Ticket Médio Mensal: R$ {tm_str}) <br> &nbsp;&nbsp;&nbsp; Crescimento: {p_cresc}% ({int(cresc_val)}) | Queda: {p_queda}% ({int(queda_val)}) | Inativo: {p_inat}% ({int(inat_val)}) | Estável: {p_estav}% ({int(estav_val)})", unsafe_allow_html=True)
                                 
                     st.markdown('</div>', unsafe_allow_html=True)
 
