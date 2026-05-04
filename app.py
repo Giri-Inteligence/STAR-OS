@@ -143,14 +143,22 @@ elif st.session_state.pagina_ativa == 'Matriz':
 
         if dims_selecionadas or not dimensoes_reais:
             col_meses = [c for c in cols if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
+            
+            # --- ISOLAMENTO DO PERÍODO ATIVO DEFINIDO PELO USUÁRIO ---
+            periodo_total = lp_val + cp_val
+            col_meses_ativos = col_meses[-periodo_total:] if len(col_meses) >= periodo_total else col_meses
+            meses_analisados = len(col_meses_ativos)
+            
             df = df_raw.copy()
             for col in col_meses: df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
             chaves = ['EMPRESA'] + dims_selecionadas
             df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
-            df_agrupado['TOTAL_ACUMULADO'] = df_agrupado[col_meses].sum(axis=1).round(0)
-            df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses[-(lp_val+cp_val):-cp_val]].sum(axis=1) / lp_val).round(0)
+            # A receita acumulada reflete ESTRITAMENTE os meses selecionados no painel
+            df_agrupado['TOTAL_ACUMULADO'] = df_agrupado[col_meses_ativos].sum(axis=1).round(0)
+            
+            df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses[-(lp_val+cp_val):-cp_val]].sum(axis=1) / lp_val).round(0) if cp_val < len(col_meses_ativos) else 0
             df_agrupado['MEDIA_CP'] = (df_agrupado[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
 
             res = df_agrupado.apply(lambda row: engine_star(row, row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
@@ -159,7 +167,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- CAMADA ANALÍTICA: PARETO COM ISOLAMENTO DA CURVA C ---
+            # --- CAMADA ANALÍTICA: PARETO COM RECORTES TEMPORAIS ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
@@ -181,7 +189,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
 
                 if dims_selecionadas:
                     dim_principal = dims_selecionadas[0]
-                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE PARETO E SAÚDE POR {dim_principal.upper()}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE PARETO E SAÚDE POR {dim_principal.upper()} (BASE: {meses_analisados} MESES)</div>', unsafe_allow_html=True)
                     
                     df_pareto = df_final.groupby(dim_principal)['TOTAL_ACUMULADO'].sum().reset_index()
                     df_pareto = df_pareto.sort_values('TOTAL_ACUMULADO', ascending=False)
@@ -202,8 +210,6 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     st.markdown('<div style="margin-top: 15px; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5; color: #e0e0e0; background: rgba(255,255,255,0.05); padding: 20px; border-left: 3px solid #001f3f;">', unsafe_allow_html=True)
                     st.markdown("**LAUDO DE DISTRIBUIÇÃO E TRAÇÃO:**")
                     
-                    meses_analisados = len(col_meses)
-                    
                     for curva in ["CURVA A (80% DA RECEITA)", "CURVA B (15% DA RECEITA)", "CURVA C (5% DA RECEITA)"]:
                         df_c = df_pareto[df_pareto['CURVA'] == curva].copy()
                         
@@ -212,7 +218,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
                             
                             if curva == "CURVA C (5% DA RECEITA)":
                                 fat_total_c = df_c['TOTAL_ACUMULADO'].sum()
-                                st.markdown(f"- Representa 5% da receita (R$ {format_br(fat_total_c)}).", unsafe_allow_html=True)
+                                st.markdown(f"- Representa 5% da receita (R$ {format_br(fat_total_c)}) referente aos {meses_analisados} meses analisados.", unsafe_allow_html=True)
                                 continue
                             
                             if curva == "CURVA B (15% DA RECEITA)" and len(df_c) > 3:
@@ -248,7 +254,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 fat_str = format_br(faturamento)
                                 tm_str = format_br(ticket_medio_mensal)
                                 
-                                st.markdown(f"- **{row[dim_principal]}** (Receita Acumulada: R$ {fat_str} | Ticket Médio Mensal: R$ {tm_str}) <br> &nbsp;&nbsp;&nbsp; Crescimento: {p_cresc}% ({int(cresc_val)}) | Queda: {p_queda}% ({int(queda_val)}) | Inativo: {p_inat}% ({int(inat_val)}) | Estável: {p_estav}% ({int(estav_val)})", unsafe_allow_html=True)
+                                st.markdown(f"- **{row[dim_principal]}** (Receita em {meses_analisados} meses: R$ {fat_str} | Ticket Médio Mensal: R$ {tm_str}) <br> &nbsp;&nbsp;&nbsp; Crescimento: {p_cresc}% ({int(cresc_val)}) | Queda: {p_queda}% ({int(queda_val)}) | Inativo: {p_inat}% ({int(inat_val)}) | Estável: {p_estav}% ({int(estav_val)})", unsafe_allow_html=True)
                                 
                     st.markdown('</div>', unsafe_allow_html=True)
 
