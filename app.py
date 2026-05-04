@@ -144,8 +144,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
         if dims_selecionadas or not dimensoes_reais:
             col_meses = [c for c in cols if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
             
-            # --- CORREÇÃO DO HORIZONTE TEMPORAL ---
-            periodo_total = lp_val # O Longo Prazo é o total de meses analisados
+            periodo_total = lp_val 
             col_meses_ativos = col_meses[-periodo_total:] if len(col_meses) >= periodo_total else col_meses
             meses_analisados = len(col_meses_ativos)
             
@@ -155,10 +154,8 @@ elif st.session_state.pagina_ativa == 'Matriz':
             chaves = ['EMPRESA'] + dims_selecionadas
             df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
-            # A receita acumulada reflete ESTRITAMENTE o período total (Longo Prazo)
             df_agrupado['TOTAL_ACUMULADO'] = df_agrupado[col_meses_ativos].sum(axis=1).round(0)
             
-            # Média do Longo Prazo (Horizonte Completo) e Média do Curto Prazo (Tração Recente)
             df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses_ativos].sum(axis=1) / meses_analisados).round(0) if meses_analisados > 0 else 0
             df_agrupado['MEDIA_CP'] = (df_agrupado[col_meses_ativos[-cp_val:]].sum(axis=1) / cp_val).round(0) if cp_val > 0 else 0
 
@@ -168,7 +165,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- CAMADA ANALÍTICA: PARETO E SAÚDE DA BASE ---
+            # --- CAMADA ANALÍTICA: PARETO COM TRAÇÃO DE SEGMENTO ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
@@ -192,7 +189,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     dim_principal = dims_selecionadas[0]
                     st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE PARETO E SAÚDE POR {dim_principal.upper()} (BASE: {meses_analisados} MESES)</div>', unsafe_allow_html=True)
                     
-                    df_pareto = df_final.groupby(dim_principal)['TOTAL_ACUMULADO'].sum().reset_index()
+                    df_pareto = df_final.groupby(dim_principal)[['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP']].sum().reset_index()
                     df_pareto = df_pareto.sort_values('TOTAL_ACUMULADO', ascending=False)
                     df_pareto['CUM_PCT'] = df_pareto['TOTAL_ACUMULADO'].cumsum() / df_pareto['TOTAL_ACUMULADO'].sum()
                     
@@ -229,6 +226,8 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 others_data = {
                                     dim_principal: "OUTROS (AGRUPADOS)", 
                                     'TOTAL_ACUMULADO': df_others['TOTAL_ACUMULADO'].sum(), 
+                                    'MEDIA_LP': df_others['MEDIA_LP'].sum(),
+                                    'MEDIA_CP': df_others['MEDIA_CP'].sum(),
                                     'TOTAL_CONTAS': df_others['TOTAL_CONTAS'].sum()
                                 }
                                 for col_status in ['🟢 CRESCIMENTO', '🔵 ESTÁVEL', '🔴 QUEDA', '🚨 QUEDA ACENTUADA', '⚫ INATIVO']:
@@ -239,6 +238,8 @@ elif st.session_state.pagina_ativa == 'Matriz':
                             for _, row in df_c.iterrows():
                                 tot = row['TOTAL_CONTAS']
                                 faturamento = row['TOTAL_ACUMULADO']
+                                media_lp = row['MEDIA_LP']
+                                media_cp = row['MEDIA_CP']
                                 
                                 ticket_medio_mensal = (faturamento / tot) / meses_analisados if (tot > 0 and meses_analisados > 0) else 0
                                 
@@ -252,10 +253,13 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 p_queda = round((queda_val / tot * 100), 1) if tot > 0 else 0
                                 p_inat = round((inat_val / tot * 100), 1) if tot > 0 else 0
                                 
+                                tracao_pct = ((media_cp / media_lp) - 1) * 100 if media_lp > 0 else (100 if media_cp > 0 else 0)
+                                status_tracao = f"🟢 EXPANSÃO (+{tracao_pct:.1f}%)" if tracao_pct > 0 else (f"🔴 EROSÃO ({tracao_pct:.1f}%)" if tracao_pct < 0 else "🔵 ESTAGNAÇÃO")
+                                
                                 fat_str = format_br(faturamento)
                                 tm_str = format_br(ticket_medio_mensal)
                                 
-                                st.markdown(f"- **{row[dim_principal]}** (Receita em {meses_analisados} meses: R$ {fat_str} | Ticket Médio Mensal: R$ {tm_str}) <br> &nbsp;&nbsp;&nbsp; Crescimento: {p_cresc}% ({int(cresc_val)}) | Queda: {p_queda}% ({int(queda_val)}) | Inativo: {p_inat}% ({int(inat_val)}) | Estável: {p_estav}% ({int(estav_val)})", unsafe_allow_html=True)
+                                st.markdown(f"- **{row[dim_principal]}** (Receita em {meses_analisados} meses: R$ {fat_str} | Ticket Médio Mensal: R$ {tm_str}) <br> &nbsp;&nbsp;&nbsp; Tração do Segmento (Média LP R$ {format_br(media_lp)} ➔ Média CP R$ {format_br(media_cp)}): **{status_tracao}** <br> &nbsp;&nbsp;&nbsp; Saúde das Contas: Crescimento: {p_cresc}% ({int(cresc_val)}) | Queda: {p_queda}% ({int(queda_val)}) | Inativo: {p_inat}% ({int(inat_val)}) | Estável: {p_estav}% ({int(estav_val)})", unsafe_allow_html=True)
                                 
                     st.markdown('</div>', unsafe_allow_html=True)
 
