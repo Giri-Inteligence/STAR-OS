@@ -43,7 +43,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- MOTOR DE GOVERNANÇA STAR ---
+# --- FUNÇÕES GLOBAIS ---
 def format_br(val):
     try:
         if pd.isna(val) or val == 0: return "0"
@@ -71,7 +71,7 @@ with st.sidebar:
         lp_val = st.number_input("Longo Prazo (Meses)", value=15, min_value=1)
         cp_val = st.number_input("Curto Prazo (Meses)", value=3, min_value=1)
 
-# --- TELA MATRIZ STAR ---
+# --- TELA: MATRIZ STAR ---
 if st.session_state.pagina_ativa == 'Matriz':
     st.markdown('<div class="title-center">MATRIZ STAR</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Upload", type=['xlsx'], label_visibility="collapsed")
@@ -98,16 +98,19 @@ if st.session_state.pagina_ativa == 'Matriz':
             df_ag['MEDIA_LP'] = (df_ag[periodo_meses].sum(axis=1) / len(periodo_meses)).round(0)
             df_ag['MEDIA_CP'] = (df_ag[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
             
+            # Cálculo da Curva ABC por Cliente
+            df_ag = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
+            df_ag['CUM_SUM'] = df_ag['TOTAL_ACUMULADO'].cumsum()
+            total_geral = df_ag['TOTAL_ACUMULADO'].sum()
+            df_ag['PCT_ACUM'] = df_ag['CUM_SUM'] / total_geral if total_geral > 0 else 0
+            df_ag['CURVA'] = df_ag['PCT_ACUM'].apply(lambda x: 'A' if x <= 0.80 else ('B' if x <= 0.95 else 'C'))
+            
             res = df_ag.apply(lambda row: engine_star(row, row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
             df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
-            df_final = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
+            df_final = df_ag.sort_values(['CURVA', 'TOTAL_ACUMULADO'], ascending=[True, False])
 
-            # --- LAUDO VISUAL (Omitido aqui por brevidade, permanece igual à V93/V94) ---
-            st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
-            # ... (Código dos Cards HTML aqui) ...
-
-            # --- DRILL-DOWN E EXPORTAÇÃO EXECUTIVA ---
-            st.markdown('<div style="font-size:0.85rem;font-weight:700;color:#ccc;margin-top:50px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.1);padding-top:30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
+            # --- DRILL-DOWN TÁTICO E EXPORTAÇÃO EXECUTIVA ---
+            st.markdown('<div style="font-size:0.85rem;font-weight:700;color:#ccc;margin-top:20px;margin-bottom:10px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
             repres = df_final.groupby(dim_principal)['TOTAL_ACUMULADO'].sum().sort_values(ascending=False)
             opcoes = ["TODOS OS SEGMENTOS"] + repres.index.tolist()
             if 'mem_f' not in st.session_state: st.session_state.mem_f = "TODOS OS SEGMENTOS"
@@ -118,20 +121,19 @@ if st.session_state.pagina_ativa == 'Matriz':
                 st.session_state.mem_f = f_sel
             
             df_exib = df_final[df_final[dim_principal] == f_sel] if f_sel != "TODOS OS SEGMENTOS" else df_final
+            colunas_view = ['CURVA'] + list(df_exib.columns[:-3]) + ['TOTAL_ACUMULADO', 'STATUS', 'META', 'AÇÃO']
             
             with col_ex:
                 output = BytesIO()
                 with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                    df_exib.to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
+                    df_exib[colunas_view].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
                     workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
                     
-                    # 1. CABEÇALHO EXECUTIVO (Azul Escuro, Letras Brancas, Negrito, Bordas Brancas)
+                    # FORMATOS EXCEL EXECUTIVOS
                     header_fmt = workbook.add_format({
                         'bold': True, 'font_color': '#FFFFFF', 'bg_color': '#002060',
-                        'border': 1, 'border_color': '#FFFFFF', 'align': 'center', 'valign': 'vcenter'
+                        'border': 1, 'border_color': '#FFFFFF', 'align': 'center', 'valign': 'vcenter', 'text_wrap': True
                     })
-                    
-                    # 2. FORMATOS DE CÉLULAS E STATUS
                     base_fmt = workbook.add_format({'valign': 'vcenter', 'align': 'left', 'border': 1, 'border_color': '#D9D9D9'})
                     num_fmt = workbook.add_format({'num_format': '#,##0', 'valign': 'vcenter', 'align': 'center', 'border': 1, 'border_color': '#D9D9D9'})
                     wrap_fmt = workbook.add_format({'text_wrap': True, 'valign': 'vcenter', 'align': 'left', 'border': 1, 'border_color': '#D9D9D9'})
@@ -142,13 +144,11 @@ if st.session_state.pagina_ativa == 'Matriz':
                     fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'valign': 'vcenter', 'border': 1})
                     fmt_estav = workbook.add_format({'bg_color': '#DDEBF7', 'font_color': '#0070C0', 'bold': True, 'valign': 'vcenter', 'border': 1})
 
-                    # Aplicar Cabeçalho
-                    for col_num, value in enumerate(df_exib.columns.values):
+                    for col_num, value in enumerate(colunas_view):
                         worksheet.write(0, col_num, value, header_fmt)
 
-                    # Aplicar Dados e Formatação Condicional de Status
-                    acao_idx = list(df_exib.columns).index('AÇÃO')
-                    status_idx = list(df_exib.columns).index('STATUS')
+                    acao_idx = colunas_view.index('AÇÃO')
+                    status_idx = colunas_view.index('STATUS')
                     
                     for r_idx, (idx, row) in enumerate(df_exib.iterrows()):
                         s_val = str(row['STATUS'])
@@ -158,8 +158,7 @@ if st.session_state.pagina_ativa == 'Matriz':
                         elif "CRESCIMENTO" in s_val: t_fmt = fmt_cresc
                         elif "ESTÁVEL" in s_val: t_fmt = fmt_estav
                         
-                        # Escrever linha com formatos
-                        for c_idx, col_name in enumerate(df_exib.columns):
+                        for c_idx, col_name in enumerate(colunas_view):
                             val = row[col_name]
                             if c_idx == status_idx: worksheet.write(r_idx + 1, c_idx, val, t_fmt)
                             elif c_idx == acao_idx:
@@ -169,19 +168,19 @@ if st.session_state.pagina_ativa == 'Matriz':
                                     if ':' in p:
                                         lbl, cont = p.split(':', 1)
                                         rich.extend([bold_lbl, lbl + ':', wrap_fmt, cont + '\n'])
-                                if rich: worksheet.write_rich_string(r_idx + 1, ac_idx if 'ac_idx' in locals() else acao_idx, *rich, wrap_fmt)
+                                if rich: worksheet.write_rich_string(r_idx + 1, acao_idx, *rich, wrap_fmt)
                                 else: worksheet.write(r_idx + 1, c_idx, val, wrap_fmt)
-                            elif isinstance(val, (int, float)): worksheet.write(r_idx + 1, c_idx, val, num_fmt)
+                            elif isinstance(val, (int, float)): worksheet.write(r_idx + 1, c_idx, int(val), num_fmt)
                             else: worksheet.write(r_idx + 1, c_idx, val, base_fmt)
 
-                    # Ajustes de Dimensão
-                    worksheet.set_column(0, 0, 45) # Empresa
-                    worksheet.set_column(acao_idx, acao_idx, 70) # Método STAR
-                    worksheet.set_default_row(60)
+                    worksheet.set_column(0, 0, 8) # Curva
+                    worksheet.set_column(1, 1, 45) # Empresa
+                    worksheet.set_column(acao_idx, acao_idx, 75) 
+                    worksheet.set_default_row(65)
 
                 st.download_button(f"📥 EXPORTAR {f_sel.upper()}", output.getvalue(), f"Giri_Matriz_STAR_{f_sel}.xlsx")
 
-            st.dataframe(df_exib.style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
+            st.dataframe(df_exib[colunas_view].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
 
 # --- DASHBOARD ---
 elif st.session_state.pagina_ativa == 'Dashboard':
