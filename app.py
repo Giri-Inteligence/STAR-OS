@@ -4,40 +4,44 @@ import numpy as np
 from datetime import datetime
 import math
 
-# 1. DESIGN EXECUTIVO GIRI - SIDEBAR SEMPRE EXPANDIDA
+# 1. CONFIGURAÇÃO DE PÁGINA COM SIDEBAR FORÇADA
 st.set_page_config(
     page_title="Giri Architecture Hub", 
     layout="wide",
-    initial_sidebar_state="expanded" # Garante que o menu não "suma" ao carregar
+    initial_sidebar_state="expanded"
 )
 
+# 2. ESTILO EXECUTIVO COM FOCO NA SIDEBAR
 st.markdown("""
     <style>
+    /* FUNDO GRADIENTE RADIAL PROFUNDO */
     .stApp { 
         background: radial-gradient(circle at 50% 50%, #001f3f 0%, #000c18 60%, #00050a 100%); 
         color: #ffffff; 
     }
-    header {visibility: hidden;}
     
-    /* MENU LATERAL VISÍVEL */
+    /* GARANTIA DE VISIBILIDADE DA SIDEBAR */
     [data-testid="stSidebar"] { 
-        background-color: rgba(0, 0, 0, 0.4) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+        background-color: #000810 !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+        min-width: 240px !important;
+        z-index: 100;
     }
     
+    /* ESTILIZAÇÃO DOS INPUTS DE TEXTO */
     .stTextInput input {
-        height: 38px !important;
+        height: 40px !important;
         text-align: center !important;
         background-color: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 4px !important;
-        font-size: 14px !important;
         color: #ffffff !important;
     }
-    
+
     .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: 20px; font-weight: 800; font-size: 1.8rem; }
     .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 40px; font-size: 1rem; }
     
+    /* CARDS DO DASHBOARD */
     .tool-card { 
         background: rgba(255, 255, 255, 0.02); 
         backdrop-filter: blur(20px); 
@@ -49,9 +53,9 @@ st.markdown("""
         display: flex;
         flex-direction: column;
         justify-content: center;
-        transition: all 0.3s ease;
     }
 
+    /* BOTÃO INVISÍVEL NO DASHBOARD */
     .btn-container .stButton button {
         background-color: transparent !important;
         border: none !important;
@@ -60,12 +64,12 @@ st.markdown("""
         width: 100% !important;
         position: absolute;
         top: -110px;
-        z-index: 10;
+        z-index: 101;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- FUNÇÕES ---
+# --- FUNÇÕES DE APOIO ---
 def format_br(val):
     try:
         if pd.isna(val) or val == 0: return "0"
@@ -79,6 +83,7 @@ def parse_int(val):
     except: return 0
 
 def get_business_days(start, end):
+    # Feriados 2026
     holidays = ['2026-01-01', '2026-05-01', '2026-09-07', '2026-10-12', '2026-11-02', '2026-11-15', '2026-12-25']
     if start > end: return 0
     days = pd.date_range(start, end)
@@ -97,8 +102,10 @@ if hoje.weekday() < 5 and hoje.strftime('%Y-%m-%d') not in ['2026-05-01']:
 # --- NAVEGAÇÃO ---
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
 
+# ESTE BLOCO PRECISA APARECER SEMPRE
 with st.sidebar:
-    st.markdown("<br><br><h2 style='letter-spacing:2px; font-size:1rem;'>GIRI | ARCHITECTURE</h2>", unsafe_allow_html=True)
+    st.markdown("<br><br><h2 style='letter-spacing:2px; font-size:1rem; color:white;'>GIRI | ARCHITECTURE</h2>", unsafe_allow_html=True)
+    st.markdown("---")
     if st.session_state.pagina_ativa != 'Dashboard':
         if st.button("⬅ VOLTAR PARA DASHBOARD"):
             st.session_state.pagina_ativa = 'Dashboard'
@@ -118,7 +125,7 @@ if st.session_state.pagina_ativa == 'Dashboard':
 
 elif st.session_state.pagina_ativa == 'Desempenho':
     with st.sidebar:
-        st.markdown("---")
+        st.markdown("<br>", unsafe_allow_html=True)
         nomes = st.text_area("EQUIPE:", "JOÃO\nCARLOS\nMARIA", height=100)
         vendedor = st.selectbox("CONSULTOR:", [v.strip().upper() for v in nomes.split('\n') if v.strip()])
     
