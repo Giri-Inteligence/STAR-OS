@@ -37,8 +37,24 @@ st.markdown("""
     /* INPUTS LIMPOS */
     .stTextInput input { height: 40px !important; text-align: center !important; background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 4px !important; color: #ffffff !important; }
     
-    /* GATILHO INVISÍVEL DASHBOARD */
-    .btn-container .stButton button { background-color: transparent !important; border: none !important; color: transparent !important; height: 110px !important; width: 100% !important; position: absolute; top: -110px; z-index: 101; }
+    /* GATILHO INVISÍVEL (SOBREPOSIÇÃO) */
+    div[data-testid="column"] div.stButton {
+        margin-top: -126px;
+        z-index: 10;
+        position: relative;
+    }
+    div[data-testid="column"] div.stButton button {
+        height: 110px !important;
+        width: 100% !important;
+        background: transparent !important;
+        border: none !important;
+        color: transparent !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="column"] div.stButton button:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 4px !important;
+    }
 
     /* TABELAS GERAIS E MATRIZ STAR */
     div[data-testid="stTable"] table { width: 100% !important; }
@@ -96,7 +112,6 @@ with st.sidebar:
             st.session_state.pagina_ativa = 'Dashboard'
             st.rerun()
 
-    # Inputs Específicos por Página
     if st.session_state.pagina_ativa == 'Matriz':
         lp_val = st.number_input("Longo Prazo (Meses)", value=12, min_value=1)
         cp_val = st.number_input("Curto Prazo (Meses)", value=3, min_value=1)
@@ -112,22 +127,22 @@ if st.session_state.pagina_ativa == 'Dashboard':
     cols = st.columns(4)
     with cols[0]:
         st.markdown('<div class="tool-card"><h4>MATRIZ STAR</h4><p>Diagnóstico de Carteira e Governança de Churn</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="btn-container">', unsafe_allow_html=True)
-        if st.button("", key="btn_star"): st.session_state.pagina_ativa = 'Matriz'; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        if st.button(" ", key="btn_star", use_container_width=True): 
+            st.session_state.pagina_ativa = 'Matriz'
+            st.rerun()
     with cols[1]:
         st.markdown('<div class="tool-card"><h4>MATRIZ DE DESEMPENHO</h4><p>Gestão de Ritmo e Eficiência Individual</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="btn-container">', unsafe_allow_html=True)
-        if st.button("", key="btn_desempenho"): st.session_state.pagina_ativa = 'Desempenho'; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        if st.button(" ", key="btn_desempenho", use_container_width=True): 
+            st.session_state.pagina_ativa = 'Desempenho'
+            st.rerun()
     with cols[2]:
         st.markdown('<div class="tool-card"><h4>ARQUITETURA COMERCIAL</h4><p>Estruturação de Processos e Playbooks</p></div>', unsafe_allow_html=True)
-        if st.button("", key="btn_arch"): pass
+        if st.button(" ", key="btn_arch", use_container_width=True): pass
     with cols[3]:
         st.markdown('<div class="tool-card"><h4>PIPELINE PREDICTOR</h4><p>Previsibilidade de Receita B2B</p></div>', unsafe_allow_html=True)
-        if st.button("", key="btn_pipe"): pass
+        if st.button(" ", key="btn_pipe", use_container_width=True): pass
 
-# --- TELA 2: MATRIZ STAR (MOTOR ORIGINAL INTACTO) ---
+# --- TELA 2: MATRIZ STAR ---
 elif st.session_state.pagina_ativa == 'Matriz':
     st.markdown('<div class="title-center">STAR-OS | SISTEMA DE GOVERNANÇA</div>', unsafe_allow_html=True)
     
@@ -208,7 +223,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
 
             st.download_button("📥 EXPORTAR PLANO EXECUTIVO", output.getvalue(), "Plano_STAR_Giri.xlsx")
 
-# --- TELA 3: MATRIZ DE DESEMPENHO (INTACTA E LIMPA) ---
+# --- TELA 3: MATRIZ DE DESEMPENHO ---
 elif st.session_state.pagina_ativa == 'Desempenho':
     meses_br = {1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"}
     
