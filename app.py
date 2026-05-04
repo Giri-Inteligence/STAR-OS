@@ -269,7 +269,6 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 fat_str = format_br(faturamento)
                                 tm_str = format_br(ticket_medio_mensal)
                                 
-                                # Motor de ordenação visual baseado na volumetria
                                 block_data = [
                                     {"name": "Cresc.", "pct": p_cresc, "val": int(cresc_val), "color": "#00E676", "bg": "#00E676"},
                                     {"name": "Estável", "pct": p_estav, "val": int(estav_val), "color": "#29B6F6", "bg": "#29B6F6"},
@@ -281,14 +280,12 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 barra_html = ""
                                 for block in block_data:
                                     if block["pct"] > 0:
-                                        barra_html += f"""
-                                        <div style="width: {block['pct']}%; padding-right: 4px; box-sizing: border-box;">
-                                            <div style="height: 8px; background: {block['bg']}; border-radius: 2px; width: 100%; margin-bottom: 6px;"></div>
-                                            <div style="color: {block['color']}; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{block['name']}: {block['pct']}% ({block['val']})">
-                                                {block['name']}<br>{block['pct']}% ({block['val']})
-                                            </div>
-                                        </div>
-                                        """
+                                        barra_html += f"""<div style="width: {block['pct']}%; padding-right: 4px; box-sizing: border-box;">
+<div style="height: 8px; background: {block['bg']}; border-radius: 2px; width: 100%; margin-bottom: 6px;"></div>
+<div style="color: {block['color']}; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{block['name']}: {block['pct']}% ({block['val']})">
+{block['name']}<br>{block['pct']}% ({block['val']})
+</div>
+</div>"""
                                 
                                 card_html = f"""<div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 20px; margin-bottom: 15px;">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
