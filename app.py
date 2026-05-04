@@ -11,15 +11,12 @@ st.set_page_config(page_title="Giri Architecture Hub", layout="wide", initial_si
 
 st.markdown("""
     <style>
-    /* FUNDO GRADIENTE RADIAL PROFUNDO */
     .stApp { background: radial-gradient(circle at 50% 50%, #001f3f 0%, #000c18 60%, #00050a 100%); color: #ffffff; }
     header {visibility: hidden;}
     
-    /* SIDEBAR EXECUTIVA */
     [data-testid="stSidebar"] { background-color: #000810 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; min-width: 240px !important; }
     .sidebar-title { margin-top: -30px; margin-bottom: 20px; letter-spacing: 2px; font-size: 1.1rem; font-weight: 800; color: white; text-transform: uppercase; }
 
-    /* DASHBOARD CARDS */
     .tool-card { 
         background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border-radius: 4px; padding: 20px; 
         border: 1px solid rgba(255, 255, 255, 0.08); text-align: center; height: 110px; display: flex; 
@@ -29,37 +26,23 @@ st.markdown("""
     h4 { text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.9rem; margin-bottom: 8px; color: #ffffff; font-weight: 700; }
     .tool-card p { color: rgba(255, 255, 255, 0.4); font-size: 0.7rem; line-height: 1.2; margin: 0; }
 
-    /* TITULOS CENTRALIZADOS E SUBIDA DE CONTEÚDO */
     .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: -45px; font-weight: 800; font-size: 1.8rem; }
     .vendedor-destaque { text-align: center; text-transform: uppercase; letter-spacing: 3px; color: #ffffff; margin-bottom: 5px; font-weight: 700; font-size: 1.4rem; }
     .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; font-size: 0.9rem; }
 
-    /* INPUTS LIMPOS */
     .stTextInput input { height: 40px !important; text-align: center !important; background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 4px !important; color: #ffffff !important; }
     
-    /* GATILHO INVISÍVEL (SOBREPOSIÇÃO) */
-    div[data-testid="column"] div.stButton {
-        margin-top: -126px;
-        z-index: 10;
-        position: relative;
-    }
-    div[data-testid="column"] div.stButton button {
-        height: 110px !important;
-        width: 100% !important;
-        background: transparent !important;
-        border: none !important;
-        color: transparent !important;
-        box-shadow: none !important;
-    }
-    div[data-testid="column"] div.stButton button:hover {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border-radius: 4px !important;
-    }
+    div[data-testid="column"] div.stButton { margin-top: -126px; z-index: 10; position: relative; }
+    div[data-testid="column"] div.stButton button { height: 110px !important; width: 100% !important; background: transparent !important; border: none !important; color: transparent !important; box-shadow: none !important; }
+    div[data-testid="column"] div.stButton button:hover { background: rgba(255, 255, 255, 0.05) !important; border-radius: 4px !important; }
 
-    /* TABELAS GERAIS E MATRIZ STAR */
     div[data-testid="stTable"] table { width: 100% !important; }
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { text-align: center !important; vertical-align: middle !important; font-size: 13px !important; color: #ffffff !important; }
-    div[data-testid="stDataFrame"] td { white-space: pre-wrap !important; word-wrap: break-word !important; min-width: 300px; vertical-align: middle !important; }
+    div[data-testid="stDataFrame"] td { white-space: pre-wrap !important; word-wrap: break-word !important; min-width: 150px; vertical-align: middle !important; }
+    
+    /* ESTILO PARA METRICAS NATIVAS DO STREAMLIT */
+    div[data-testid="stMetricValue"] { font-size: 1.8rem !important; font-weight: 800; }
+    div[data-testid="stMetricLabel"] p { font-size: 0.8rem !important; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); }
     </style>
     """, unsafe_allow_html=True)
 
@@ -83,14 +66,14 @@ def get_business_days(start, end):
 
 def engine_star(row, lp, cp):
     if cp == 0: 
-        return "⚫ INATIVO", 0, ("OBJETIVO: Diagnóstico de Churn e Reconexão.\nAÇÃO: Reestabelecer contato sem viés de venda.\nORIENTAÇÃO: Identifique o motivo real da parada. Valide se a dor ainda existe.")
+        return "⚫ INATIVO", 0, ("OBJETIVO: Diagnóstico de Churn e Reconexão.\nAÇÃO: Reestabelecer contato sem viés de venda.\nORIENTAÇÃO: Identifique o motivo real da parada.")
     if cp < (lp * 0.80):
-        return "🚨 QUEDA ACENTUADA", lp, ("OBJETIVO: Contenção de Perda e Defesa de Share.\nAÇÃO: Investigar entrada de concorrência ou falha de serviço.\nORIENTAÇÃO: Foque no negócio dele. Entenda onde ele perde margem e apresente solução.")
+        return "🚨 QUEDA ACENTUADA", lp, ("OBJETIVO: Contenção de Perda e Defesa de Share.\nAÇÃO: Investigar entrada de concorrência ou falha de serviço.\nORIENTAÇÃO: Foque no negócio dele e entenda onde perde margem.")
     if cp < (lp * 0.95): 
-        return "🔴 QUEDA", lp, ("OBJETIVO: Estabilização de Giro.\nAÇÃO: Identificar se a queda é sazonal ou substituição de mix.\nORIENTAÇÃO: Sugira ajustes que ajudem o cliente a reduzir perdas e manter o custo.")
+        return "🔴 QUEDA", lp, ("OBJETIVO: Estabilização de Giro.\nAÇÃO: Identificar se a queda é sazonal ou substituição de mix.\nORIENTAÇÃO: Sugira ajustes que ajudem o cliente a reduzir perdas.")
     if cp > (lp * 1.05): 
-        return "🟢 CRESCIMENTO", int(cp * 1.05), ("OBJETIVO: Expansão de Share e Upsell.\nAÇÃO: Analisar mix de clientes similares e elevar Ticket Médio.\nORIENTAÇÃO: Recomende itens complementares explicando o ganho de margem para ele.")
-    return "🔵 ESTÁVEL", int(lp * 1.05), ("OBJETIVO: Manutenção e Blindagem.\nAÇÃO: Prevenir inércia e validar satisfação.\nORIENTAÇÃO: Confirme se os objetivos dele estão sendo atingidos e prospecte novos projetos.")
+        return "🟢 CRESCIMENTO", int(cp * 1.05), ("OBJETIVO: Expansão de Share e Upsell.\nAÇÃO: Analisar mix de clientes similares e elevar Ticket Médio.\nORIENTAÇÃO: Recomende itens complementares.")
+    return "🔵 ESTÁVEL", int(lp * 1.05), ("OBJETIVO: Manutenção e Blindagem.\nAÇÃO: Prevenir inércia e validar satisfação.\nORIENTAÇÃO: Confirme se os objetivos estão sendo atingidos.")
 
 # --- LÓGICA TEMPORAL GERAL ---
 hoje = datetime.now()
@@ -123,7 +106,7 @@ with st.sidebar:
 
 # --- TELA 1: DASHBOARD ---
 if st.session_state.pagina_ativa == 'Dashboard':
-    st.markdown('<h1 class="title-center">Dashboard Estratégico</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="title-center">DASHBOARD ESTRATÉGICO</h1>', unsafe_allow_html=True)
     cols = st.columns(4)
     with cols[0]:
         st.markdown('<div class="tool-card"><h4>MATRIZ STAR</h4><p>Diagnóstico de Carteira e Governança de Churn</p></div>', unsafe_allow_html=True)
@@ -142,7 +125,7 @@ if st.session_state.pagina_ativa == 'Dashboard':
         st.markdown('<div class="tool-card"><h4>PIPELINE PREDICTOR</h4><p>Previsibilidade de Receita B2B</p></div>', unsafe_allow_html=True)
         if st.button(" ", key="btn_pipe", use_container_width=True): pass
 
-# --- TELA 2: MATRIZ STAR ---
+# --- TELA 2: MATRIZ STAR (COM DIAGNÓSTICO ANALÍTICO) ---
 elif st.session_state.pagina_ativa == 'Matriz':
     st.markdown('<div class="title-center">MATRIZ STAR</div>', unsafe_allow_html=True)
     
@@ -177,7 +160,43 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            st.subheader("Matriz de Decisão Tática")
+            # --- NOVA CAMADA ANALÍTICA EXECUTIVA ---
+            st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
+            
+            total_clientes = len(df_final)
+            if total_clientes > 0:
+                status_pct = (df_final['STATUS'].value_counts() / total_clientes * 100).round(1)
+                
+                cresc = status_pct.get('🟢 CRESCIMENTO', 0.0)
+                estav = status_pct.get('🔵 ESTÁVEL', 0.0)
+                queda = status_pct.get('🔴 QUEDA', 0.0)
+                queda_ac = status_pct.get('🚨 QUEDA ACENTUADA', 0.0)
+                inativo = status_pct.get('⚫ INATIVO', 0.0)
+                risco_total = (queda + queda_ac + inativo).round(1)
+
+                c1, c2, c3, c4 = st.columns(4)
+                c1.metric("EXPANSÃO (CRESCIMENTO)", f"{cresc}%")
+                c2.metric("BLINDAGEM (ESTÁVEL)", f"{estav}%")
+                c3.metric("CONTENÇÃO (QUEDA)", f"{(queda + queda_ac).round(1)}%")
+                c4.metric("CHURN (INATIVO)", f"{inativo}%")
+
+                analise_txt = f"A governança aponta que {risco_total}% da base de {total_clientes} contas analisadas apresenta sinais de erosão na receita. "
+                if cresc > 50:
+                    analise_txt += "A operação traciona a expansão com força, mas exige disciplina em rituais de retenção."
+                elif risco_total > 40:
+                    analise_txt += "A taxa de sangria é crítica e exige intervenção imediata na arquitetura comercial."
+                else:
+                    analise_txt += "O sistema opera com estabilidade primária, indicando oportunidade para desenho de upsell."
+                st.info(analise_txt)
+
+                if dims_selecionadas:
+                    dim_principal = dims_selecionadas[0]
+                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 20px; margin-bottom: 10px;">DECOMPOSIÇÃO POR {dim_principal.upper()}</div>', unsafe_allow_html=True)
+                    resumo_dim = df_final.groupby([dim_principal, 'STATUS']).size().unstack(fill_value=0)
+                    st.dataframe(resumo_dim.style.background_gradient(cmap='Blues', axis=1), use_container_width=True)
+            # ----------------------------------------
+
+            st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">MATRIZ DE DECISÃO TÁTICA BASE</div>', unsafe_allow_html=True)
             st.dataframe(df_final[colunas_exibicao].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
 
             output = BytesIO()
