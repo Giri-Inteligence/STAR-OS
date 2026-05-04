@@ -25,11 +25,10 @@ st.markdown("""
         color: #ffffff !important; font-weight: 800 !important; text-transform: uppercase !important;
         box-shadow: 3px 3px 10px rgba(0,0,0,0.4), inset 1px 1px 2px rgba(255,255,255,0.2) !important;
     }
-    div[data-testid="stDownloadButton"] button:hover { box-shadow: 0px 0px 15px rgba(255,255,255,0.15), inset 1px 1px 1px rgba(255,255,255,0.3) !important; transform: translateY(-1px); }
     </style>
     """, unsafe_allow_html=True)
 
-# --- FUNÇÕES ---
+# --- FUNÇÕES DE MOTOR TÁTICO ---
 def format_br(val):
     try:
         if pd.isna(val) or val == 0: return "0"
@@ -37,11 +36,16 @@ def format_br(val):
     except: return val
 
 def engine_star(row, lp, cp):
-    if cp == 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn.\nAÇÃO: Reconexão estratégica.\nORIENTAÇÃO: Identifique o motivo da parada."
-    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "OBJETIVO: Contenção de Perda.\nAÇÃO: Investigação de concorrência.\nORIENTAÇÃO: Defenda o share."
-    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "OBJETIVO: Estabilização.\nAÇÃO: Ajuste de mix.\nORIENTAÇÃO: Recupere o giro."
-    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "OBJETIVO: Expansão.\nAÇÃO: Upsell tático.\nORIENTAÇÃO: Eleve o ticket médio."
-    return "🔵 ESTÁVEL", int(lp * 1.05), "OBJETIVO: Blindagem.\nAÇÃO: Validação de satisfação.\nORIENTAÇÃO: Mantenha a recorrência."
+    """Instruções STAR: Foco em Problemas Reais e Interesse Genuíno"""
+    if cp == 0: 
+        return "⚫ INATIVO", 0, ("OBJETIVO: Diagnóstico de Churn e Reconexão.\nAÇÃO: Reestabelecer contato sem viés de venda.\nORIENTAÇÃO: Identifique o motivo real da parada.")
+    if cp < (lp * 0.80):
+        return "🚨 QUEDA ACENTUADA", lp, ("OBJETIVO: Contenção de Perda e Defesa de Share.\nAÇÃO: Investigar entrada de concorrência ou falha de serviço.\nORIENTAÇÃO: Foque no negócio dele e entenda onde perde margem.")
+    if cp < (lp * 0.95): 
+        return "🔴 QUEDA", lp, ("OBJETIVO: Estabilização de Giro.\nAÇÃO: Identificar se a queda é sazonal ou substituição de mix.\nORIENTAÇÃO: Sugira ajustes que ajudem o cliente a reduzir perdas.")
+    if cp > (lp * 1.05): 
+        return "🟢 CRESCIMENTO", int(cp * 1.05), ("OBJETIVO: Expansão de Share e Upsell.\nAÇÃO: Analisar mix de clientes similares e elevar Ticket Médio.\nORIENTAÇÃO: Recomende itens complementares.")
+    return "🔵 ESTÁVEL", int(lp * 1.05), ("OBJETIVO: Manutenção e Blindagem.\nAÇÃO: Prevenir inércia e validar satisfação.\nORIENTAÇÃO: Confirme se os objetivos estão sendo atingidos.")
 
 # --- NAVEGAÇÃO ---
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
@@ -71,16 +75,20 @@ if st.session_state.pagina_ativa == 'Matriz':
             col_m = [c for c in df_raw.columns if any(m in c for m in ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'])]
             for col in col_m: df_raw[col] = pd.to_numeric(df_raw[col], errors='coerce').fillna(0)
             p_meses = col_m[-lp_val:]
+            
             df_ag = df_raw.groupby(['EMPRESA'] + dims_sel)[col_m].sum().reset_index()
             df_ag['TOTAL_ACUMULADO'] = df_ag[p_meses].sum(axis=1).round(0)
             df_ag['MEDIA_LP'] = (df_ag[p_meses].sum(axis=1) / len(p_meses)).round(0)
             df_ag['MEDIA_CP'] = (df_ag[col_m[-cp_val:]].sum(axis=1) / cp_val).round(0)
+            
+            # Pareto e Curva ABC
             df_ag = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
             df_ag['CURVA'] = (df_ag['TOTAL_ACUMULADO'].cumsum() / df_ag['TOTAL_ACUMULADO'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
+            
             res = df_ag.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
             df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
 
-            # --- BLOCO 1: INFOGRÁFICOS DE TRAÇÃO ---
+            # --- BLOCO 1: INFOGRÁFICOS ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE TRAÇÃO E SAÚDE POR SEGMENTO</div>', unsafe_allow_html=True)
             df_p = df_ag.groupby(dim_p)[['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP']].sum().reset_index().sort_values('TOTAL_ACUMULADO', ascending=False)
             df_p['CURVA_SEG'] = (df_p['TOTAL_ACUMULADO'].cumsum() / df_p['TOTAL_ACUMULADO'].sum()).apply(lambda x: 'CURVA A' if x <= 0.8 else ('CURVA B' if x <= 0.95 else 'CURVA C'))
@@ -104,8 +112,6 @@ if st.session_state.pagina_ativa == 'Matriz':
                     for _, row in df_c.iterrows():
                         tot = row.get('🟢 CRESCIMENTO',0)+row.get('🔵 ESTÁVEL',0)+row.get('🔴 QUEDA',0)+row.get('🚨 QUEDA ACENTUADA',0)+row.get('⚫ INATIVO',0)
                         trac = ((row['MEDIA_CP'] / row['MEDIA_LP']) - 1) * 100 if row['MEDIA_LP'] > 0 else 0
-                        
-                        # BLOCOS COM QUANTIDADE DE CLIENTES RESTAURADA
                         blocks = [
                             {"n": "Cresc.", "q": int(row.get('🟢 CRESCIMENTO',0)), "p": round(row.get('🟢 CRESCIMENTO',0)/tot*100,1) if tot>0 else 0, "c": "#00E676"},
                             {"n": "Estável", "q": int(row.get('🔵 ESTÁVEL',0)), "p": round(row.get('🔵 ESTÁVEL',0)/tot*100,1) if tot>0 else 0, "c": "#29B6F6"},
@@ -114,15 +120,15 @@ if st.session_state.pagina_ativa == 'Matriz':
                         ]
                         blocks.sort(key=lambda x: x["p"], reverse=True)
                         barra = "".join([f'<div style="width:{b["p"]}%;padding-right:4px;"><div style="height:8px;background:{b["c"]};border-radius:2px;margin-bottom:4px;width:100%;"></div><div style="font-size:0.65rem;color:{b["c"]};font-weight:700;line-height:1.1;display:{"block" if b["p"] > 7 else "none"};">{b["n"]} {b["p"]}%<br>({b["q"]})</div></div>' for b in blocks if b["p"] > 0])
-                        
                         html_infog += f"""<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><b style="font-size:1.1rem;letter-spacing:1px;">{str(row[dim_p]).upper()}</b><span style="font-size:0.75rem;color:#888;background:rgba(255,255,255,0.05);padding:4px 10px;border-radius:4px;font-weight:800;">{int(tot)} CONTAS</span></div><div style="display:flex;gap:40px;margin-bottom:15px;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,0.05);"><div><div style="font-size:0.7rem;color:#888;margin-bottom:3px;">RECEITA ACUM.</div><div style="font-size:1.2rem;font-weight:800;">R$ {format_br(row['TOTAL_ACUMULADO'])}</div></div><div><div style="font-size:0.7rem;color:#888;margin-bottom:3px;">TRAÇÃO</div><div style="font-size:1.2rem;font-weight:800;color:{'#00E676' if trac>=0 else '#FF1744'};">{'▲' if trac>=0 else '▼'} {trac:.1f}%</div></div></div><div style="display:flex;width:100%;align-items:flex-start;">{barra}</div></div>"""
             st.markdown(html_infog + "</div>", unsafe_allow_html=True)
 
             # --- BLOCO 2: DRILL-DOWN E EXPORTAÇÃO ---
-            st.markdown('<div style="font-size:0.85rem;font-weight:700;color:#ccc;margin-top:50px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.1);padding-top:30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
+            st.markdown('<div style="font-size:0.85rem;font-weight:700;color:#ccc;margin-top:50px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.1);padding-top:30px;">🔬 DRILL-DOWN TÁTICO</div>', unsafe_allow_html=True)
             repres = df_ag.groupby(dim_p)['TOTAL_ACUMULADO'].sum().sort_values(ascending=False).index.tolist()
             opcoes = ["TODOS OS SEGMENTOS"] + repres
             if 'mem_f' not in st.session_state: st.session_state.mem_f = "TODOS OS SEGMENTOS"
+            
             c_f, c_ex = st.columns([3, 2])
             with c_f:
                 f_sel = st.selectbox("X", opcoes, index=opcoes.index(st.session_state.mem_f) if st.session_state.mem_f in opcoes else 0, label_visibility="collapsed", key="sel_f")
@@ -139,11 +145,11 @@ if st.session_state.pagina_ativa == 'Matriz':
                     # CABEÇALHO FORCE BRANCO NO AZUL ESCURO
                     h_f = wb.add_format({'bold':1,'font_color':'#FFFFFF','bg_color':'#002060','border':1,'border_color':'#FFFFFF','align':'center','valign':'vcenter','text_wrap':1})
                     b_f = wb.add_format({'valign':'vcenter','align':'left','border':1,'border_color':'#D9D9D9','text_wrap':1})
-                    n_f = wb.add_format({'num_format':'#,##0','valign':'vcenter','align':'center','border':1})
-                    st_q = wb.add_format({'font_color':'#FF0000','bold':1,'valign':'vcenter','border':1})
-                    st_qa = wb.add_format({'bg_color':'#FFC7CE','font_color':'#9C0006','bold':1,'valign':'vcenter','border':1})
-                    st_c = wb.add_format({'bg_color':'#C6EFCE','font_color':'#006100','bold':1,'valign':'vcenter','border':1})
-                    st_e = wb.add_format({'bg_color':'#DDEBF7','font_color':'#0070C0','bold':1,'valign':'vcenter','border':1})
+                    n_f = wb.add_format({'num_format':'#,##0','valign':'vcenter','align':'center','border':1,'border_color':'#D9D9D9'})
+                    st_q = wb.add_format({'font_color':'#FF0000','bold':1,'valign':'vcenter','border':1,'align':'left'})
+                    st_qa = wb.add_format({'bg_color':'#FFC7CE','font_color':'#9C0006','bold':1,'valign':'vcenter','border':1,'align':'left'})
+                    st_c = wb.add_format({'bg_color':'#C6EFCE','font_color':'#006100','bold':1,'valign':'vcenter','border':1,'align':'left'})
+                    st_e = wb.add_format({'bg_color':'#DDEBF7','font_color':'#0070C0','bold':1,'valign':'vcenter','border':1,'align':'left'})
                     bold_l = wb.add_format({'bold':1,'valign':'vcenter','text_wrap':1})
                     
                     for i, v in enumerate(cols_v): ws.write(0, i, v, h_f)
@@ -154,13 +160,14 @@ if st.session_state.pagina_ativa == 'Matriz':
                         elif "🔴 QUEDA" in s_v: t_f = st_q
                         elif "CRESCIMENTO" in s_v: t_f = st_c
                         elif "ESTÁVEL" in s_v: t_f = st_e
+                        
                         for c_idx, c_n in enumerate(cols_v):
                             v = row[c_n]
                             if c_idx == st_idx: ws.write(r_idx+1, c_idx, v, t_f)
                             elif c_idx == ac_idx:
-                                parts = str(v).split('\n')
+                                pts = str(v).split('\n')
                                 rich = []
-                                for p in parts:
+                                for p in pts:
                                     if ':' in p:
                                         l, c = p.split(':', 1)
                                         rich.extend([bold_l, l + ':', b_f, c + '\n'])
