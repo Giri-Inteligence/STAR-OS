@@ -269,10 +269,26 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 fat_str = format_br(faturamento)
                                 tm_str = format_br(ticket_medio_mensal)
                                 
-                                block_cresc = f'<div style="width: {p_cresc}%; display: {"block" if p_cresc > 0 else "none"};"><div style="height: 8px; background: #00E676; border-radius: 2px; width: 100%; margin-bottom: 4px;"></div><div style="color: #00E676; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: visible;">Cresc.<br>{p_cresc}% ({int(cresc_val)})</div></div>'
-                                block_estav = f'<div style="width: {p_estav}%; display: {"block" if p_estav > 0 else "none"};"><div style="height: 8px; background: #29B6F6; border-radius: 2px; width: 100%; margin-bottom: 4px;"></div><div style="color: #29B6F6; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: visible;">Estável<br>{p_estav}% ({int(estav_val)})</div></div>'
-                                block_queda = f'<div style="width: {p_queda}%; display: {"block" if p_queda > 0 else "none"};"><div style="height: 8px; background: #FF1744; border-radius: 2px; width: 100%; margin-bottom: 4px;"></div><div style="color: #FF1744; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: visible;">Queda<br>{p_queda}% ({int(queda_val)})</div></div>'
-                                block_inat = f'<div style="width: {p_inat}%; display: {"block" if p_inat > 0 else "none"};"><div style="height: 8px; background: #555; border-radius: 2px; width: 100%; margin-bottom: 4px;"></div><div style="color: #888; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: visible;">Inativo<br>{p_inat}% ({int(inat_val)})</div></div>'
+                                # Motor de ordenação visual baseado na volumetria
+                                block_data = [
+                                    {"name": "Cresc.", "pct": p_cresc, "val": int(cresc_val), "color": "#00E676", "bg": "#00E676"},
+                                    {"name": "Estável", "pct": p_estav, "val": int(estav_val), "color": "#29B6F6", "bg": "#29B6F6"},
+                                    {"name": "Queda", "pct": p_queda, "val": int(queda_val), "color": "#FF1744", "bg": "#FF1744"},
+                                    {"name": "Inativo", "pct": p_inat, "val": int(inat_val), "color": "#888", "bg": "#555"}
+                                ]
+                                block_data.sort(key=lambda x: x["pct"], reverse=True)
+                                
+                                barra_html = ""
+                                for block in block_data:
+                                    if block["pct"] > 0:
+                                        barra_html += f"""
+                                        <div style="width: {block['pct']}%; padding-right: 4px; box-sizing: border-box;">
+                                            <div style="height: 8px; background: {block['bg']}; border-radius: 2px; width: 100%; margin-bottom: 6px;"></div>
+                                            <div style="color: {block['color']}; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{block['name']}: {block['pct']}% ({block['val']})">
+                                                {block['name']}<br>{block['pct']}% ({block['val']})
+                                            </div>
+                                        </div>
+                                        """
                                 
                                 card_html = f"""<div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 20px; margin-bottom: 15px;">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -285,12 +301,9 @@ elif st.session_state.pagina_ativa == 'Matriz':
 <div><div style="font-size: 0.7rem; color: #aaa; margin-bottom: 3px;">TRAÇÃO DO SEGMENTO</div><div style="font-size: 1.2rem; font-weight: 800; color: {tracao_color};">{status_tracao}</div></div>
 </div>
 <div>
-<div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">SAÚDE ESTRUTURAL DA BASE (DISTRIBUIÇÃO TÁTICA)</div>
-<div style="display: flex; width: 100%; gap: 2px;">
-{block_cresc}
-{block_estav}
-{block_queda}
-{block_inat}
+<div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">SAÚDE ESTRUTURAL DA BASE (DISTRIBUIÇÃO TÁTICA ORDENADA)</div>
+<div style="display: flex; width: 100%; align-items: flex-start;">
+{barra_html}
 </div>
 </div>
 </div>"""
