@@ -310,7 +310,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     laudo_html += '</div>'
                     st.markdown(laudo_html, unsafe_allow_html=True)
                     
-                    # --- DRILL-DOWN TÁTICO COM MEMÓRIA DE ESTADO ---
+                    # --- DRILL-DOWN TÁTICO COM EXPORTAÇÃO DINÂMICA ---
                     st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 50px; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
                     
                     opcoes_filtro = ["TODOS OS SEGMENTOS"] + list(df_final[dim_principal].unique())
@@ -325,66 +325,81 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     def atualizar_memoria():
                         st.session_state.memoria_filtro = st.session_state.seletor_temp
                         
-                    filtro_sel = st.selectbox(
-                        f"SELECIONE A CHAVE ({dim_principal.upper()}) PARA ISOLAR A ANÁLISE:", 
-                        opcoes_filtro,
-                        index=indice_padrao,
-                        key="seletor_temp",
-                        on_change=atualizar_memoria
-                    )
+                    col_filtro, col_export = st.columns([3, 1])
+                    
+                    with col_filtro:
+                        filtro_sel = st.selectbox(
+                            f"SELECIONE A CHAVE ({dim_principal.upper()}) PARA ISOLAR A ANÁLISE:", 
+                            opcoes_filtro,
+                            index=indice_padrao,
+                            key="seletor_temp",
+                            on_change=atualizar_memoria
+                        )
                     
                     if filtro_sel != "TODOS OS SEGMENTOS":
                         df_exibicao = df_final[df_final[dim_principal] == filtro_sel]
+                        nome_arquivo = f"Matriz_STAR_{filtro_sel.replace(' ', '_')}.xlsx"
+                        label_botao = f"📥 EXPORTAR {filtro_sel.upper()}"
                     else:
                         df_exibicao = df_final
+                        nome_arquivo = "Matriz_STAR_Completa.xlsx"
+                        label_botao = "📥 EXPORTAR MATRIZ COMPLETA"
+
+                    output = BytesIO()
+                    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                        df_exibicao[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
+                        workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
+
+                        header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
+                        num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'vcenter'})
+                        wrap_fmt = workbook.add_format({'text_wrap': True, 'valign': 'vcenter', 'align': 'left'})
+                        bold_part = workbook.add_format({'bold': True, 'align': 'left', 'valign': 'vcenter', 'text_wrap': True})
+
+                        fmt_queda = workbook.add_format({'font_color': '#C00000', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+                        fmt_queda_ac = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+                        fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+
+                        for col_num, value in enumerate(colunas_exibicao):
+                            worksheet.write(0, col_num, value, header_fmt)
+
+                        acao_idx = colunas_exibicao.index('AÇÃO')
+                        status_idx = colunas_exibicao.index('STATUS')
+
+                        for row_num, row_data in enumerate(df_exibicao[colunas_exibicao].values):
+                            for col_num, cell_value in enumerate(row_data):
+                                if col_num == acao_idx:
+                                    parts = str(cell_value).split('\n')
+                                    rich_text = []
+                                    for p in parts:
+                                        if ':' in p:
+                                            label, content = p.split(':', 1)
+                                            rich_text.extend([bold_part, label + ':', wrap_fmt, content + '\n'])
+                                        else:
+                                            rich_text.extend([wrap_fmt, p + '\n'])
+                                    if rich_text:
+                                        worksheet.write_rich_string(row_num + 1, col_num, *rich_text, wrap_fmt)
+                                    else:
+                                        worksheet.write(row_num + 1, col_num, cell_value, wrap_fmt)
+                                else:
+                                    fmt = num_fmt if isinstance(cell_value, (int, float)) else wrap_fmt
+                                    worksheet.write(row_num + 1, col_num, cell_value, fmt)
+
+                        worksheet.set_column(acao_idx, acao_idx, 60)
+                        worksheet.set_column(0, acao_idx-1, 20)
+                        
+                        worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
+                        worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
+                        worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
+
+                    with col_export:
+                        st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
+                        st.download_button(label_botao, output.getvalue(), nome_arquivo, use_container_width=True)
+                        
                 else:
                     df_exibicao = df_final
 
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 20px; margin-bottom: 10px;">MATRIZ DE DECISÃO TÁTICA BASE</div>', unsafe_allow_html=True)
             st.dataframe(df_exibicao[colunas_exibicao].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
-
-            output = BytesIO()
-            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                df_exibicao[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
-                workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
-
-                header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
-                num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'vcenter'})
-                wrap_fmt = workbook.add_format({'text_wrap': True, 'valign': 'vcenter', 'align': 'left'})
-                bold_part = workbook.add_format({'bold': True, 'align': 'left', 'valign': 'vcenter', 'text_wrap': True})
-
-                fmt_queda = workbook.add_format({'font_color': '#C00000', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-                fmt_queda_ac = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-                fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-
-                for col_num, value in enumerate(colunas_exibicao):
-                    worksheet.write(0, col_num, value, header_fmt)
-
-                acao_idx = colunas_exibicao.index('AÇÃO')
-                status_idx = colunas_exibicao.index('STATUS')
-
-                for row_num, row_data in enumerate(df_exibicao[colunas_exibicao].values):
-                    for col_num, cell_value in enumerate(row_data):
-                        if col_num == acao_idx:
-                            parts = cell_value.split('\n')
-                            rich_text = []
-                            for p in parts:
-                                if ':' in p:
-                                    label, content = p.split(':', 1)
-                                    rich_text.extend([bold_part, label + ':', wrap_fmt, content + '\n'])
-                            worksheet.write_rich_string(row_num + 1, col_num, *rich_text, wrap_fmt)
-                        else:
-                            fmt = num_fmt if isinstance(cell_value, (int, float)) else wrap_fmt
-                            worksheet.write(row_num + 1, col_num, cell_value, fmt)
-
-                worksheet.set_column(acao_idx, acao_idx, 60)
-                worksheet.set_column(0, acao_idx-1, 20)
-                
-                worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
-                worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
-                worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
-
-            st.download_button("📥 EXPORTAR PLANO EXECUTIVO (FILTRADO)", output.getvalue(), "Plano_STAR_Giri_Filtrado.xlsx")
 
 # --- TELA 3: MATRIZ DE DESEMPENHO ---
 elif st.session_state.pagina_ativa == 'Desempenho':
