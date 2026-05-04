@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import math
+from io import BytesIO
 
-# 1. DESIGN EXECUTIVO GIRI - ESTÉTICA E ALTA PERFORMANCE
+# 1. DESIGN EXECUTIVO GIRI - ESTÉTICA UNIFICADA V71
 st.set_page_config(page_title="Giri Architecture Hub", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
@@ -13,6 +14,8 @@ st.markdown("""
     header {visibility: hidden;}
     [data-testid="stSidebar"] { background-color: #000810 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; min-width: 240px !important; }
     .sidebar-title { margin-top: -30px; margin-bottom: 20px; letter-spacing: 2px; font-size: 1.1rem; font-weight: 800; color: white; text-transform: uppercase; }
+    
+    /* CARDS DASHBOARD */
     .tool-card { 
         background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border-radius: 4px; padding: 20px; 
         border: 1px solid rgba(255, 255, 255, 0.08); text-align: center; height: 110px; display: flex; 
@@ -21,13 +24,19 @@ st.markdown("""
     .tool-card:hover { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); }
     h4 { text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.9rem; margin-bottom: 8px; color: #ffffff; font-weight: 700; }
     .tool-card p { color: rgba(255, 255, 255, 0.4); font-size: 0.7rem; line-height: 1.2; margin: 0; }
+
+    /* TITULOS E ALINHAMENTO */
     .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: -45px; font-weight: 800; font-size: 1.8rem; }
     .vendedor-destaque { text-align: center; text-transform: uppercase; letter-spacing: 3px; color: #ffffff; margin-bottom: 5px; font-weight: 700; font-size: 1.4rem; }
     .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; font-size: 0.9rem; }
+
+    /* INPUTS E TABELAS */
     .stTextInput input { height: 40px !important; text-align: center !important; background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 4px !important; color: #ffffff !important; }
-    .btn-container .stButton button { background-color: transparent !important; border: none !important; color: transparent !important; height: 110px !important; width: 100% !important; position: absolute; top: -110px; z-index: 101; }
     div[data-testid="stTable"] table { width: 100% !important; }
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { text-align: center !important; vertical-align: middle !important; font-size: 13px !important; color: #ffffff !important; }
+
+    /* GATILHO INVISÍVEL */
+    .btn-container .stButton button { background-color: transparent !important; border: none !important; color: transparent !important; height: 110px !important; width: 100% !important; position: absolute; top: -110px; z-index: 101; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -47,12 +56,12 @@ def get_business_days(start, end):
     days = pd.date_range(start, end)
     return len([d for d in days if d.weekday() < 5 and d.strftime('%Y-%m-%d') not in holidays])
 
-def engine_star(lp, cp):
-    if cp == 0: return "⚫ INATIVO", 0, "AÇÃO: Diagnóstico de Churn."
-    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "AÇÃO: Defesa de Share."
-    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "AÇÃO: Estabilização."
-    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "AÇÃO: Expansão/Upsell."
-    return "🔵 ESTÁVEL", int(lp * 1.05), "AÇÃO: Blindagem."
+def engine_star(row, lp, cp):
+    if cp == 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn e Reconexão.\nAÇÃO: Reestabelecer contato sem viés de venda.\nORIENTAÇÃO: Identifique o motivo real da parada."
+    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "OBJETIVO: Contenção de Perda.\nAÇÃO: Investigar concorrência ou falha.\nORIENTAÇÃO: Entenda onde ele perde margem."
+    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "OBJETIVO: Estabilização de Giro.\nAÇÃO: Identificar se é sazonal ou mix.\nORIENTAÇÃO: Sugira ajustes para reduzir perdas."
+    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "OBJETIVO: Expansão e Upsell.\nAÇÃO: Analisar mix de clientes similares.\nORIENTAÇÃO: Recomende itens complementares."
+    return "🔵 ESTÁVEL", int(lp * 1.05), "OBJETIVO: Manutenção e Blindagem.\nAÇÃO: Prevenir inércia.\nORIENTAÇÃO: Confirme se os objetivos dele estão sendo atingidos."
 
 # --- LÓGICA TEMPORAL ---
 hoje = datetime.now()
@@ -87,7 +96,7 @@ if st.session_state.pagina_ativa == 'Dashboard':
         if st.button("", key="btn_des"): st.session_state.pagina_ativa = 'Desempenho'; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-# --- TELA 2: MATRIZ STAR (LOGICA DE MAPEAMENTO ROBUSTA) ---
+# --- TELA 2: MATRIZ STAR (MOTOR FUNCIONAL REINTEGRADO) ---
 elif st.session_state.pagina_ativa == 'Matriz':
     st.markdown('<div class="title-center">STAR-OS | GOVERNANÇA</div>', unsafe_allow_html=True)
     with st.sidebar:
@@ -95,37 +104,33 @@ elif st.session_state.pagina_ativa == 'Matriz':
         cp_val = st.number_input("Curto Prazo (Meses)", value=3, min_value=1)
     
     uploaded_file = st.file_uploader("Upload da Base de Faturamento", type=['xlsx'])
-    
     if uploaded_file:
         df_raw = pd.read_excel(uploaded_file)
-        # Normalização de nomes de colunas
-        cols_norm = [str(c).upper().strip() for c in df_raw.columns]
-        df_raw.columns = cols_norm
+        df_raw.columns = [str(c).upper().strip() for c in df_raw.columns]
         
-        # Mapeamento dinâmico (procura por palavras-chave)
-        col_cliente = next((c for c in cols_norm if any(x in c for x in ['CLIENTE', 'EMPRESA', 'RAZAO', 'NOME', 'RAZÃO'])), None)
-        col_vendedor = next((c for c in cols_norm if any(x in c for x in ['VENDEDOR', 'REPRESENTANTE', 'CONSULTOR', 'FUNC'])), None)
-        # Busca por meses (Jan, Fev, etc)
-        meses_lista = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
-        col_meses = [c for c in cols_norm if any(m in c for m in meses_lista)]
-
-        if col_cliente and col_vendedor and len(col_meses) >= (lp_val + cp_val):
-            # Garante que os valores de faturamento sejam numéricos
+        focos = ["VENDEDOR", "SEGMENTO", "CIDADE", "REGIAO", "UF", "CLIENTE", "EMPRESA"]
+        dimensoes_reais = [c for c in df_raw.columns if any(f in c for f in focos)]
+        
+        with st.sidebar:
+            st.subheader("📂 CHAVES DE GOVERNANÇA")
+            dims_sel = [d for d in dimensoes_reais if st.checkbox(d, key=f"chk_{d}")]
+        
+        if dims_sel:
+            col_meses = [c for c in df_raw.columns if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
             for c in col_meses: df_raw[c] = pd.to_numeric(df_raw[c], errors='coerce').fillna(0)
             
-            df_agrupado = df_raw.groupby([col_cliente, col_vendedor])[col_meses].sum().reset_index()
-            df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses[-(lp_val+cp_val):-cp_val]].sum(axis=1) / lp_val).round(0)
-            df_agrupado['MEDIA_CP'] = (df_agrupado[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
+            df_ag = df_raw.groupby(dims_sel)[col_meses].sum().reset_index()
+            df_ag['TOTAL_ACUMULADO'] = df_ag[col_meses].sum(axis=1).round(0)
+            df_ag['MEDIA_LP'] = (df_ag[col_meses[-(lp_val+cp_val):-cp_val]].sum(axis=1) / lp_val).round(0)
+            df_ag['MEDIA_CP'] = (df_ag[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
             
-            res_star = df_agrupado.apply(lambda row: engine_star(row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
-            df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*res_star)
+            res_star = df_ag.apply(lambda row: engine_star(row, row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
+            df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res_star)
             
-            # Exibição
-            st.dataframe(df_agrupado.style.format({c: format_br for c in col_meses + ['MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
-        else:
-            st.warning("🔍 Verifique se as colunas de Cliente, Vendedor e os Meses estão presentes e se o período selecionado existe na planilha.")
+            df_final = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
+            st.dataframe(df_final.style.format({c: format_br for c in col_meses + ['MEDIA_LP', 'MEDIA_CP', 'META', 'TOTAL_ACUMULADO']}), use_container_width=True)
 
-# --- TELA 3: DESEMPENHO (INTACTA) ---
+# --- TELA 3: DESEMPENHO (BLINDADA) ---
 elif st.session_state.pagina_ativa == 'Desempenho':
     with st.sidebar:
         nomes = st.text_area("EQUIPE:", "JOÃO\nCARLOS\nMARIA", height=100)
