@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 import math
 
-# 1. DESIGN EXECUTIVO GIRI
+# 1. DESIGN EXECUTIVO GIRI - SIDEBAR E ALTA DENSIDADE
 st.set_page_config(page_title="Giri Architecture Hub", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
@@ -13,6 +13,17 @@ st.markdown("""
     header {visibility: hidden;}
     [data-testid="stSidebar"] { background-color: #000810 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; min-width: 240px !important; }
     
+    /* AJUSTE DO TÍTULO NO TOPO DA SIDEBAR */
+    .sidebar-title {
+        margin-top: -30px; /* Sobe o título para o topo absoluto */
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: white;
+        text-transform: uppercase;
+    }
+
     .stTextInput input {
         height: 40px !important;
         text-align: center !important;
@@ -22,7 +33,7 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: 20px; font-weight: 800; font-size: 1.8rem; }
+    .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: 10px; font-weight: 800; font-size: 1.8rem; }
     .vendedor-destaque { text-align: center; text-transform: uppercase; letter-spacing: 3px; color: #ffffff; margin-bottom: 5px; font-weight: 700; font-size: 1.4rem; }
     .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 40px; font-size: 0.9rem; }
     
@@ -65,7 +76,7 @@ if hoje.weekday() < 5 and hoje.strftime('%Y-%m-%d') not in ['2026-05-01']:
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
 
 with st.sidebar:
-    st.markdown("<br><br><h2 style='letter-spacing:2px; font-size:1rem;'>GIRI | ARCHITECTURE</h2>", unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-title">GIRI | ARCHITECTURE</div>', unsafe_allow_html=True)
     st.markdown("---")
     if st.session_state.pagina_ativa != 'Dashboard':
         if st.button("⬅ VOLTAR PARA DASHBOARD"):
