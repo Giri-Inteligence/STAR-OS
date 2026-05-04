@@ -63,7 +63,7 @@ def engine_star(row, lp, cp):
     if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "Expansão de conta."
     return "🔵 ESTÁVEL", int(lp * 1.05), "Blindagem de conta."
 
-# --- NAVEGAÇÃO E LOGICA TEMPORAL ---
+# --- NAVEGAÇÃO ---
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
 with st.sidebar:
     st.markdown('<div class="sidebar-title">GIRI | ARCHITECTURE</div>', unsafe_allow_html=True)
@@ -90,21 +90,21 @@ if st.session_state.pagina_ativa == 'Matriz':
         if dims_selecionadas:
             dim_principal = dims_selecionadas[0]
             col_meses = [c for c in df_raw.columns if any(m in c for m in ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'])]
-            meses_ativos = col_meses[-lp_val:]
             df = df_raw.copy()
             for col in col_meses: df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
             
+            periodo_meses = col_meses[-lp_val:]
             chaves = ['EMPRESA'] + dims_selecionadas
             df_ag = df.groupby(chaves)[col_meses].sum().reset_index()
-            df_ag['TOTAL_ACUMULADO'] = df_ag[meses_ativos].sum(axis=1).round(0)
-            df_ag['MEDIA_LP'] = (df_ag[meses_ativos].sum(axis=1) / len(meses_ativos)).round(0)
+            df_ag['TOTAL_ACUMULADO'] = df_ag[periodo_meses].sum(axis=1).round(0)
+            df_ag['MEDIA_LP'] = (df_ag[periodo_meses].sum(axis=1) / len(periodo_meses)).round(0)
             df_ag['MEDIA_CP'] = (df_ag[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
             
             res = df_ag.apply(lambda row: engine_star(row, row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
             df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
             df_final = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
 
-            # --- BLOCO 1: INFOGRÁFICOS DE TRAÇÃO POR CURVA ---
+            # --- LAUDO DE DISTRIBUIÇÃO (CURVA B COM TOP 3 + OUTROS) ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE TRAÇÃO E SAÚDE POR SEGMENTO</div>', unsafe_allow_html=True)
             
             df_pareto = df_final.groupby(dim_principal)[['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP']].sum().reset_index()
@@ -128,13 +128,27 @@ if st.session_state.pagina_ativa == 'Matriz':
                         laudo_html += f'<div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);padding:15px;border-radius:8px;margin-top:20px;color:#888;">{curva}: R$ {format_br(df_c["TOTAL_ACUMULADO"].sum())} acumulados.</div>'
                         continue
                     
-                    laudo_html += f'<div style="color:#fff;font-weight:800;margin:25px 0 10px 0;letter-spacing:1px;font-size:0.9rem;">{curva}</div>'
+                    # LOGICA TOP 3 + OUTROS PARA CURVA B
+                    if curva == "CURVA B (15% DA RECEITA)" and len(df_c) > 3:
+                        top3 = df_c.head(3)
+                        outros = df_c.iloc[3:]
+                        outros_ag = pd.DataFrame([{
+                            dim_principal: "OUTROS (AGRUPADOS)",
+                            'TOTAL_ACUMULADO': outros['TOTAL_ACUMULADO'].sum(),
+                            'MEDIA_LP': outros['MEDIA_LP'].sum(),
+                            'MEDIA_CP': outros['MEDIA_CP'].sum()
+                        }])
+                        for col_s in ['🟢 CRESCIMENTO', '🔵 ESTÁVEL', '🔴 QUEDA', '🚨 QUEDA ACENTUADA', '⚫ INATIVO']:
+                            outros_ag[col_s] = outros[col_s].sum() if col_s in outros.columns else 0
+                        df_c = pd.concat([top3, outros_ag], ignore_index=True)
+
+                    laudo_html += f'<div style="color:#fff;font-weight:800;margin:25px 0 10px 0;letter-spacing:1.5px;font-size:0.95rem;">{curva}</div>'
+                    
                     for _, row in df_c.iterrows():
                         tot_contas = row.get('🟢 CRESCIMENTO',0)+row.get('🔵 ESTÁVEL',0)+row.get('🔴 QUEDA',0)+row.get('🚨 QUEDA ACENTUADA',0)+row.get('⚫ INATIVO',0)
                         tracao = ((row['MEDIA_CP'] / row['MEDIA_LP']) - 1) * 100 if row['MEDIA_LP'] > 0 else 0
                         t_color = "#00E676" if tracao >= 0 else "#FF1744"
                         
-                        # Barras Ordenadas Blindadas
                         blocks = [
                             {"n": "Cresc.", "p": round(row.get('🟢 CRESCIMENTO',0)/tot_contas*100,1) if tot_contas>0 else 0, "c": "#00E676"},
                             {"n": "Estável", "p": round(row.get('🔵 ESTÁVEL',0)/tot_contas*100,1) if tot_contas>0 else 0, "c": "#29B6F6"},
@@ -143,30 +157,35 @@ if st.session_state.pagina_ativa == 'Matriz':
                         ]
                         blocks.sort(key=lambda x: x["p"], reverse=True)
                         
-                        barra_html = "".join([f'<div style="width:{b["p"]}%;padding-right:4px;"><div style="height:6px;background:{b["c"]};border-radius:2px;margin-bottom:4px;"></div><div style="font-size:0.6rem;color:{b["c"]};font-weight:700;">{b["n"]}<br>{b["p"]}%</div></div>' for b in blocks if b["p"] > 0])
+                        # Blindagem Visual: Oculta texto se o bloco for < 8% para evitar sobreposição vertical
+                        barra_html = "".join([f"""<div style="width:{b["p"]}%;padding-right:4px;box-sizing:border-box;">
+<div style="height:8px;background:{b["c"]};border-radius:2px;margin-bottom:4px;width:100%;"></div>
+<div style="font-size:0.65rem;color:{b["c"]};font-weight:700;line-height:1.1;display:{'block' if b['p'] > 8 else 'none'};" title="{b['n']} {b['p']}%">
+{b["n"]}<br>{b["p"]}%
+</div>
+</div>""" for b in blocks if b["p"] > 0])
                         
                         laudo_html += f"""<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;margin-bottom:12px;">
-<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><b style="font-size:1.1rem;">{row[dim_principal]}</b><span style="font-size:0.7rem;color:#888;background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:4px;">{int(tot_contas)} CONTAS</span></div>
-<div style="display:flex;gap:40px;margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.05);">
-<div><small style="color:#888;">RECEITA ACUM.</small><br><b>R$ {format_br(row['TOTAL_ACUMULADO'])}</b></div>
-<div><small style="color:#888;">TRAÇÃO</small><br><b style="color:{t_color};">{'▲' if tracao>=0 else '▼'} {tracao:.1f}%</b></div>
+<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><b style="font-size:1.1rem;letter-spacing:1px;">{str(row[dim_principal]).upper()}</b><span style="font-size:0.75rem;color:#888;background:rgba(255,255,255,0.05);padding:4px 10px;border-radius:4px;font-weight:800;">{int(tot_contas)} CONTAS</span></div>
+<div style="display:flex;gap:40px;margin-bottom:15px;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,0.05);">
+<div><div style="font-size:0.7rem;color:#888;margin-bottom:3px;">RECEITA ACUM.</div><div style="font-size:1.2rem;font-weight:800;">R$ {format_br(row['TOTAL_ACUMULADO'])}</div></div>
+<div><div style="font-size:0.7rem;color:#888;margin-bottom:3px;">TRAÇÃO</div><div style="font-size:1.2rem;font-weight:800;color:{t_color};">{'▲' if tracao>=0 else '▼'} {tracao:.1f}%</div></div>
 </div>
-<div style="display:flex;width:100%;">{barra_html}</div>
+<div style="display:flex;width:100%;align-items:flex-start;">{barra_html}</div>
 </div>"""
             st.markdown(laudo_html + "</div>", unsafe_allow_html=True)
 
-            # --- BLOCO 2: DRILL-DOWN TÁTICO PRIORIZADO ---
-            st.markdown('<div style="font-size:0.8rem;font-weight:700;color:#888;margin-top:30px;margin-bottom:10px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
+            # --- DRILL-DOWN TÁTICO PRIORIZADO ---
+            st.markdown('<div style="font-size:0.85rem;font-weight:700;color:#ccc;margin-top:50px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.1);padding-top:30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
             
-            # Ordenação por representatividade para a lista
-            representatividade = df_final.groupby(dim_principal)['TOTAL_ACUMULADO'].sum().sort_values(ascending=False)
-            opcoes_ordenadas = ["TODOS OS SEGMENTOS"] + representatividade.index.tolist()
+            repres = df_final.groupby(dim_principal)['TOTAL_ACUMULADO'].sum().sort_values(ascending=False)
+            opcoes = ["TODOS OS SEGMENTOS"] + repres.index.tolist()
             
             if 'mem_f' not in st.session_state: st.session_state.mem_f = "TODOS OS SEGMENTOS"
             
             col_f, col_ex = st.columns([3, 2])
             with col_f:
-                f_sel = st.selectbox("X", opcoes_ordenadas, index=opcoes_ordenadas.index(st.session_state.mem_f) if st.session_state.mem_f in opcoes_ordenadas else 0, label_visibility="collapsed", key="sel_f")
+                f_sel = st.selectbox("Filtro", opcoes, index=opcoes.index(st.session_state.mem_f) if st.session_state.mem_f in opcoes else 0, label_visibility="collapsed", key="sel_f")
                 st.session_state.mem_f = f_sel
             
             df_exib = df_final[df_final[dim_principal] == f_sel] if f_sel != "TODOS OS SEGMENTOS" else df_final
@@ -175,12 +194,12 @@ if st.session_state.pagina_ativa == 'Matriz':
                 output = BytesIO()
                 with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
                     df_exib.to_excel(writer, index=False)
-                st.download_button(f"📥 EXPORTAR {f_sel}", output.getvalue(), f"Matriz_STAR_{f_sel}.xlsx")
+                st.download_button(f"📥 EXPORTAR {f_sel.upper()}", output.getvalue(), f"Matriz_STAR_{f_sel.replace(' ','_')}.xlsx")
 
             st.dataframe(df_exib.style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
 
 # --- DASHBOARD ---
 elif st.session_state.pagina_ativa == 'Dashboard':
-    st.markdown('<h1 class="title-center">GIRI | STAR-OS</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="title-center">GIRI | ARCHITECTURE</h1>', unsafe_allow_html=True)
     if st.button("ACESSAR MATRIZ STAR", use_container_width=True):
         st.session_state.pagina_ativa = 'Matriz'; st.rerun()
