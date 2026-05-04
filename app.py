@@ -144,7 +144,7 @@ if st.session_state.pagina_ativa == 'Dashboard':
 
 # --- TELA 2: MATRIZ STAR ---
 elif st.session_state.pagina_ativa == 'Matriz':
-    st.markdown('<div class="title-center">STAR-OS | SISTEMA DE GOVERNANÇA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title-center">MATRIZ STAR</div>', unsafe_allow_html=True)
     
     uploaded_file = st.file_uploader("Upload da Base de Faturamento", type=['xlsx'])
     if uploaded_file:
