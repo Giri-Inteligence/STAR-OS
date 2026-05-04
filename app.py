@@ -4,8 +4,12 @@ import numpy as np
 from datetime import datetime
 import math
 
-# 1. DESIGN EXECUTIVO GIRI - ESTÉTICA E RIGOR
-st.set_page_config(page_title="Giri Architecture Hub", layout="wide")
+# 1. DESIGN EXECUTIVO GIRI - SIDEBAR SEMPRE EXPANDIDA
+st.set_page_config(
+    page_title="Giri Architecture Hub", 
+    layout="wide",
+    initial_sidebar_state="expanded" # Garante que o menu não "suma" ao carregar
+)
 
 st.markdown("""
     <style>
@@ -14,10 +18,11 @@ st.markdown("""
         color: #ffffff; 
     }
     header {visibility: hidden;}
+    
+    /* MENU LATERAL VISÍVEL */
     [data-testid="stSidebar"] { 
-        background-color: rgba(0, 0, 0, 0.3) !important;
+        background-color: rgba(0, 0, 0, 0.4) !important;
         border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-        min-width: 220px !important;
     }
     
     .stTextInput input {
@@ -29,6 +34,9 @@ st.markdown("""
         font-size: 14px !important;
         color: #ffffff !important;
     }
+    
+    .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: 20px; font-weight: 800; font-size: 1.8rem; }
+    .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 40px; font-size: 1rem; }
     
     .tool-card { 
         background: rgba(255, 255, 255, 0.02); 
@@ -43,23 +51,6 @@ st.markdown("""
         justify-content: center;
         transition: all 0.3s ease;
     }
-    .tool-card:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    div[data-testid="stTable"] table { width: 100% !important; table-layout: fixed !important; }
-    div[data-testid="stTable"] td, div[data-testid="stTable"] th { 
-        text-align: center !important; 
-        vertical-align: middle !important; 
-        font-size: 13px !important;
-        padding: 12px 5px !important;
-        white-space: nowrap !important;
-    }
-    div[data-testid="stTable"] th:nth-child(1), div[data-testid="stTable"] td:nth-child(1) { width: 25% !important; text-align: left !important; }
-
-    .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: 20px; font-weight: 800; font-size: 1.8rem; }
-    .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 40px; font-size: 1rem; }
 
     .btn-container .stButton button {
         background-color: transparent !important;
