@@ -269,6 +269,11 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 fat_str = format_br(faturamento)
                                 tm_str = format_br(ticket_medio_mensal)
                                 
+                                block_cresc = f'<div style="width: {p_cresc}%; display: {"block" if p_cresc > 0 else "none"};"><div style="height: 8px; background: #00E676; border-radius: 2px; width: 100%; margin-bottom: 4px;"></div><div style="color: #00E676; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: visible;">Cresc.<br>{p_cresc}% ({int(cresc_val)})</div></div>'
+                                block_estav = f'<div style="width: {p_estav}%; display: {"block" if p_estav > 0 else "none"};"><div style="height: 8px; background: #29B6F6; border-radius: 2px; width: 100%; margin-bottom: 4px;"></div><div style="color: #29B6F6; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: visible;">Estável<br>{p_estav}% ({int(estav_val)})</div></div>'
+                                block_queda = f'<div style="width: {p_queda}%; display: {"block" if p_queda > 0 else "none"};"><div style="height: 8px; background: #FF1744; border-radius: 2px; width: 100%; margin-bottom: 4px;"></div><div style="color: #FF1744; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: visible;">Queda<br>{p_queda}% ({int(queda_val)})</div></div>'
+                                block_inat = f'<div style="width: {p_inat}%; display: {"block" if p_inat > 0 else "none"};"><div style="height: 8px; background: #555; border-radius: 2px; width: 100%; margin-bottom: 4px;"></div><div style="color: #888; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: visible;">Inativo<br>{p_inat}% ({int(inat_val)})</div></div>'
+                                
                                 card_html = f"""<div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 20px; margin-bottom: 15px;">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
 <h4 style="margin: 0; color: #fff; font-size: 1.1rem; letter-spacing: 1px;">{str(row[dim_principal]).upper()}</h4>
@@ -280,18 +285,12 @@ elif st.session_state.pagina_ativa == 'Matriz':
 <div><div style="font-size: 0.7rem; color: #aaa; margin-bottom: 3px;">TRAÇÃO DO SEGMENTO</div><div style="font-size: 1.2rem; font-weight: 800; color: {tracao_color};">{status_tracao}</div></div>
 </div>
 <div>
-<div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">SAÚDE ESTRUTURAL DA BASE (DISTRIBUIÇÃO DE CONTAS)</div>
-<div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 10px; background: #1a1a1a;">
-<div style="width: {p_cresc}%; background: #00E676;" title="Crescimento"></div>
-<div style="width: {p_estav}%; background: #29B6F6;" title="Estável"></div>
-<div style="width: {p_queda}%; background: #FF1744;" title="Queda"></div>
-<div style="width: {p_inat}%; background: #424242;" title="Inativo"></div>
-</div>
-<div style="display: flex; gap: 15px; font-size: 0.75rem; font-weight: 600;">
-<div style="color: #00E676;">Crescimento: {p_cresc}% ({int(cresc_val)})</div>
-<div style="color: #29B6F6;">Estável: {p_estav}% ({int(estav_val)})</div>
-<div style="color: #FF1744;">Queda: {p_queda}% ({int(queda_val)})</div>
-<div style="color: #888;">Inativo: {p_inat}% ({int(inat_val)})</div>
+<div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">SAÚDE ESTRUTURAL DA BASE (DISTRIBUIÇÃO TÁTICA)</div>
+<div style="display: flex; width: 100%; gap: 2px;">
+{block_cresc}
+{block_estav}
+{block_queda}
+{block_inat}
 </div>
 </div>
 </div>"""
