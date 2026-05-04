@@ -23,29 +23,45 @@ st.markdown("""
         flex-direction: column; justify-content: center; transition: all 0.3s ease;
     }
     .tool-card:hover { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); }
-    h4 { text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.9rem; margin-bottom: 8px; color: #ffffff; font-weight: 700; }
-    .tool-card p { color: rgba(255, 255, 255, 0.4); font-size: 0.7rem; line-height: 1.2; margin: 0; }
-
+    
     .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: -45px; font-weight: 800; font-size: 1.8rem; }
-    .vendedor-destaque { text-align: center; text-transform: uppercase; letter-spacing: 3px; color: #ffffff; margin-bottom: 5px; font-weight: 700; font-size: 1.4rem; }
     .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; font-size: 0.9rem; }
 
-    .stTextInput input { height: 40px !important; text-align: center !important; background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 4px !important; color: #ffffff !important; }
-    .stSelectbox div[data-baseweb="select"] { background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 4px !important; color: #fff !important; min-height: 40px !important; max-height: 40px !important; }
-    
-    div[data-testid="column"] div.stButton { margin-top: -126px; z-index: 10; position: relative; }
-    div[data-testid="column"] div.stButton button { height: 110px !important; width: 100% !important; background: transparent !important; border: none !important; color: transparent !important; box-shadow: none !important; }
-    div[data-testid="column"] div.stButton button:hover { background: rgba(255, 255, 255, 0.05) !important; border-radius: 4px !important; }
+    /* INPUTS E SELETORES */
+    .stSelectbox div[data-baseweb="select"] { 
+        background-color: rgba(255, 255, 255, 0.05) !important; 
+        border: 1px solid rgba(255, 255, 255, 0.2) !important; 
+        border-radius: 4px !important; 
+        min-height: 42px !important;
+    }
 
-    div[data-testid="stDownloadButton"] button { height: 40px !important; border-radius: 4px !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; background-color: rgba(255, 255, 255, 0.05) !important; color: #ffffff !important; font-weight: 700 !important; white-space: nowrap !important; width: 100% !important; margin: 0 !important; padding: 0 15px !important; display: flex; align-items: center; justify-content: center; }
-    div[data-testid="stDownloadButton"] button:hover { background-color: rgba(255, 255, 255, 0.1) !important; border-color: #ffffff !important; }
+    /* BOTÃO DE EXPORTAÇÃO 3D (BISEL E SOMBRA) */
+    div[data-testid="stDownloadButton"] button { 
+        height: 42px !important; 
+        border-radius: 6px !important; 
+        border: 1px solid rgba(255, 255, 255, 0.3) !important; 
+        background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02)) !important;
+        color: #ffffff !important; 
+        font-weight: 800 !important; 
+        letter-spacing: 1px !important;
+        text-transform: uppercase !important;
+        white-space: nowrap !important; 
+        width: 100% !important; 
+        box-shadow: 3px 3px 10px rgba(0,0,0,0.4), inset 1px 1px 2px rgba(255,255,255,0.2) !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    div[data-testid="stDownloadButton"] button:hover { 
+        background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)) !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
+        box-shadow: 0px 0px 15px rgba(255,255,255,0.15), inset 1px 1px 1px rgba(255,255,255,0.3) !important;
+        transform: translateY(-1px);
+    }
+    div[data-testid="stDownloadButton"] button:active {
+        box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5) !important;
+        transform: translateY(1px);
+    }
 
-    div[data-testid="stTable"] table { width: 100% !important; }
-    div[data-testid="stTable"] td, div[data-testid="stTable"] th { text-align: center !important; vertical-align: middle !important; font-size: 13px !important; color: #ffffff !important; }
-    div[data-testid="stDataFrame"] td { white-space: pre-wrap !important; word-wrap: break-word !important; min-width: 150px; vertical-align: middle !important; }
-    
-    div[data-testid="stMetricValue"] { font-size: 1.8rem !important; font-weight: 800; }
-    div[data-testid="stMetricLabel"] p { font-size: 0.8rem !important; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+    div[data-testid="stDataFrame"] td { white-space: pre-wrap !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -68,371 +84,122 @@ def get_business_days(start, end):
     return len([d for d in days if d.weekday() < 5 and d.strftime('%Y-%m-%d') not in holidays])
 
 def engine_star(row, lp, cp):
-    if cp == 0: 
-        return "⚫ INATIVO", 0, ("OBJETIVO: Diagnóstico de Churn e Reconexão.\nAÇÃO: Reestabelecer contato sem viés de venda.\nORIENTAÇÃO: Identifique o motivo real da parada.")
-    if cp < (lp * 0.80):
-        return "🚨 QUEDA ACENTUADA", lp, ("OBJETIVO: Contenção de Perda e Defesa de Share.\nAÇÃO: Investigar entrada de concorrência ou falha de serviço.\nORIENTAÇÃO: Foque no negócio dele e entenda onde perde margem.")
-    if cp < (lp * 0.95): 
-        return "🔴 QUEDA", lp, ("OBJETIVO: Estabilização de Giro.\nAÇÃO: Identificar se a queda é sazonal ou substituição de mix.\nORIENTAÇÃO: Sugira ajustes que ajudem o cliente a reduzir perdas.")
-    if cp > (lp * 1.05): 
-        return "🟢 CRESCIMENTO", int(cp * 1.05), ("OBJETIVO: Expansão de Share e Upsell.\nAÇÃO: Analisar mix de clientes similares e elevar Ticket Médio.\nORIENTAÇÃO: Recomende itens complementares.")
-    return "🔵 ESTÁVEL", int(lp * 1.05), ("OBJETIVO: Manutenção e Blindagem.\nAÇÃO: Prevenir inércia e validar satisfação.\nORIENTAÇÃO: Confirme se os objetivos estão sendo atingidos.")
+    if cp == 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn e Reconexão."
+    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "OBJETIVO: Contenção de Perda e Defesa de Share."
+    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "OBJETIVO: Estabilização de Giro."
+    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "OBJETIVO: Expansão de Share e Upsell."
+    return "🔵 ESTÁVEL", int(lp * 1.05), "OBJETIVO: Manutenção e Blindagem."
 
 # --- LÓGICA TEMPORAL ---
 hoje = datetime.now()
-p_dia = hoje.replace(day=1)
-u_dia = (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
-d_totais = get_business_days(p_dia, u_dia)
-d_passados = get_business_days(p_dia, hoje)
-if hoje.weekday() < 5 and hoje.strftime('%Y-%m-%d') not in ['2026-05-01']:
-    d_passados = max(0, d_passados - 1)
+p_dia, u_dia = hoje.replace(day=1), (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
+d_totais, d_passados = get_business_days(p_dia, u_dia), max(0, get_business_days(p_dia, hoje) - 1)
 
 # --- NAVEGAÇÃO ---
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
-
 with st.sidebar:
     st.markdown('<div class="sidebar-title">GIRI | ARCHITECTURE</div>', unsafe_allow_html=True)
-    st.markdown("---")
-    if st.session_state.pagina_ativa != 'Dashboard':
-        if st.button("⬅ VOLTAR PARA DASHBOARD"):
-            st.session_state.pagina_ativa = 'Dashboard'
-            st.rerun()
-
+    if st.session_state.pagina_ativa != 'Dashboard' and st.button("⬅ VOLTAR"):
+        st.session_state.pagina_ativa = 'Dashboard'; st.rerun()
     if st.session_state.pagina_ativa == 'Matriz':
         lp_val = st.number_input("Longo Prazo (Meses)", value=12, min_value=1)
         cp_val = st.number_input("Curto Prazo (Meses)", value=3, min_value=1)
-
-    if st.session_state.pagina_ativa == 'Desempenho':
-        nomes_input = st.text_area("EQUIPE:", "JOÃO\nCARLOS\nMARIA", height=100)
-        lista_vendedores = [v.strip().upper() for v in nomes_input.split('\n') if v.strip()]
-        vendedor_selecionado = st.selectbox("SELECIONAR CONSULTOR:", lista_vendedores)
 
 # --- TELA 1: DASHBOARD ---
 if st.session_state.pagina_ativa == 'Dashboard':
     st.markdown('<h1 class="title-center">DASHBOARD ESTRATÉGICO</h1>', unsafe_allow_html=True)
     cols = st.columns(4)
-    with cols[0]:
-        st.markdown('<div class="tool-card"><h4>MATRIZ STAR</h4><p>Diagnóstico de Carteira e Governança de Churn</p></div>', unsafe_allow_html=True)
-        if st.button(" ", key="btn_star", use_container_width=True): 
-            st.session_state.pagina_ativa = 'Matriz'
-            st.rerun()
-    with cols[1]:
-        st.markdown('<div class="tool-card"><h4>MATRIZ DE DESEMPENHO</h4><p>Gestão de Ritmo e Eficiência Individual</p></div>', unsafe_allow_html=True)
-        if st.button(" ", key="btn_desempenho", use_container_width=True): 
-            st.session_state.pagina_ativa = 'Desempenho'
-            st.rerun()
-    with cols[2]:
-        st.markdown('<div class="tool-card"><h4>ARQUITETURA COMERCIAL</h4><p>Estruturação de Processos e Playbooks</p></div>', unsafe_allow_html=True)
-        if st.button(" ", key="btn_arch", use_container_width=True): pass
-    with cols[3]:
-        st.markdown('<div class="tool-card"><h4>PIPELINE PREDICTOR</h4><p>Previsibilidade de Receita B2B</p></div>', unsafe_allow_html=True)
-        if st.button(" ", key="btn_pipe", use_container_width=True): pass
+    titulos = ["MATRIZ STAR", "MATRIZ DE DESEMPENHO", "ARQUITETURA", "PIPELINE"]
+    paginas = ["Matriz", "Desempenho", "Dashboard", "Dashboard"]
+    for i, t in enumerate(titulos):
+        with cols[i]:
+            st.markdown(f'<div class="tool-card"><h4>{t}</h4></div>', unsafe_allow_html=True)
+            if st.button("Acessar", key=f"btn_{i}", use_container_width=True): 
+                st.session_state.pagina_ativa = paginas[i]; st.rerun()
 
 # --- TELA 2: MATRIZ STAR ---
 elif st.session_state.pagina_ativa == 'Matriz':
     st.markdown('<div class="title-center">MATRIZ STAR</div>', unsafe_allow_html=True)
-    
-    uploaded_file = st.file_uploader("Upload da Base de Faturamento", type=['xlsx'])
+    uploaded_file = st.file_uploader("Upload Base", type=['xlsx'], label_visibility="collapsed")
     if uploaded_file:
         df_raw = pd.read_excel(uploaded_file)
-        cols = [str(c).upper() for c in df_raw.columns]
-        df_raw.columns = cols 
-
-        focos_permitidos = ["VENDEDOR", "SEGMENTO", "CIDADE", "REGIAO", "UF"]
-        dimensoes_reais = [c for c in cols if any(f in c for f in focos_permitidos)]
-
+        df_raw.columns = [str(c).upper() for c in df_raw.columns]
+        focos = ["VENDEDOR", "SEGMENTO", "CIDADE", "REGIAO", "UF"]
+        dimensoes_reais = [c for c in df_raw.columns if any(f in c for f in focos)]
+        
         with st.sidebar:
-            st.subheader("📂 CHAVES DE GOVERNANÇA")
+            st.subheader("CHAVES")
             dims_selecionadas = [d for d in dimensoes_reais if st.checkbox(d, key=f"chk_{d}")]
-
-        if dims_selecionadas or not dimensoes_reais:
-            col_meses = [c for c in cols if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
             
-            periodo_total = lp_val 
-            col_meses_ativos = col_meses[-periodo_total:] if len(col_meses) >= periodo_total else col_meses
-            meses_analisados = len(col_meses_ativos)
-            
+        if dims_selecionadas:
+            col_meses = [c for c in df_raw.columns if any(m in c for m in ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'])]
+            meses_ativos = col_meses[-lp_val:]
             df = df_raw.copy()
             for col in col_meses: df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-
+            
             chaves = ['EMPRESA'] + dims_selecionadas
-            df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
-
-            df_agrupado['TOTAL_ACUMULADO'] = df_agrupado[col_meses_ativos].sum(axis=1).round(0)
+            df_ag = df.groupby(chaves)[col_meses].sum().reset_index()
+            df_ag['TOTAL_ACUMULADO'] = df_ag[meses_ativos].sum(axis=1).round(0)
+            df_ag['MEDIA_LP'] = (df_ag[meses_ativos].sum(axis=1) / len(meses_ativos)).round(0)
+            df_ag['MEDIA_CP'] = (df_ag[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
             
-            df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses_ativos].sum(axis=1) / meses_analisados).round(0) if meses_analisados > 0 else 0
-            df_agrupado['MEDIA_CP'] = (df_agrupado[col_meses_ativos[-cp_val:]].sum(axis=1) / cp_val).round(0) if cp_val > 0 else 0
-
-            res = df_agrupado.apply(lambda row: engine_star(row, row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
-            df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*res)
-
-            df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
-            colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
+            res = df_ag.apply(lambda row: engine_star(row, row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
+            df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
+            df_final = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
             
-            st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
+            # --- INFOGRÁFICOS ---
+            dim_principal = dims_selecionadas[0]
+            df_pareto = df_final.groupby(dim_principal)[['TOTAL_ACUMULADO','MEDIA_LP','MEDIA_CP']].sum().reset_index()
+            df_pareto = df_pareto.sort_values('TOTAL_ACUMULADO', ascending=False)
+            df_pareto['CUM_PCT'] = df_pareto['TOTAL_ACUMULADO'].cumsum() / df_pareto['TOTAL_ACUMULADO'].sum()
             
-            total_clientes = len(df_final)
-            if total_clientes > 0:
-                status_pct = (df_final['STATUS'].value_counts() / total_clientes * 100).round(1)
+            resumo_dim = df_final.groupby([dim_principal, 'STATUS']).size().unstack(fill_value=0)
+            df_p = df_pareto.merge(resumo_dim, on=dim_principal, how='left')
+            
+            html = '<div style="margin-bottom:30px;">'
+            for _, row in df_p.head(5).iterrows(): # Exemplo Curva A
+                tot = row.get('🟢 CRESCIMENTO',0) + row.get('🔵 ESTÁVEL',0) + row.get('🔴 QUEDA',0) + row.get('🚨 QUEDA ACENTUADA',0) + row.get('⚫ INATIVO',0)
+                media_lp, media_cp = row['MEDIA_LP'], row['MEDIA_CP']
+                tracao_pct = ((media_cp / media_lp) - 1) * 100 if media_lp > 0 else 0
+                color = "#00E676" if tracao_pct > 0 else "#FF1744"
                 
-                cresc = status_pct.get('🟢 CRESCIMENTO', 0.0)
-                estav = status_pct.get('🔵 ESTÁVEL', 0.0)
-                queda = status_pct.get('🔴 QUEDA', 0.0)
-                queda_ac = status_pct.get('🚨 QUEDA ACENTUADA', 0.0)
-                inativo = status_pct.get('⚫ INATIVO', 0.0)
-                risco_total = (queda + queda_ac + inativo).round(1)
-
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("EXPANSÃO (CRESCIMENTO)", f"{cresc}%")
-                c2.metric("BLINDAGEM (ESTÁVEL)", f"{estav}%")
-                c3.metric("CONTENÇÃO (QUEDA)", f"{(queda + queda_ac).round(1)}%")
-                c4.metric("CHURN (INATIVO)", f"{inativo}%")
-
-                if dims_selecionadas:
-                    dim_principal = dims_selecionadas[0]
-                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 40px; margin-bottom: 10px;">ANÁLISE DE PARETO E SAÚDE POR {dim_principal.upper()} (BASE: {meses_analisados} MESES)</div>', unsafe_allow_html=True)
-                    
-                    df_pareto = df_final.groupby(dim_principal)[['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP']].sum().reset_index()
-                    df_pareto = df_pareto.sort_values('TOTAL_ACUMULADO', ascending=False)
-                    df_pareto['CUM_PCT'] = df_pareto['TOTAL_ACUMULADO'].cumsum() / df_pareto['TOTAL_ACUMULADO'].sum()
-                    
-                    def assign_curve(pct):
-                        if pct <= 0.80: return "CURVA A (80% DA RECEITA)"
-                        elif pct <= 0.95: return "CURVA B (15% DA RECEITA)"
-                        else: return "CURVA C (5% DA RECEITA)"
-                        
-                    df_pareto['CURVA'] = df_pareto['CUM_PCT'].apply(assign_curve)
-                    
-                    resumo_dim = df_final.groupby([dim_principal, 'STATUS']).size().unstack(fill_value=0)
-                    resumo_dim['TOTAL_CONTAS'] = resumo_dim.sum(axis=1)
-                    
-                    df_pareto = df_pareto.merge(resumo_dim, on=dim_principal, how='left')
-                    
-                    laudo_html = '<div style="margin-top: 10px; margin-bottom: 30px;">'
-                    
-                    for curva in ["CURVA A (80% DA RECEITA)", "CURVA B (15% DA RECEITA)", "CURVA C (5% DA RECEITA)"]:
-                        df_c = df_pareto[df_pareto['CURVA'] == curva].copy()
-                        
-                        if not df_c.empty:
-                            if curva == "CURVA C (5% DA RECEITA)":
-                                fat_total_c = df_c['TOTAL_ACUMULADO'].sum()
-                                laudo_html += f"""<div style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 20px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-<div style="color: #888; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">{curva}</div>
-<div style="color: #aaa; font-size: 0.85rem;">Representa a cauda longa da operação (R$ {format_br(fat_total_c)} acumulados).</div>
+                # Cálculo de Blocos Ordenados
+                status_data = [
+                    {"n": "Cresc.", "p": round(row.get('🟢 CRESCIMENTO',0)/tot*100,1) if tot>0 else 0, "c": "#00E676"},
+                    {"n": "Queda", "p": round((row.get('🔴 QUEDA',0)+row.get('🚨 QUEDA ACENTUADA',0))/tot*100,1) if tot>0 else 0, "c": "#FF1744"},
+                    {"n": "Inat.", "p": round(row.get('⚫ INATIVO',0)/tot*100,1) if tot>0 else 0, "c": "#888"}
+                ]
+                status_data.sort(key=lambda x: x["p"], reverse=True)
+                
+                barra = "".join([f'<div style="width:{s["p"]}%;padding-right:5px;"><div style="height:6px;background:{s["c"]};border-radius:2px;"></div><div style="font-size:0.6rem;color:{s["c"]};font-weight:700;">{s["n"]} {s["p"]}%</div></div>' for s in status_data if s["p"] > 0])
+                
+                html += f"""<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:15px;margin-bottom:10px;">
+<div style="display:flex;justify-content:space-between;"><b>{row[dim_principal]}</b><span style="font-size:0.7rem;color:#888;">{int(tot)} CONTAS</span></div>
+<div style="display:flex;gap:20px;margin:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:10px;">
+<div><small style="color:#888;">RECEITA</small><br>R$ {format_br(row['TOTAL_ACUMULADO'])}</div>
+<div style="color:{color};">▲ {tracao_pct:.1f}%</div>
+</div>
+<div style="display:flex;">{barra}</div>
 </div>"""
-                                continue
-                            
-                            if curva == "CURVA B (15% DA RECEITA)" and len(df_c) > 3:
-                                df_top3 = df_c.iloc[:3].copy()
-                                df_others = df_c.iloc[3:].copy()
-                                
-                                others_data = {
-                                    dim_principal: "OUTROS (AGRUPADOS)", 
-                                    'TOTAL_ACUMULADO': df_others['TOTAL_ACUMULADO'].sum(), 
-                                    'MEDIA_LP': df_others['MEDIA_LP'].sum(),
-                                    'MEDIA_CP': df_others['MEDIA_CP'].sum(),
-                                    'TOTAL_CONTAS': df_others['TOTAL_CONTAS'].sum()
-                                }
-                                for col_status in ['🟢 CRESCIMENTO', '🔵 ESTÁVEL', '🔴 QUEDA', '🚨 QUEDA ACENTUADA', '⚫ INATIVO']:
-                                    others_data[col_status] = df_others[col_status].sum() if col_status in df_others.columns else 0
-                                        
-                                df_c = pd.concat([df_top3, pd.DataFrame([others_data])], ignore_index=True)
+            st.markdown(html + "</div>", unsafe_allow_html=True)
 
-                            laudo_html += f"""<div style="font-size: 0.95rem; color: #fff; font-weight: 800; margin: 25px 0 15px 0; letter-spacing: 1.5px;">{curva}</div>"""
+            # --- DRILL DOWN COM BOTÃO 3D ---
+            st.markdown('<div style="font-size:0.8rem;font-weight:700;color:#888;margin-bottom:10px;">ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
+            col_f, col_ex = st.columns([3, 2])
+            
+            if 'mem_f' not in st.session_state: st.session_state.mem_f = "TODOS"
+            opcoes = ["TODOS"] + list(df_final[dim_principal].unique())
+            
+            with col_f:
+                f_sel = st.selectbox("X", opcoes, index=opcoes.index(st.session_state.mem_f) if st.session_state.mem_f in opcoes else 0, label_visibility="collapsed", key="sel_f")
+                st.session_state.mem_f = f_sel
+            
+            df_exib = df_final[df_final[dim_principal] == f_sel] if f_sel != "TODOS" else df_final
+            
+            with col_ex:
+                output = BytesIO()
+                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                    df_exib.to_excel(writer, index=False)
+                st.download_button(f"📥 EXPORTAR {f_sel}", output.getvalue(), f"{f_sel}.xlsx")
 
-                            for _, row in df_c.iterrows():
-                                tot = row['TOTAL_CONTAS']
-                                faturamento = row['TOTAL_ACUMULADO']
-                                media_lp = row['MEDIA_LP']
-                                media_cp = row['MEDIA_CP']
-                                
-                                ticket_medio_mensal = (faturamento / tot) / meses_analisados if (tot > 0 and meses_analisados > 0) else 0
-                                
-                                cresc_val = row.get('🟢 CRESCIMENTO', 0)
-                                estav_val = row.get('🔵 ESTÁVEL', 0)
-                                queda_val = row.get('🔴 QUEDA', 0) + row.get('🚨 QUEDA ACENTUADA', 0)
-                                inat_val = row.get('⚫ INATIVO', 0)
-                                
-                                p_cresc = round((cresc_val / tot * 100), 1) if tot > 0 else 0
-                                p_estav = round((estav_val / tot * 100), 1) if tot > 0 else 0
-                                p_queda = round((queda_val / tot * 100), 1) if tot > 0 else 0
-                                p_inat = round((inat_val / tot * 100), 1) if tot > 0 else 0
-                                
-                                tracao_pct = ((media_cp / media_lp) - 1) * 100 if media_lp > 0 else (100 if media_cp > 0 else 0)
-                                
-                                if tracao_pct > 0:
-                                    status_tracao = f"▲ EXPANSÃO (+{tracao_pct:.1f}%)"
-                                    tracao_color = "#00E676"
-                                elif tracao_pct < 0:
-                                    status_tracao = f"▼ EROSÃO ({tracao_pct:.1f}%)"
-                                    tracao_color = "#FF1744"
-                                else:
-                                    status_tracao = "■ ESTAGNAÇÃO"
-                                    tracao_color = "#29B6F6"
-                                
-                                fat_str = format_br(faturamento)
-                                tm_str = format_br(ticket_medio_mensal)
-                                
-                                block_data = [
-                                    {"name": "Cresc.", "pct": p_cresc, "val": int(cresc_val), "color": "#00E676", "bg": "#00E676"},
-                                    {"name": "Estável", "pct": p_estav, "val": int(estav_val), "color": "#29B6F6", "bg": "#29B6F6"},
-                                    {"name": "Queda", "pct": p_queda, "val": int(queda_val), "color": "#FF1744", "bg": "#FF1744"},
-                                    {"name": "Inativo", "pct": p_inat, "val": int(inat_val), "color": "#888", "bg": "#555"}
-                                ]
-                                block_data.sort(key=lambda x: x["pct"], reverse=True)
-                                
-                                barra_html = ""
-                                for block in block_data:
-                                    if block["pct"] > 0:
-                                        barra_html += f"""<div style="width: {block['pct']}%; padding-right: 4px; box-sizing: border-box;">
-<div style="height: 8px; background: {block['bg']}; border-radius: 2px; width: 100%; margin-bottom: 6px;"></div>
-<div style="color: {block['color']}; font-size: 0.65rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{block['name']}: {block['pct']}% ({block['val']})">
-{block['name']}<br>{block['pct']}% ({block['val']})
-</div>
-</div>"""
-                                
-                                card_html = f"""<div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-<h4 style="margin: 0; color: #fff; font-size: 1.1rem; letter-spacing: 1px;">{str(row[dim_principal]).upper()}</h4>
-<span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; color: #ccc;">{int(tot)} CONTAS</span>
-</div>
-<div style="display: flex; gap: 30px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
-<div><div style="font-size: 0.7rem; color: #aaa; margin-bottom: 3px;">RECEITA ({meses_analisados}M)</div><div style="font-size: 1.2rem; font-weight: 800; color: #fff;">R$ {fat_str}</div></div>
-<div><div style="font-size: 0.7rem; color: #aaa; margin-bottom: 3px;">TKT MÉDIO MENSAL</div><div style="font-size: 1.2rem; font-weight: 800; color: #fff;">R$ {tm_str}</div></div>
-<div><div style="font-size: 0.7rem; color: #aaa; margin-bottom: 3px;">TRAÇÃO DO SEGMENTO</div><div style="font-size: 1.2rem; font-weight: 800; color: {tracao_color};">{status_tracao}</div></div>
-</div>
-<div>
-<div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">SAÚDE ESTRUTURAL DA BASE (DISTRIBUIÇÃO TÁTICA ORDENADA)</div>
-<div style="display: flex; width: 100%; align-items: flex-start;">
-{barra_html}
-</div>
-</div>
-</div>"""
-                                laudo_html += card_html
-                                
-                    laudo_html += '</div>'
-                    st.markdown(laudo_html, unsafe_allow_html=True)
-                    
-                    # --- DRILL-DOWN TÁTICO: ALINHAMENTO DE EIXO ---
-                    st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 50px; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
-                    st.markdown(f'<div style="font-size: 0.85rem; font-weight: 700; color: #ccc; margin-bottom: 10px;">SELECIONE A CHAVE ({dim_principal.upper()}) PARA ISOLAR A ANÁLISE:</div>', unsafe_allow_html=True)
-                    
-                    opcoes_filtro = ["TODOS OS SEGMENTOS"] + list(df_final[dim_principal].unique())
-                    
-                    if 'memoria_filtro' not in st.session_state:
-                        st.session_state.memoria_filtro = "TODOS OS SEGMENTOS"
-                        
-                    indice_padrao = 0
-                    if st.session_state.memoria_filtro in opcoes_filtro:
-                        indice_padrao = opcoes_filtro.index(st.session_state.memoria_filtro)
-                        
-                    def atualizar_memoria():
-                        st.session_state.memoria_filtro = st.session_state.seletor_temp
-                        
-                    # Proporção da grade ajustada (60% seletor, 40% botão)
-                    col_filtro, col_export = st.columns([3, 2])
-                    
-                    with col_filtro:
-                        filtro_sel = st.selectbox(
-                            "Oculto",
-                            opcoes_filtro,
-                            index=indice_padrao,
-                            key="seletor_temp",
-                            on_change=atualizar_memoria,
-                            label_visibility="collapsed"
-                        )
-                    
-                    if filtro_sel != "TODOS OS SEGMENTOS":
-                        df_exibicao = df_final[df_final[dim_principal] == filtro_sel]
-                        nome_arquivo = f"Matriz_STAR_{filtro_sel.replace(' ', '_')}.xlsx"
-                        label_botao = f"📥 EXPORTAR {filtro_sel.upper()}"
-                    else:
-                        df_exibicao = df_final
-                        nome_arquivo = "Matriz_STAR_Completa.xlsx"
-                        label_botao = "📥 EXPORTAR MATRIZ COMPLETA"
-
-                    output = BytesIO()
-                    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                        df_exibicao[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
-                        workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
-
-                        header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
-                        num_fmt = workbook.add_format({'num_format': '#,##0', 'align': 'center', 'valign': 'vcenter'})
-                        wrap_fmt = workbook.add_format({'text_wrap': True, 'valign': 'vcenter', 'align': 'left'})
-                        bold_part = workbook.add_format({'bold': True, 'align': 'left', 'valign': 'vcenter', 'text_wrap': True})
-
-                        fmt_queda = workbook.add_format({'font_color': '#C00000', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-                        fmt_queda_ac = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-                        fmt_cresc = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100', 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-
-                        for col_num, value in enumerate(colunas_exibicao):
-                            worksheet.write(0, col_num, value, header_fmt)
-
-                        acao_idx = colunas_exibicao.index('AÇÃO')
-                        status_idx = colunas_exibicao.index('STATUS')
-
-                        for row_num, row_data in enumerate(df_exibicao[colunas_exibicao].values):
-                            for col_num, cell_value in enumerate(row_data):
-                                if col_num == acao_idx:
-                                    parts = str(cell_value).split('\n')
-                                    rich_text = []
-                                    for p in parts:
-                                        if ':' in p:
-                                            label, content = p.split(':', 1)
-                                            rich_text.extend([bold_part, label + ':', wrap_fmt, content + '\n'])
-                                        else:
-                                            rich_text.extend([wrap_fmt, p + '\n'])
-                                    if rich_text:
-                                        worksheet.write_rich_string(row_num + 1, col_num, *rich_text, wrap_fmt)
-                                    else:
-                                        worksheet.write(row_num + 1, col_num, cell_value, wrap_fmt)
-                                else:
-                                    fmt = num_fmt if isinstance(cell_value, (int, float)) else wrap_fmt
-                                    worksheet.write(row_num + 1, col_num, cell_value, fmt)
-
-                        worksheet.set_column(acao_idx, acao_idx, 60)
-                        worksheet.set_column(0, acao_idx-1, 20)
-                        
-                        worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
-                        worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
-                        worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
-
-                    with col_export:
-                        st.download_button(label_botao, output.getvalue(), nome_arquivo, use_container_width=True)
-                        
-                else:
-                    df_exibicao = df_final
-
-            st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 20px; margin-bottom: 10px;">MATRIZ DE DECISÃO TÁTICA BASE</div>', unsafe_allow_html=True)
-            st.dataframe(df_exibicao[colunas_exibicao].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
-
-# --- TELA 3: MATRIZ DE DESEMPENHO ---
-elif st.session_state.pagina_ativa == 'Desempenho':
-    meses_br = {1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"}
-    
-    st.markdown('<div class="title-center">MATRIZ DE DESEMPENHO</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="vendedor-destaque">{vendedor_selecionado}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="subtitle-center">COMPETÊNCIA: {meses_br[hoje.month].upper()} / {hoje.year}</div>', unsafe_allow_html=True)
-    
-    st.info(f"📅 Meta baseada em **{d_passados}** dias úteis passados de **{d_totais}**.")
-
-    cols_in = st.columns(5)
-    ind_list = []
-    sugestoes = ["CLIENTES ATIVOS", "CLIENTES REATIVADOS", "NOVOS CLIENTES", "ORÇAMENTOS", "FATURAMENTO"]
-
-    for i, col in enumerate(cols_in):
-        with col:
-            st.text_input(f"Indicador {i+1}", value=sugestoes[i], key=f"n_{i}_{vendedor_selecionado}")
-            m_raw = st.text_input(f"Meta", value="", key=f"m_{i}_{vendedor_selecionado}")
-            r_raw = st.text_input(f"Realizado", value="", key=f"r_{i}_{vendedor_selecionado}")
-            ind_list.append({"NOME": sugestoes[i], "META": parse_int(m_raw), "REALIZADO": parse_int(r_raw)})
-
-    res = []
-    for it in ind_list:
-        v_esp = math.ceil((it["META"] / d_totais) * d_passados) if d_totais > 0 else 0
-        rota = (it["REALIZADO"] / v_esp) if v_esp > 0 else (1.0 if it["REALIZADO"] >= 0 else 0.0)
-        tend = math.ceil((it["REALIZADO"] / d_passados) * d_totais) if d_passados > 0 else it["REALIZADO"]
-        status = "-" if it["META"] == 0 else ("🟢 NO RITMO" if (v_esp == 0) or rota >= 1.0 else "🚨 CRÍTICO")
-        eficiencia = "-" if v_esp == 0 else f"{round(rota * 100, 1)}%"
-        res.append({"INDICADOR": it["NOME"], "META MENSAL": format_br(it["META"]), "ESPERADO": format_br(v_esp), "REALIZADO": format_br(it["REALIZADO"]), "EFICIÊNCIA (ROTA)": eficiencia, "PROJEÇÃO FINAL": format_br(tend), "STATUS": status})
-    st.table(pd.DataFrame(res))
+            st.dataframe(df_exib.style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
