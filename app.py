@@ -144,8 +144,8 @@ elif st.session_state.pagina_ativa == 'Matriz':
         if dims_selecionadas or not dimensoes_reais:
             col_meses = [c for c in cols if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']) and 'TOTAL' not in c]
             
-            # --- ISOLAMENTO DO PERÍODO ATIVO DEFINIDO PELO USUÁRIO ---
-            periodo_total = lp_val + cp_val
+            # --- CORREÇÃO DO HORIZONTE TEMPORAL ---
+            periodo_total = lp_val # O Longo Prazo é o total de meses analisados
             col_meses_ativos = col_meses[-periodo_total:] if len(col_meses) >= periodo_total else col_meses
             meses_analisados = len(col_meses_ativos)
             
@@ -155,11 +155,12 @@ elif st.session_state.pagina_ativa == 'Matriz':
             chaves = ['EMPRESA'] + dims_selecionadas
             df_agrupado = df.groupby(chaves)[col_meses].sum().reset_index()
 
-            # A receita acumulada reflete ESTRITAMENTE os meses selecionados no painel
+            # A receita acumulada reflete ESTRITAMENTE o período total (Longo Prazo)
             df_agrupado['TOTAL_ACUMULADO'] = df_agrupado[col_meses_ativos].sum(axis=1).round(0)
             
-            df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses[-(lp_val+cp_val):-cp_val]].sum(axis=1) / lp_val).round(0) if cp_val < len(col_meses_ativos) else 0
-            df_agrupado['MEDIA_CP'] = (df_agrupado[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
+            # Média do Longo Prazo (Horizonte Completo) e Média do Curto Prazo (Tração Recente)
+            df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses_ativos].sum(axis=1) / meses_analisados).round(0) if meses_analisados > 0 else 0
+            df_agrupado['MEDIA_CP'] = (df_agrupado[col_meses_ativos[-cp_val:]].sum(axis=1) / cp_val).round(0) if cp_val > 0 else 0
 
             res = df_agrupado.apply(lambda row: engine_star(row, row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
             df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*res)
@@ -167,7 +168,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- CAMADA ANALÍTICA: PARETO COM RECORTES TEMPORAIS ---
+            # --- CAMADA ANALÍTICA: PARETO E SAÚDE DA BASE ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
