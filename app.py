@@ -22,9 +22,9 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.08); text-align: center; height: 110px; display: flex; 
         flex-direction: column; justify-content: center; transition: all 0.3s ease;
     }
-    .tool-card:hover { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); }
     
     .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: -45px; font-weight: 800; font-size: 1.8rem; }
+    .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; font-size: 0.9rem; }
 
     /* SELETORES E BOTÃO 3D */
     .stSelectbox div[data-baseweb="select"] { 
@@ -56,24 +56,14 @@ def format_br(val):
         return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
     except: return val
 
-def get_business_days(start, end):
-    holidays = ['2026-01-01', '2026-05-01', '2026-09-07', '2026-10-12', '2026-11-02', '2026-11-15', '2026-12-25']
-    days = pd.date_range(start, end)
-    return len([d for d in days if d.weekday() < 5 and d.strftime('%Y-%m-%d') not in holidays])
-
 def engine_star(row, lp, cp):
-    if cp == 0: return "⚫ INATIVO", 0, "Diagnóstico de Churn."
-    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "Contenção de Perda."
-    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "Estabilização de Giro."
-    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "Expansão e Upsell."
-    return "🔵 ESTÁVEL", int(lp * 1.05), "Manutenção e Blindagem."
+    if cp == 0: return "⚫ INATIVO", 0, "Churn detectado."
+    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "Defesa de share."
+    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "Giro instável."
+    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "Expansão de conta."
+    return "🔵 ESTÁVEL", int(lp * 1.05), "Blindagem de conta."
 
-# --- LÓGICA TEMPORAL ---
-hoje = datetime.now()
-p_dia, u_dia = hoje.replace(day=1), (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
-d_totais, d_passados = get_business_days(p_dia, u_dia), max(0, get_business_days(p_dia, hoje) - 1)
-
-# --- NAVEGAÇÃO ---
+# --- NAVEGAÇÃO E LOGICA TEMPORAL ---
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
 with st.sidebar:
     st.markdown('<div class="sidebar-title">GIRI | ARCHITECTURE</div>', unsafe_allow_html=True)
@@ -83,7 +73,7 @@ with st.sidebar:
         lp_val = st.number_input("Longo Prazo (Meses)", value=12, min_value=1)
         cp_val = st.number_input("Curto Prazo (Meses)", value=3, min_value=1)
 
-# --- TELA 2: MATRIZ STAR (EXIBIÇÃO) ---
+# --- TELA: MATRIZ STAR ---
 if st.session_state.pagina_ativa == 'Matriz':
     st.markdown('<div class="title-center">MATRIZ STAR</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Upload", type=['xlsx'], label_visibility="collapsed")
@@ -91,8 +81,7 @@ if st.session_state.pagina_ativa == 'Matriz':
     if uploaded_file:
         df_raw = pd.read_excel(uploaded_file)
         df_raw.columns = [str(c).upper() for c in df_raw.columns]
-        focos = ["VENDEDOR", "SEGMENTO", "CIDADE", "REGIAO", "UF"]
-        dimensoes_reais = [c for c in df_raw.columns if any(f in c for f in focos)]
+        dimensoes_reais = [c for c in df_raw.columns if any(f in c for f in ["VENDEDOR", "SEGMENTO", "CIDADE", "REGIAO", "UF"])]
         
         with st.sidebar:
             st.subheader("GOVERNANÇA")
@@ -115,10 +104,61 @@ if st.session_state.pagina_ativa == 'Matriz':
             df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
             df_final = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
 
-            # --- DRILL DOWN COM ORDENAÇÃO POR REPRESENTATIVIDADE ---
+            # --- BLOCO 1: INFOGRÁFICOS DE TRAÇÃO POR CURVA ---
+            st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE TRAÇÃO E SAÚDE POR SEGMENTO</div>', unsafe_allow_html=True)
+            
+            df_pareto = df_final.groupby(dim_principal)[['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP']].sum().reset_index()
+            df_pareto = df_pareto.sort_values('TOTAL_ACUMULADO', ascending=False)
+            df_pareto['CUM_PCT'] = df_pareto['TOTAL_ACUMULADO'].cumsum() / df_pareto['TOTAL_ACUMULADO'].sum()
+            
+            def assign_curve(pct):
+                if pct <= 0.80: return "CURVA A (80% DA RECEITA)"
+                elif pct <= 0.95: return "CURVA B (15% DA RECEITA)"
+                else: return "CURVA C (5% DA RECEITA)"
+            df_pareto['CURVA'] = df_pareto['CUM_PCT'].apply(assign_curve)
+            
+            resumo_status = df_final.groupby([dim_principal, 'STATUS']).size().unstack(fill_value=0)
+            df_p = df_pareto.merge(resumo_status, on=dim_principal, how='left')
+
+            laudo_html = '<div style="margin-bottom: 40px;">'
+            for curva in ["CURVA A (80% DA RECEITA)", "CURVA B (15% DA RECEITA)", "CURVA C (5% DA RECEITA)"]:
+                df_c = df_p[df_p['CURVA'] == curva].copy()
+                if not df_c.empty:
+                    if curva == "CURVA C (5% DA RECEITA)":
+                        laudo_html += f'<div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);padding:15px;border-radius:8px;margin-top:20px;color:#888;">{curva}: R$ {format_br(df_c["TOTAL_ACUMULADO"].sum())} acumulados.</div>'
+                        continue
+                    
+                    laudo_html += f'<div style="color:#fff;font-weight:800;margin:25px 0 10px 0;letter-spacing:1px;font-size:0.9rem;">{curva}</div>'
+                    for _, row in df_c.iterrows():
+                        tot_contas = row.get('🟢 CRESCIMENTO',0)+row.get('🔵 ESTÁVEL',0)+row.get('🔴 QUEDA',0)+row.get('🚨 QUEDA ACENTUADA',0)+row.get('⚫ INATIVO',0)
+                        tracao = ((row['MEDIA_CP'] / row['MEDIA_LP']) - 1) * 100 if row['MEDIA_LP'] > 0 else 0
+                        t_color = "#00E676" if tracao >= 0 else "#FF1744"
+                        
+                        # Barras Ordenadas Blindadas
+                        blocks = [
+                            {"n": "Cresc.", "p": round(row.get('🟢 CRESCIMENTO',0)/tot_contas*100,1) if tot_contas>0 else 0, "c": "#00E676"},
+                            {"n": "Estável", "p": round(row.get('🔵 ESTÁVEL',0)/tot_contas*100,1) if tot_contas>0 else 0, "c": "#29B6F6"},
+                            {"n": "Queda", "p": round((row.get('🔴 QUEDA',0)+row.get('🚨 QUEDA ACENTUADA',0))/tot_contas*100,1) if tot_contas>0 else 0, "c": "#FF1744"},
+                            {"n": "Inat.", "p": round(row.get('⚫ INATIVO',0)/tot_contas*100,1) if tot_contas>0 else 0, "c": "#555"}
+                        ]
+                        blocks.sort(key=lambda x: x["p"], reverse=True)
+                        
+                        barra_html = "".join([f'<div style="width:{b["p"]}%;padding-right:4px;"><div style="height:6px;background:{b["c"]};border-radius:2px;margin-bottom:4px;"></div><div style="font-size:0.6rem;color:{b["c"]};font-weight:700;">{b["n"]}<br>{b["p"]}%</div></div>' for b in blocks if b["p"] > 0])
+                        
+                        laudo_html += f"""<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;margin-bottom:12px;">
+<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><b style="font-size:1.1rem;">{row[dim_principal]}</b><span style="font-size:0.7rem;color:#888;background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:4px;">{int(tot_contas)} CONTAS</span></div>
+<div style="display:flex;gap:40px;margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.05);">
+<div><small style="color:#888;">RECEITA ACUM.</small><br><b>R$ {format_br(row['TOTAL_ACUMULADO'])}</b></div>
+<div><small style="color:#888;">TRAÇÃO</small><br><b style="color:{t_color};">{'▲' if tracao>=0 else '▼'} {tracao:.1f}%</b></div>
+</div>
+<div style="display:flex;width:100%;">{barra_html}</div>
+</div>"""
+            st.markdown(laudo_html + "</div>", unsafe_allow_html=True)
+
+            # --- BLOCO 2: DRILL-DOWN TÁTICO PRIORIZADO ---
             st.markdown('<div style="font-size:0.8rem;font-weight:700;color:#888;margin-top:30px;margin-bottom:10px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
             
-            # Cálculo de representatividade para a lista suspensa
+            # Ordenação por representatividade para a lista
             representatividade = df_final.groupby(dim_principal)['TOTAL_ACUMULADO'].sum().sort_values(ascending=False)
             opcoes_ordenadas = ["TODOS OS SEGMENTOS"] + representatividade.index.tolist()
             
@@ -126,9 +166,7 @@ if st.session_state.pagina_ativa == 'Matriz':
             
             col_f, col_ex = st.columns([3, 2])
             with col_f:
-                f_sel = st.selectbox("X", opcoes_ordenadas, 
-                                     index=opcoes_ordenadas.index(st.session_state.mem_f) if st.session_state.mem_f in opcoes_ordenadas else 0, 
-                                     label_visibility="collapsed", key="sel_f")
+                f_sel = st.selectbox("X", opcoes_ordenadas, index=opcoes_ordenadas.index(st.session_state.mem_f) if st.session_state.mem_f in opcoes_ordenadas else 0, label_visibility="collapsed", key="sel_f")
                 st.session_state.mem_f = f_sel
             
             df_exib = df_final[df_final[dim_principal] == f_sel] if f_sel != "TODOS OS SEGMENTOS" else df_final
@@ -137,12 +175,12 @@ if st.session_state.pagina_ativa == 'Matriz':
                 output = BytesIO()
                 with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
                     df_exib.to_excel(writer, index=False)
-                st.download_button(f"📥 EXPORTAR {f_sel}", output.getvalue(), f"{f_sel}.xlsx")
+                st.download_button(f"📥 EXPORTAR {f_sel}", output.getvalue(), f"Matriz_STAR_{f_sel}.xlsx")
 
             st.dataframe(df_exib.style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
 
-# --- DASHBOARD SIMPLIFICADO ---
+# --- DASHBOARD ---
 elif st.session_state.pagina_ativa == 'Dashboard':
     st.markdown('<h1 class="title-center">GIRI | STAR-OS</h1>', unsafe_allow_html=True)
-    if st.button("MATRIZ STAR", use_container_width=True):
+    if st.button("ACESSAR MATRIZ STAR", use_container_width=True):
         st.session_state.pagina_ativa = 'Matriz'; st.rerun()
