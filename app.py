@@ -57,20 +57,25 @@ def format_br(val):
     except: return val
 
 def engine_star(row, lp, cp):
-    if cp == 0: return "⚫ INATIVO", 0, "Churn detectado."
-    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "Defesa de share."
-    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "Giro instável."
-    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "Expansão de conta."
-    return "🔵 ESTÁVEL", int(lp * 1.05), "Blindagem de conta."
+    """Motor de Governança com Instruções Táticas do Método STAR"""
+    if cp == 0: 
+        return "⚫ INATIVO", 0, ("OBJETIVO: Diagnóstico de Churn e Reconexão.\nAÇÃO: Reestabelecer contato sem viés de venda.\nORIENTAÇÃO: Identifique o motivo real da parada.")
+    if cp < (lp * 0.80):
+        return "🚨 QUEDA ACENTUADA", lp, ("OBJETIVO: Contenção de Perda e Defesa de Share.\nAÇÃO: Investigar entrada de concorrência ou falha de serviço.\nORIENTAÇÃO: Foque no negócio dele e entenda onde perde margem.")
+    if cp < (lp * 0.95): 
+        return "🔴 QUEDA", lp, ("OBJETIVO: Estabilização de Giro.\nAÇÃO: Identificar se a queda é sazonal ou substituição de mix.\nORIENTAÇÃO: Sugira ajustes que ajudem o cliente a reduzir perdas.")
+    if cp > (lp * 1.05): 
+        return "🟢 CRESCIMENTO", int(cp * 1.05), ("OBJETIVO: Expansão de Share e Upsell.\nAÇÃO: Analisar mix de clientes similares e elevar Ticket Médio.\nORIENTAÇÃO: Recomende itens complementares.")
+    return "🔵 ESTÁVEL", int(lp * 1.05), ("OBJETIVO: Manutenção e Blindagem.\nAÇÃO: Prevenir inércia e validar satisfação.\nORIENTAÇÃO: Confirme se os objetivos estão sendo atingidos.")
 
-# --- NAVEGAÇÃO ---
+# --- NAVEGAÇÃO E LOGICA TEMPORAL ---
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
 with st.sidebar:
     st.markdown('<div class="sidebar-title">GIRI | ARCHITECTURE</div>', unsafe_allow_html=True)
     if st.session_state.pagina_ativa != 'Dashboard' and st.button("⬅ VOLTAR"):
         st.session_state.pagina_ativa = 'Dashboard'; st.rerun()
     if st.session_state.pagina_ativa == 'Matriz':
-        lp_val = st.number_input("Longo Prazo (Meses)", value=12, min_value=1)
+        lp_val = st.number_input("Longo Prazo (Meses)", value=15, min_value=1)
         cp_val = st.number_input("Curto Prazo (Meses)", value=3, min_value=1)
 
 # --- TELA: MATRIZ STAR ---
@@ -104,7 +109,7 @@ if st.session_state.pagina_ativa == 'Matriz':
             df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
             df_final = df_ag.sort_values('TOTAL_ACUMULADO', ascending=False)
 
-            # --- LAUDO DE DISTRIBUIÇÃO (CURVA B COM TOP 3 + OUTROS) ---
+            # --- BLOCO 1: INFOGRÁFICOS DE TRAÇÃO POR CURVA ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE TRAÇÃO E SAÚDE POR SEGMENTO</div>', unsafe_allow_html=True)
             
             df_pareto = df_final.groupby(dim_principal)[['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP']].sum().reset_index()
@@ -128,16 +133,10 @@ if st.session_state.pagina_ativa == 'Matriz':
                         laudo_html += f'<div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);padding:15px;border-radius:8px;margin-top:20px;color:#888;">{curva}: R$ {format_br(df_c["TOTAL_ACUMULADO"].sum())} acumulados.</div>'
                         continue
                     
-                    # LOGICA TOP 3 + OUTROS PARA CURVA B
+                    # GOVERNANÇA CURVA B: TOP 3 + OUTROS
                     if curva == "CURVA B (15% DA RECEITA)" and len(df_c) > 3:
-                        top3 = df_c.head(3)
-                        outros = df_c.iloc[3:]
-                        outros_ag = pd.DataFrame([{
-                            dim_principal: "OUTROS (AGRUPADOS)",
-                            'TOTAL_ACUMULADO': outros['TOTAL_ACUMULADO'].sum(),
-                            'MEDIA_LP': outros['MEDIA_LP'].sum(),
-                            'MEDIA_CP': outros['MEDIA_CP'].sum()
-                        }])
+                        top3, outros = df_c.head(3), df_c.iloc[3:]
+                        outros_ag = pd.DataFrame([{dim_principal: "OUTROS (AGRUPADOS)", 'TOTAL_ACUMULADO': outros['TOTAL_ACUMULADO'].sum(), 'MEDIA_LP': outros['MEDIA_LP'].sum(), 'MEDIA_CP': outros['MEDIA_CP'].sum()}])
                         for col_s in ['🟢 CRESCIMENTO', '🔵 ESTÁVEL', '🔴 QUEDA', '🚨 QUEDA ACENTUADA', '⚫ INATIVO']:
                             outros_ag[col_s] = outros[col_s].sum() if col_s in outros.columns else 0
                         df_c = pd.concat([top3, outros_ag], ignore_index=True)
@@ -156,14 +155,7 @@ if st.session_state.pagina_ativa == 'Matriz':
                             {"n": "Inat.", "p": round(row.get('⚫ INATIVO',0)/tot_contas*100,1) if tot_contas>0 else 0, "c": "#555"}
                         ]
                         blocks.sort(key=lambda x: x["p"], reverse=True)
-                        
-                        # Blindagem Visual: Oculta texto se o bloco for < 8% para evitar sobreposição vertical
-                        barra_html = "".join([f"""<div style="width:{b["p"]}%;padding-right:4px;box-sizing:border-box;">
-<div style="height:8px;background:{b["c"]};border-radius:2px;margin-bottom:4px;width:100%;"></div>
-<div style="font-size:0.65rem;color:{b["c"]};font-weight:700;line-height:1.1;display:{'block' if b['p'] > 8 else 'none'};" title="{b['n']} {b['p']}%">
-{b["n"]}<br>{b["p"]}%
-</div>
-</div>""" for b in blocks if b["p"] > 0])
+                        barra_html = "".join([f'<div style="width:{b["p"]}%;padding-right:4px;"><div style="height:8px;background:{b["c"]};border-radius:2px;margin-bottom:4px;width:100%;"></div><div style="font-size:0.65rem;color:{b["c"]};font-weight:700;line-height:1.1;display:{"block" if b["p"] > 8 else "none"};">{b["n"]}<br>{b["p"]}%</div></div>' for b in blocks if b["p"] > 0])
                         
                         laudo_html += f"""<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px;margin-bottom:12px;">
 <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><b style="font-size:1.1rem;letter-spacing:1px;">{str(row[dim_principal]).upper()}</b><span style="font-size:0.75rem;color:#888;background:rgba(255,255,255,0.05);padding:4px 10px;border-radius:4px;font-weight:800;">{int(tot_contas)} CONTAS</span></div>
@@ -175,12 +167,11 @@ if st.session_state.pagina_ativa == 'Matriz':
 </div>"""
             st.markdown(laudo_html + "</div>", unsafe_allow_html=True)
 
-            # --- DRILL-DOWN TÁTICO PRIORIZADO ---
+            # --- BLOCO 2: DRILL-DOWN TÁTICO PRIORIZADO ---
             st.markdown('<div style="font-size:0.85rem;font-weight:700;color:#ccc;margin-top:50px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.1);padding-top:30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
             
             repres = df_final.groupby(dim_principal)['TOTAL_ACUMULADO'].sum().sort_values(ascending=False)
             opcoes = ["TODOS OS SEGMENTOS"] + repres.index.tolist()
-            
             if 'mem_f' not in st.session_state: st.session_state.mem_f = "TODOS OS SEGMENTOS"
             
             col_f, col_ex = st.columns([3, 2])
@@ -193,7 +184,23 @@ if st.session_state.pagina_ativa == 'Matriz':
             with col_ex:
                 output = BytesIO()
                 with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                    df_exib.to_excel(writer, index=False)
+                    df_exib.to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
+                    workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
+                    wrap_fmt = workbook.add_format({'text_wrap': True, 'valign': 'top'})
+                    bold_fmt = workbook.add_format({'bold': True, 'text_wrap': True, 'valign': 'top'})
+                    
+                    # Formatação de Rich Text para Excel mantendo o posicionamento C-level
+                    acao_idx = list(df_exib.columns).index('AÇÃO')
+                    for r_idx, val in enumerate(df_exib['AÇÃO']):
+                        parts = str(val).split('\n')
+                        rich_text = []
+                        for p in parts:
+                            if ':' in p:
+                                label, content = p.split(':', 1)
+                                rich_text.extend([bold_fmt, label + ':', wrap_fmt, content + '\n'])
+                        if rich_text: worksheet.write_rich_string(r_idx + 1, acao_idx, *rich_text, wrap_fmt)
+                    worksheet.set_column(acao_idx, acao_idx, 60)
+
                 st.download_button(f"📥 EXPORTAR {f_sel.upper()}", output.getvalue(), f"Matriz_STAR_{f_sel.replace(' ','_')}.xlsx")
 
             st.dataframe(df_exib.style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
