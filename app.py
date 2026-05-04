@@ -6,7 +6,7 @@ import math
 from io import BytesIO
 import xlsxwriter
 
-# 1. DESIGN EXECUTIVO GIRI - ESTÉTICA E ALTA PERFORMANCE
+# 1. DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Architecture Hub", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
@@ -40,7 +40,6 @@ st.markdown("""
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { text-align: center !important; vertical-align: middle !important; font-size: 13px !important; color: #ffffff !important; }
     div[data-testid="stDataFrame"] td { white-space: pre-wrap !important; word-wrap: break-word !important; min-width: 150px; vertical-align: middle !important; }
     
-    /* ESTILO PARA METRICAS NATIVAS DO STREAMLIT */
     div[data-testid="stMetricValue"] { font-size: 1.8rem !important; font-weight: 800; }
     div[data-testid="stMetricLabel"] p { font-size: 0.8rem !important; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); }
     </style>
@@ -75,7 +74,7 @@ def engine_star(row, lp, cp):
         return "🟢 CRESCIMENTO", int(cp * 1.05), ("OBJETIVO: Expansão de Share e Upsell.\nAÇÃO: Analisar mix de clientes similares e elevar Ticket Médio.\nORIENTAÇÃO: Recomende itens complementares.")
     return "🔵 ESTÁVEL", int(lp * 1.05), ("OBJETIVO: Manutenção e Blindagem.\nAÇÃO: Prevenir inércia e validar satisfação.\nORIENTAÇÃO: Confirme se os objetivos estão sendo atingidos.")
 
-# --- LÓGICA TEMPORAL GERAL ---
+# --- LÓGICA TEMPORAL ---
 hoje = datetime.now()
 p_dia = hoje.replace(day=1)
 u_dia = (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
@@ -84,7 +83,7 @@ d_passados = get_business_days(p_dia, hoje)
 if hoje.weekday() < 5 and hoje.strftime('%Y-%m-%d') not in ['2026-05-01']:
     d_passados = max(0, d_passados - 1)
 
-# --- NAVEGAÇÃO E SIDEBAR BASE ---
+# --- NAVEGAÇÃO ---
 if 'pagina_ativa' not in st.session_state: st.session_state.pagina_ativa = 'Dashboard'
 
 with st.sidebar:
@@ -125,7 +124,7 @@ if st.session_state.pagina_ativa == 'Dashboard':
         st.markdown('<div class="tool-card"><h4>PIPELINE PREDICTOR</h4><p>Previsibilidade de Receita B2B</p></div>', unsafe_allow_html=True)
         if st.button(" ", key="btn_pipe", use_container_width=True): pass
 
-# --- TELA 2: MATRIZ STAR (COM DIAGNÓSTICO ANALÍTICO) ---
+# --- TELA 2: MATRIZ STAR ---
 elif st.session_state.pagina_ativa == 'Matriz':
     st.markdown('<div class="title-center">MATRIZ STAR</div>', unsafe_allow_html=True)
     
@@ -160,7 +159,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- NOVA CAMADA ANALÍTICA EXECUTIVA ---
+            # --- CAMADA ANALÍTICA EXECUTIVA ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
@@ -191,10 +190,42 @@ elif st.session_state.pagina_ativa == 'Matriz':
 
                 if dims_selecionadas:
                     dim_principal = dims_selecionadas[0]
-                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 20px; margin-bottom: 10px;">DECOMPOSIÇÃO POR {dim_principal.upper()}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 20px; margin-bottom: 10px;">DECOMPOSIÇÃO TÁTICA POR {dim_principal.upper()}</div>', unsafe_allow_html=True)
+                    
                     resumo_dim = df_final.groupby([dim_principal, 'STATUS']).size().unstack(fill_value=0)
-                    st.dataframe(resumo_dim.style.background_gradient(cmap='Blues', axis=1), use_container_width=True)
-            # ----------------------------------------
+                    st.dataframe(resumo_dim, use_container_width=True) 
+                    
+                    st.markdown('<div style="margin-top: 15px; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5; color: #e0e0e0; background: rgba(255,255,255,0.05); padding: 15px; border-left: 3px solid #001f3f;">', unsafe_allow_html=True)
+                    st.markdown("**LAUDO EXECUTIVO:**")
+                    
+                    resumo_dim['TOTAL_CONTAS'] = resumo_dim.sum(axis=1)
+                    top_dims = resumo_dim.sort_values('TOTAL_CONTAS', ascending=False).head(5)
+                    
+                    for idx, row in top_dims.iterrows():
+                        tot = row['TOTAL_CONTAS']
+                        cresc_dim = row.get('🟢 CRESCIMENTO', 0)
+                        inativo_dim = row.get('⚫ INATIVO', 0)
+                        queda_dim = row.get('🔴 QUEDA', 0) + row.get('🚨 QUEDA ACENTUADA', 0)
+                        
+                        p_cresc = round((cresc_dim / tot) * 100, 1) if tot > 0 else 0
+                        p_risco = round(((inativo_dim + queda_dim) / tot) * 100, 1) if tot > 0 else 0
+                        
+                        analise_linha = f"**{idx}** (Volume: {tot} contas) — "
+                        if p_risco > 50:
+                            analise_linha += f"Erosão severa: **{p_risco}%** da base apresenta sangria de receita ou inatividade. "
+                        elif p_risco > 25:
+                            analise_linha += f"Atenção na contenção: **{p_risco}%** da carteira em declínio. "
+                        else:
+                            analise_linha += f"Risco isolado: evasão contida em {p_risco}%. "
+                            
+                        if p_cresc > 30:
+                            analise_linha += f"Motor de upsell ativo, com **{p_cresc}%** dos clientes em tração de expansão."
+                        else:
+                            analise_linha += f"Baixa alavancagem de crescimento ({p_cresc}% da base)."
+                            
+                        st.markdown(f"- {analise_linha}")
+                        
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">MATRIZ DE DECISÃO TÁTICA BASE</div>', unsafe_allow_html=True)
             st.dataframe(df_final[colunas_exibicao].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
