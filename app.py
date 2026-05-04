@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import math
-from io import BytesIO
 
 # 1. DESIGN EXECUTIVO GIRI - ESTÉTICA E ALTA PERFORMANCE
 st.set_page_config(page_title="Giri Architecture Hub", layout="wide", initial_sidebar_state="expanded")
@@ -49,11 +48,11 @@ def get_business_days(start, end):
     return len([d for d in days if d.weekday() < 5 and d.strftime('%Y-%m-%d') not in holidays])
 
 def engine_star(lp, cp):
-    if cp == 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn e Reconexão."
-    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "OBJETIVO: Contenção de Perda e Defesa de Share."
-    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "OBJETIVO: Estabilização de Giro."
-    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "OBJETIVO: Expansão de Share e Upsell."
-    return "🔵 ESTÁVEL", int(lp * 1.05), "OBJETIVO: Manutenção e Blindagem."
+    if cp == 0: return "⚫ INATIVO", 0, "AÇÃO: Diagnóstico de Churn."
+    if cp < (lp * 0.80): return "🚨 QUEDA ACENTUADA", lp, "AÇÃO: Defesa de Share."
+    if cp < (lp * 0.95): return "🔴 QUEDA", lp, "AÇÃO: Estabilização."
+    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "AÇÃO: Expansão/Upsell."
+    return "🔵 ESTÁVEL", int(lp * 1.05), "AÇÃO: Blindagem."
 
 # --- LÓGICA TEMPORAL ---
 hoje = datetime.now()
@@ -88,36 +87,45 @@ if st.session_state.pagina_ativa == 'Dashboard':
         if st.button("", key="btn_des"): st.session_state.pagina_ativa = 'Desempenho'; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-# --- TELA 2: MATRIZ STAR (COM PROTEÇÃO DE COLUNA) ---
+# --- TELA 2: MATRIZ STAR (LOGICA DE MAPEAMENTO ROBUSTA) ---
 elif st.session_state.pagina_ativa == 'Matriz':
     st.markdown('<div class="title-center">STAR-OS | GOVERNANÇA</div>', unsafe_allow_html=True)
     with st.sidebar:
         lp_val = st.number_input("Longo Prazo (Meses)", value=12, min_value=1)
         cp_val = st.number_input("Curto Prazo (Meses)", value=3, min_value=1)
+    
     uploaded_file = st.file_uploader("Upload da Base de Faturamento", type=['xlsx'])
     
     if uploaded_file:
         df_raw = pd.read_excel(uploaded_file)
+        # Normalização de nomes de colunas
         cols_norm = [str(c).upper().strip() for c in df_raw.columns]
         df_raw.columns = cols_norm
         
-        # Identificação dinâmica para evitar KeyError
-        col_cliente = next((c for c in cols_norm if 'CLIENTE' in c or 'EMPRESA' in c or 'RAZÃO' in c), None)
-        col_vendedor = next((c for c in cols_norm if 'VENDEDOR' in c or 'REPRESENTANTE' in c or 'CONSULTOR' in c), None)
-        col_meses = [c for c in cols_norm if any(m in c for m in ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'])]
+        # Mapeamento dinâmico (procura por palavras-chave)
+        col_cliente = next((c for c in cols_norm if any(x in c for x in ['CLIENTE', 'EMPRESA', 'RAZAO', 'NOME', 'RAZÃO'])), None)
+        col_vendedor = next((c for c in cols_norm if any(x in c for x in ['VENDEDOR', 'REPRESENTANTE', 'CONSULTOR', 'FUNC'])), None)
+        # Busca por meses (Jan, Fev, etc)
+        meses_lista = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+        col_meses = [c for c in cols_norm if any(m in c for m in meses_lista)]
 
-        if col_cliente and col_vendedor and col_meses:
+        if col_cliente and col_vendedor and len(col_meses) >= (lp_val + cp_val):
+            # Garante que os valores de faturamento sejam numéricos
+            for c in col_meses: df_raw[c] = pd.to_numeric(df_raw[c], errors='coerce').fillna(0)
+            
             df_agrupado = df_raw.groupby([col_cliente, col_vendedor])[col_meses].sum().reset_index()
             df_agrupado['MEDIA_LP'] = (df_agrupado[col_meses[-(lp_val+cp_val):-cp_val]].sum(axis=1) / lp_val).round(0)
             df_agrupado['MEDIA_CP'] = (df_agrupado[col_meses[-cp_val:]].sum(axis=1) / cp_val).round(0)
             
             res_star = df_agrupado.apply(lambda row: engine_star(row['MEDIA_LP'], row['MEDIA_CP']), axis=1)
             df_agrupado['STATUS'], df_agrupado['META'], df_agrupado['AÇÃO'] = zip(*res_star)
+            
+            # Exibição
             st.dataframe(df_agrupado.style.format({c: format_br for c in col_meses + ['MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
         else:
-            st.error("⚠️ Estrutura do Excel incompatível. Certifique-se que as colunas 'CLIENTE', 'VENDEDOR' e os Meses existem.")
+            st.warning("🔍 Verifique se as colunas de Cliente, Vendedor e os Meses estão presentes e se o período selecionado existe na planilha.")
 
-# --- TELA 3: MATRIZ DE DESEMPENHO (INTACTA) ---
+# --- TELA 3: DESEMPENHO (INTACTA) ---
 elif st.session_state.pagina_ativa == 'Desempenho':
     with st.sidebar:
         nomes = st.text_area("EQUIPE:", "JOÃO\nCARLOS\nMARIA", height=100)
