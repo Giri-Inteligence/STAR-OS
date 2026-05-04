@@ -48,7 +48,7 @@ st.markdown("""
 # --- FUNÇÕES GLOBAIS ---
 def format_br(val):
     try:
-        if pd.isna(val) or val == 0: return "-"
+        if pd.isna(val) or val == 0: return "0"
         return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
     except: return val
 
@@ -159,7 +159,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- CAMADA ANALÍTICA: PARETO E SAÚDE DA BASE ---
+            # --- CAMADA ANALÍTICA: PARETO AVANÇADO ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
@@ -203,12 +203,30 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     st.markdown("**LAUDO DE DISTRIBUIÇÃO E TRAÇÃO:**")
                     
                     for curva in ["CURVA A (80% DA RECEITA)", "CURVA B (15% DA RECEITA)", "CURVA C (5% DA RECEITA)"]:
-                        df_c = df_pareto[df_pareto['CURVA'] == curva]
+                        df_c = df_pareto[df_pareto['CURVA'] == curva].copy()
+                        
                         if not df_c.empty:
                             st.markdown(f"<br>**{curva}**", unsafe_allow_html=True)
+                            
+                            # Filtro da Curva B: Top 3 e Agrupamento
+                            if curva == "CURVA B (15% DA RECEITA)" and len(df_c) > 3:
+                                df_top3 = df_c.iloc[:3].copy()
+                                df_others = df_c.iloc[3:].copy()
+                                
+                                others_data = {
+                                    dim_principal: "OUTROS (AGRUPADOS)", 
+                                    'TOTAL_ACUMULADO': df_others['TOTAL_ACUMULADO'].sum(), 
+                                    'TOTAL_CONTAS': df_others['TOTAL_CONTAS'].sum()
+                                }
+                                for col_status in ['🟢 CRESCIMENTO', '🔵 ESTÁVEL', '🔴 QUEDA', '🚨 QUEDA ACENTUADA', '⚫ INATIVO']:
+                                    others_data[col_status] = df_others[col_status].sum() if col_status in df_others.columns else 0
+                                        
+                                df_c = pd.concat([df_top3, pd.DataFrame([others_data])], ignore_index=True)
+
                             for _, row in df_c.iterrows():
                                 tot = row['TOTAL_CONTAS']
                                 faturamento = row['TOTAL_ACUMULADO']
+                                ticket_medio = faturamento / tot if tot > 0 else 0
                                 
                                 cresc_val = row.get('🟢 CRESCIMENTO', 0)
                                 estav_val = row.get('🔵 ESTÁVEL', 0)
@@ -221,7 +239,9 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 p_inat = round((inat_val / tot * 100), 1) if tot > 0 else 0
                                 
                                 fat_str = format_br(faturamento)
-                                st.markdown(f"- **{row[dim_principal]}** (Receita Acumulada: R$ {fat_str}) <br> &nbsp;&nbsp;&nbsp; Crescimento: {p_cresc}% | Queda: {p_queda}% | Inativo: {p_inat}% | Estável: {p_estav}%", unsafe_allow_html=True)
+                                tm_str = format_br(ticket_medio)
+                                
+                                st.markdown(f"- **{row[dim_principal]}** (Receita Acumulada: R$ {fat_str} | Ticket Médio: R$ {tm_str}) <br> &nbsp;&nbsp;&nbsp; Crescimento: {p_cresc}% ({int(cresc_val)}) | Queda: {p_queda}% ({int(queda_val)}) | Inativo: {p_inat}% ({int(inat_val)}) | Estável: {p_estav}% ({int(estav_val)})", unsafe_allow_html=True)
                                 
                     st.markdown('</div>', unsafe_allow_html=True)
 
