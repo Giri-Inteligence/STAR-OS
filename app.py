@@ -159,7 +159,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- CAMADA ANALÍTICA: PARETO E TICKET MÉDIO MENSAL ---
+            # --- CAMADA ANALÍTICA: PARETO COM ISOLAMENTO DA CURVA C ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
@@ -209,6 +209,11 @@ elif st.session_state.pagina_ativa == 'Matriz':
                         
                         if not df_c.empty:
                             st.markdown(f"<br>**{curva}**", unsafe_allow_html=True)
+                            
+                            if curva == "CURVA C (5% DA RECEITA)":
+                                fat_total_c = df_c['TOTAL_ACUMULADO'].sum()
+                                st.markdown(f"- Representa 5% da receita (R$ {format_br(fat_total_c)}).", unsafe_allow_html=True)
+                                continue
                             
                             if curva == "CURVA B (15% DA RECEITA)" and len(df_c) > 3:
                                 df_top3 = df_c.iloc[:3].copy()
