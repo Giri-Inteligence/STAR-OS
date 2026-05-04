@@ -46,10 +46,19 @@ st.markdown("""
         text-align: center;
         text-transform: uppercase;
         letter-spacing: 5px;
-        margin-top: 50px;
-        margin-bottom: 50px;
+        margin-top: 20px;
+        margin-bottom: 10px;
         font-weight: 800;
         font-size: 1.8rem;
+    }
+    
+    .subtitle-center {
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 40px;
+        font-size: 1rem;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -63,7 +72,6 @@ def format_br(val):
 
 def parse_int(val):
     try:
-        # Remove pontos de milhar se o usuário digitar
         limpo = str(val).replace(".", "").replace(",", "")
         return int(limpo) if limpo else 0
     except: return 0
@@ -85,6 +93,13 @@ with st.sidebar:
 
 # --- LÓGICA DE TEMPO ---
 hoje = datetime.now()
+meses_br = {
+    1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 
+    5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto", 
+    9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+}
+competencia_txt = f"{meses_br[hoje.month]} / {hoje.year}"
+
 p_dia = hoje.replace(day=1)
 u_dia = (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
 d_totais = get_working_days(p_dia, u_dia)
@@ -98,7 +113,9 @@ if st.session_state.pagina_ativa == 'Desempenho':
         nomes = st.text_area("EQUIPE:", "JOÃO\nCARLOS\nMARIA", height=100)
         vendedor = st.selectbox("CONSULTOR:", [v.strip().upper() for v in nomes.split('\n') if v.strip()])
     
-    st.title(f"MATRIZ DE DESEMPENHO: {vendedor}")
+    st.markdown(f'<div class="title-center">MATRIZ DE DESEMPENHO: {vendedor}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="subtitle-center">COMPETÊNCIA: {competencia_txt.upper()}</div>', unsafe_allow_html=True)
+    
     st.info(f"📅 Meta baseada em {d_passados} dias úteis passados de {d_totais}.")
     
     cols_in = st.columns(5)
@@ -108,7 +125,6 @@ if st.session_state.pagina_ativa == 'Desempenho':
     for i, col in enumerate(cols_in):
         with col:
             n = st.text_input(f"Indicador {i+1}", value=sugestoes[i], key=f"n_{i}_{vendedor}")
-            # Campos de texto que aceitam apenas números e iniciam vazios
             m_raw = st.text_input(f"Meta", value="", key=f"m_{i}_{vendedor}")
             r_raw = st.text_input(f"Realizado", value="", key=f"r_{i}_{vendedor}")
             
