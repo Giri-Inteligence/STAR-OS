@@ -165,7 +165,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
             df_final = df_agrupado.sort_values('TOTAL_ACUMULADO', ascending=False)
             colunas_exibicao = chaves + col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
             
-            # --- CAMADA ANALÍTICA: PARETO COM TRAÇÃO DE SEGMENTO ---
+            # --- CAMADA ANALÍTICA: PARETO VISUAL COM MICRO-INFOGRÁFICOS ---
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 5px;">DIAGNÓSTICO ESTRUTURAL DA CARTEIRA</div>', unsafe_allow_html=True)
             
             total_clientes = len(df_final)
@@ -187,7 +187,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
 
                 if dims_selecionadas:
                     dim_principal = dims_selecionadas[0]
-                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">ANÁLISE DE PARETO E SAÚDE POR {dim_principal.upper()} (BASE: {meses_analisados} MESES)</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="subtitle-center" style="text-align: left; margin-top: 40px; margin-bottom: 10px;">ANÁLISE DE PARETO E SAÚDE POR {dim_principal.upper()} (BASE: {meses_analisados} MESES)</div>', unsafe_allow_html=True)
                     
                     df_pareto = df_final.groupby(dim_principal)[['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP']].sum().reset_index()
                     df_pareto = df_pareto.sort_values('TOTAL_ACUMULADO', ascending=False)
@@ -205,18 +205,21 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     
                     df_pareto = df_pareto.merge(resumo_dim, on=dim_principal, how='left')
                     
-                    st.markdown('<div style="margin-top: 15px; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5; color: #e0e0e0; background: rgba(255,255,255,0.05); padding: 20px; border-left: 3px solid #001f3f;">', unsafe_allow_html=True)
-                    st.markdown("**LAUDO DE DISTRIBUIÇÃO E TRAÇÃO:**")
+                    # Gerador do HTML Executivo
+                    laudo_html = '<div style="margin-top: 10px; margin-bottom: 30px;">'
                     
                     for curva in ["CURVA A (80% DA RECEITA)", "CURVA B (15% DA RECEITA)", "CURVA C (5% DA RECEITA)"]:
                         df_c = df_pareto[df_pareto['CURVA'] == curva].copy()
                         
                         if not df_c.empty:
-                            st.markdown(f"<br>**{curva}**", unsafe_allow_html=True)
-                            
                             if curva == "CURVA C (5% DA RECEITA)":
                                 fat_total_c = df_c['TOTAL_ACUMULADO'].sum()
-                                st.markdown(f"- Representa 5% da receita (R$ {format_br(fat_total_c)}) referente aos {meses_analisados} meses analisados.", unsafe_allow_html=True)
+                                laudo_html += f"""
+                                <div style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 20px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="color: #888; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">{curva}</div>
+                                    <div style="color: #aaa; font-size: 0.85rem;">Representa a cauda longa da operação (R$ {format_br(fat_total_c)} acumulados).</div>
+                                </div>
+                                """
                                 continue
                             
                             if curva == "CURVA B (15% DA RECEITA)" and len(df_c) > 3:
@@ -234,6 +237,8 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                     others_data[col_status] = df_others[col_status].sum() if col_status in df_others.columns else 0
                                         
                                 df_c = pd.concat([df_top3, pd.DataFrame([others_data])], ignore_index=True)
+
+                            laudo_html += f'<div style="font-size: 0.95rem; color: #fff; font-weight: 800; margin: 25px 0 15px 0; letter-spacing: 1.5px;">{curva}</div>'
 
                             for _, row in df_c.iterrows():
                                 tot = row['TOTAL_CONTAS']
@@ -254,14 +259,53 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 p_inat = round((inat_val / tot * 100), 1) if tot > 0 else 0
                                 
                                 tracao_pct = ((media_cp / media_lp) - 1) * 100 if media_lp > 0 else (100 if media_cp > 0 else 0)
-                                status_tracao = f"🟢 EXPANSÃO (+{tracao_pct:.1f}%)" if tracao_pct > 0 else (f"🔴 EROSÃO ({tracao_pct:.1f}%)" if tracao_pct < 0 else "🔵 ESTAGNAÇÃO")
+                                
+                                if tracao_pct > 0:
+                                    status_tracao = f"▲ EXPANSÃO (+{tracao_pct:.1f}%)"
+                                    tracao_color = "#00E676"
+                                elif tracao_pct < 0:
+                                    status_tracao = f"▼ EROSÃO ({tracao_pct:.1f}%)"
+                                    tracao_color = "#FF1744"
+                                else:
+                                    status_tracao = "■ ESTAGNAÇÃO"
+                                    tracao_color = "#29B6F6"
                                 
                                 fat_str = format_br(faturamento)
                                 tm_str = format_br(ticket_medio_mensal)
                                 
-                                st.markdown(f"- **{row[dim_principal]}** (Receita em {meses_analisados} meses: R$ {fat_str} | Ticket Médio Mensal: R$ {tm_str}) <br> &nbsp;&nbsp;&nbsp; Tração do Segmento (Média LP R$ {format_br(media_lp)} ➔ Média CP R$ {format_br(media_cp)}): **{status_tracao}** <br> &nbsp;&nbsp;&nbsp; Saúde das Contas: Crescimento: {p_cresc}% ({int(cresc_val)}) | Queda: {p_queda}% ({int(queda_val)}) | Inativo: {p_inat}% ({int(inat_val)}) | Estável: {p_estav}% ({int(estav_val)})", unsafe_allow_html=True)
+                                # HTML do Card Individual
+                                card_html = f"""
+                                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                        <h4 style="margin: 0; color: #fff; font-size: 1.1rem; letter-spacing: 1px;">{row[dim_principal].upper()}</h4>
+                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; color: #ccc;">{tot} CONTAS</span>
+                                    </div>
+                                    <div style="display: flex; gap: 30px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                                        <div><div style="font-size: 0.7rem; color: #aaa; margin-bottom: 3px;">RECEITA ({meses_analisados}M)</div><div style="font-size: 1.2rem; font-weight: 800; color: #fff;">R$ {fat_str}</div></div>
+                                        <div><div style="font-size: 0.7rem; color: #aaa; margin-bottom: 3px;">TKT MÉDIO MENSAL</div><div style="font-size: 1.2rem; font-weight: 800; color: #fff;">R$ {tm_str}</div></div>
+                                        <div><div style="font-size: 0.7rem; color: #aaa; margin-bottom: 3px;">TRAÇÃO DO SEGMENTO</div><div style="font-size: 1.2rem; font-weight: 800; color: {tracao_color};">{status_tracao}</div></div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">SAÚDE ESTRUTURAL DA BASE (DISTRIBUIÇÃO DE CONTAS)</div>
+                                        <div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 10px; background: #1a1a1a;">
+                                            <div style="width: {p_cresc}%; background: #00E676;" title="Crescimento"></div>
+                                            <div style="width: {p_estav}%; background: #29B6F6;" title="Estável"></div>
+                                            <div style="width: {p_queda}%; background: #FF1744;" title="Queda"></div>
+                                            <div style="width: {p_inat}%; background: #424242;" title="Inativo"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 15px; font-size: 0.75rem; font-weight: 600;">
+                                            <div style="color: #00E676;">Crescimento: {p_cresc}% ({int(cresc_val)})</div>
+                                            <div style="color: #29B6F6;">Estável: {p_estav}% ({int(estav_val)})</div>
+                                            <div style="color: #FF1744;">Queda: {p_queda}% ({int(queda_val)})</div>
+                                            <div style="color: #888;">Inativo: {p_inat}% ({int(inat_val)})</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                """
+                                laudo_html += card_html
                                 
-                    st.markdown('</div>', unsafe_allow_html=True)
+                    laudo_html += '</div>'
+                    st.markdown(laudo_html, unsafe_allow_html=True)
 
             st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">MATRIZ DE DECISÃO TÁTICA BASE</div>', unsafe_allow_html=True)
             st.dataframe(df_final[colunas_exibicao].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
