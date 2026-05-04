@@ -15,13 +15,42 @@ st.markdown("""
     
     /* AJUSTE DO TÍTULO NO TOPO DA SIDEBAR */
     .sidebar-title {
-        margin-top: -30px; /* Sobe o título para o topo absoluto */
+        margin-top: -30px; 
         margin-bottom: 20px;
         letter-spacing: 2px;
         font-size: 1.1rem;
         font-weight: 800;
         color: white;
         text-transform: uppercase;
+    }
+
+    /* AJUSTE DO TÍTULO CENTRAL (SUBIDA DE CONTEÚDO) */
+    .title-center { 
+        text-align: center; 
+        text-transform: uppercase; 
+        letter-spacing: 5px; 
+        margin-top: -45px; /* Sobe o bloco de título principal */
+        font-weight: 800; 
+        font-size: 1.8rem; 
+    }
+    
+    .vendedor-destaque { 
+        text-align: center; 
+        text-transform: uppercase; 
+        letter-spacing: 3px; 
+        color: #ffffff; 
+        margin-bottom: 5px; 
+        font-weight: 700; 
+        font-size: 1.4rem; 
+    }
+    
+    .subtitle-center { 
+        text-align: center; 
+        text-transform: uppercase; 
+        letter-spacing: 2px; 
+        color: rgba(255, 255, 255, 0.6); 
+        margin-bottom: 30px; 
+        font-size: 0.9rem; 
     }
 
     .stTextInput input {
@@ -32,10 +61,6 @@ st.markdown("""
         border-radius: 4px !important;
         color: #ffffff !important;
     }
-
-    .title-center { text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-top: 10px; font-weight: 800; font-size: 1.8rem; }
-    .vendedor-destaque { text-align: center; text-transform: uppercase; letter-spacing: 3px; color: #ffffff; margin-bottom: 5px; font-weight: 700; font-size: 1.4rem; }
-    .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 40px; font-size: 0.9rem; }
     
     div[data-testid="stTable"] table { width: 100% !important; }
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { 
@@ -63,7 +88,7 @@ def get_business_days(start, end):
     days = pd.date_range(start, end)
     return len([d for d in days if d.weekday() < 5 and d.strftime('%Y-%m-%d') not in holidays])
 
-# --- LÓGICA TEMPORAL ---
+# --- LÓGICA TEMPORAL (RIGOR CALENDÁRIO) ---
 hoje = datetime.now()
 p_dia = hoje.replace(day=1)
 u_dia = (hoje.replace(month=hoje.month % 12 + 1, day=1) if hoje.month < 12 else hoje.replace(year=hoje.year + 1, month=1, day=1)) - pd.Timedelta(days=1)
@@ -114,13 +139,7 @@ if st.session_state.pagina_ativa == 'Desempenho':
         v_esp = math.ceil((it["META"] / d_totais) * d_passados) if d_totais > 0 else 0
         rota = (it["REALIZADO"] / v_esp) if v_esp > 0 else (1.0 if it["REALIZADO"] >= 0 else 0.0)
         tend = math.ceil((it["REALIZADO"] / d_passados) * d_totais) if d_passados > 0 else it["REALIZADO"]
-        
         status = "-" if it["META"] == 0 else ("🟢 NO RITMO" if (v_esp == 0) or rota >= 1.0 else "🚨 CRÍTICO")
         eficiencia = "-" if v_esp == 0 else f"{round(rota * 100, 1)}%"
-        
-        res.append({
-            "INDICADOR": it["NOME"], "META MENSAL": format_br(it["META"]), "ESPERADO": format_br(v_esp),
-            "REALIZADO": format_br(it["REALIZADO"]), "EFICIÊNCIA (ROTA)": eficiencia, "PROJEÇÃO FINAL": format_br(tend), "STATUS": status
-        })
-    
+        res.append({"INDICADOR": it["NOME"], "META MENSAL": format_br(it["META"]), "ESPERADO": format_br(v_esp), "REALIZADO": format_br(it["REALIZADO"]), "EFICIÊNCIA (ROTA)": eficiencia, "PROJEÇÃO FINAL": format_br(tend), "STATUS": status})
     st.table(pd.DataFrame(res))
