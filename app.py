@@ -31,11 +31,14 @@ st.markdown("""
     .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; font-size: 0.9rem; }
 
     .stTextInput input { height: 40px !important; text-align: center !important; background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 4px !important; color: #ffffff !important; }
-    .stSelectbox div[data-baseweb="select"] { background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 4px !important; color: #fff !important; }
+    .stSelectbox div[data-baseweb="select"] { background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 4px !important; color: #fff !important; min-height: 40px !important; max-height: 40px !important; }
     
     div[data-testid="column"] div.stButton { margin-top: -126px; z-index: 10; position: relative; }
     div[data-testid="column"] div.stButton button { height: 110px !important; width: 100% !important; background: transparent !important; border: none !important; color: transparent !important; box-shadow: none !important; }
     div[data-testid="column"] div.stButton button:hover { background: rgba(255, 255, 255, 0.05) !important; border-radius: 4px !important; }
+
+    div[data-testid="stDownloadButton"] button { height: 40px !important; border-radius: 4px !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; background-color: rgba(255, 255, 255, 0.05) !important; color: #ffffff !important; font-weight: 700 !important; white-space: nowrap !important; width: 100% !important; margin: 0 !important; padding: 0 15px !important; display: flex; align-items: center; justify-content: center; }
+    div[data-testid="stDownloadButton"] button:hover { background-color: rgba(255, 255, 255, 0.1) !important; border-color: #ffffff !important; }
 
     div[data-testid="stTable"] table { width: 100% !important; }
     div[data-testid="stTable"] td, div[data-testid="stTable"] th { text-align: center !important; vertical-align: middle !important; font-size: 13px !important; color: #ffffff !important; }
@@ -310,8 +313,9 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     laudo_html += '</div>'
                     st.markdown(laudo_html, unsafe_allow_html=True)
                     
-                    # --- DRILL-DOWN TÁTICO COM EXPORTAÇÃO DINÂMICA ---
+                    # --- DRILL-DOWN TÁTICO: ALINHAMENTO DE EIXO ---
                     st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 50px; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="font-size: 0.85rem; font-weight: 700; color: #ccc; margin-bottom: 10px;">SELECIONE A CHAVE ({dim_principal.upper()}) PARA ISOLAR A ANÁLISE:</div>', unsafe_allow_html=True)
                     
                     opcoes_filtro = ["TODOS OS SEGMENTOS"] + list(df_final[dim_principal].unique())
                     
@@ -325,15 +329,17 @@ elif st.session_state.pagina_ativa == 'Matriz':
                     def atualizar_memoria():
                         st.session_state.memoria_filtro = st.session_state.seletor_temp
                         
-                    col_filtro, col_export = st.columns([3, 1])
+                    # Proporção da grade ajustada (60% seletor, 40% botão)
+                    col_filtro, col_export = st.columns([3, 2])
                     
                     with col_filtro:
                         filtro_sel = st.selectbox(
-                            f"SELECIONE A CHAVE ({dim_principal.upper()}) PARA ISOLAR A ANÁLISE:", 
+                            "Oculto",
                             opcoes_filtro,
                             index=indice_padrao,
                             key="seletor_temp",
-                            on_change=atualizar_memoria
+                            on_change=atualizar_memoria,
+                            label_visibility="collapsed"
                         )
                     
                     if filtro_sel != "TODOS OS SEGMENTOS":
@@ -392,7 +398,6 @@ elif st.session_state.pagina_ativa == 'Matriz':
                         worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
 
                     with col_export:
-                        st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
                         st.download_button(label_botao, output.getvalue(), nome_arquivo, use_container_width=True)
                         
                 else:
