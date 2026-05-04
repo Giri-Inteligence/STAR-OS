@@ -31,6 +31,7 @@ st.markdown("""
     .subtitle-center { text-align: center; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; font-size: 0.9rem; }
 
     .stTextInput input { height: 40px !important; text-align: center !important; background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 4px !important; color: #ffffff !important; }
+    .stSelectbox div[data-baseweb="select"] { background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 4px !important; color: #fff !important; }
     
     div[data-testid="column"] div.stButton { margin-top: -126px; z-index: 10; position: relative; }
     div[data-testid="column"] div.stButton button { height: 110px !important; width: 100% !important; background: transparent !important; border: none !important; color: transparent !important; box-shadow: none !important; }
@@ -308,13 +309,26 @@ elif st.session_state.pagina_ativa == 'Matriz':
                                 
                     laudo_html += '</div>'
                     st.markdown(laudo_html, unsafe_allow_html=True)
+                    
+                    # --- NOVO BLOCO: DRILL-DOWN TÁTICO ---
+                    st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 50px; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">🔬 DRILL-DOWN TÁTICO: ISOLAMENTO DE CARTEIRA</div>', unsafe_allow_html=True)
+                    
+                    opcoes_filtro = ["TODOS OS SEGMENTOS"] + list(df_final[dim_principal].unique())
+                    filtro_sel = st.selectbox(f"SELECIONE A CHAVE ({dim_principal.upper()}) PARA ISOLAR A ANÁLISE:", opcoes_filtro)
+                    
+                    if filtro_sel != "TODOS OS SEGMENTOS":
+                        df_exibicao = df_final[df_final[dim_principal] == filtro_sel]
+                    else:
+                        df_exibicao = df_final
+                else:
+                    df_exibicao = df_final
 
-            st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 30px; margin-bottom: 10px;">MATRIZ DE DECISÃO TÁTICA BASE</div>', unsafe_allow_html=True)
-            st.dataframe(df_final[colunas_exibicao].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
+            st.markdown('<div class="subtitle-center" style="text-align: left; margin-top: 20px; margin-bottom: 10px;">MATRIZ DE DECISÃO TÁTICA BASE</div>', unsafe_allow_html=True)
+            st.dataframe(df_exibicao[colunas_exibicao].style.format({c: format_br for c in col_meses + ['TOTAL_ACUMULADO', 'MEDIA_LP', 'MEDIA_CP', 'META']}), use_container_width=True)
 
             output = BytesIO()
             with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                df_final[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
+                df_exibicao[colunas_exibicao].to_excel(writer, index=False, sheet_name='MATRIZ_STAR')
                 workbook, worksheet = writer.book, writer.sheets['MATRIZ_STAR']
 
                 header_fmt = workbook.add_format({'bold': True, 'font_color': 'white', 'bg_color': '#001220', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
@@ -332,7 +346,7 @@ elif st.session_state.pagina_ativa == 'Matriz':
                 acao_idx = colunas_exibicao.index('AÇÃO')
                 status_idx = colunas_exibicao.index('STATUS')
 
-                for row_num, row_data in enumerate(df_final[colunas_exibicao].values):
+                for row_num, row_data in enumerate(df_exibicao[colunas_exibicao].values):
                     for col_num, cell_value in enumerate(row_data):
                         if col_num == acao_idx:
                             parts = cell_value.split('\n')
@@ -349,11 +363,11 @@ elif st.session_state.pagina_ativa == 'Matriz':
                 worksheet.set_column(acao_idx, acao_idx, 60)
                 worksheet.set_column(0, acao_idx-1, 20)
                 
-                worksheet.conditional_format(1, status_idx, len(df_final), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
-                worksheet.conditional_format(1, status_idx, len(df_final), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
-                worksheet.conditional_format(1, status_idx, len(df_final), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
+                worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA ACENTUADA', 'format': fmt_queda_ac})
+                worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'QUEDA', 'format': fmt_queda})
+                worksheet.conditional_format(1, status_idx, len(df_exibicao), status_idx, {'type': 'text', 'criteria': 'containing', 'value': 'CRESCIMENTO', 'format': fmt_cresc})
 
-            st.download_button("📥 EXPORTAR PLANO EXECUTIVO", output.getvalue(), "Plano_STAR_Giri.xlsx")
+            st.download_button("📥 EXPORTAR PLANO EXECUTIVO (FILTRADO)", output.getvalue(), "Plano_STAR_Giri_Filtrado.xlsx")
 
 # --- TELA 3: MATRIZ DE DESEMPENHO ---
 elif st.session_state.pagina_ativa == 'Desempenho':
