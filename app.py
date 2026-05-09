@@ -448,18 +448,17 @@ if uploaded_file:
             dv = df[df[vend_col].astype(str) == v]
             rows.append({
                 'VENDEDOR':      v,
-                'CLIENTES':      len(dv),
-                'CURVA A':       len(dv[dv['CURVA'] == 'A']),
-                'RECEITA TOTAL': dv['TOTAL LP'].sum(),
-                'EM RISCO':      len(dv[dv['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO'])]),
-                'CRESCIMENTO':   len(dv[dv['STATUS'].isin(['CRESCIMENTO', 'CRESCIMENTO ACENTUADO'])]),
-                'INATIVOS':      len(dv[dv['STATUS'] == 'INATIVO']),
+                'CLIENTES':      str(len(dv)),
+                'CURVA A':       str(len(dv[dv['CURVA'] == 'A'])),
+                'RECEITA TOTAL': f"R$ {fmt_br(dv['TOTAL LP'].sum())}",
+                'EM RISCO':      str(len(dv[dv['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO'])])),
+                'CRESCIMENTO':   str(len(dv[dv['STATUS'].isin(['CRESCIMENTO', 'CRESCIMENTO ACENTUADO'])])),
+                'INATIVOS':      str(len(dv[dv['STATUS'] == 'INATIVO'])),
             })
-        df_vend = pd.DataFrame(rows).sort_values('RECEITA TOTAL', ascending=False)
+        df_vend = pd.DataFrame(rows)
         st.dataframe(
-            df_vend.style
-            .format({'RECEITA TOTAL': lambda x: f"R$ {fmt_br(x)}"})
-            .set_properties(**{'text-align': 'center'}),
+            df_vend.style.set_properties(**{'text-align': 'center'})
+            .set_table_styles([{'selector': 'th', 'props': [('text-align', 'center')]}]),
             use_container_width=True, hide_index=True
         )
 
