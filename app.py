@@ -45,6 +45,13 @@ st.markdown("""
 .vend-table tr:last-child td { border-bottom:none; }
 .vend-table tr:hover td { background:#F5F7FB; }
 .vend-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:hidden; }
+.cart-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.85rem; }
+.cart-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:11px 14px; text-align:center; letter-spacing:0.8px; font-size:0.72rem; text-transform:uppercase; position:sticky; top:0; }
+.cart-table td { padding:10px 14px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; }
+.cart-table td.left { text-align:left; }
+.cart-table tr:last-child td { border-bottom:none; }
+.cart-table tr:hover td { background:#F5F7FB; }
+.cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
 .stDownloadButton > button {
     background: linear-gradient(135deg, #001233 0%, #003087 50%, #0056b3 100%) !important;
     color: #FFFFFF !important; border: none !important; border-radius: 12px !important;
@@ -218,6 +225,15 @@ STATUS_COLORS = {
     'QUEDA ACENTUADA': '#C00000', 'INATIVO': '#9CA3AF',
 }
 
+STATUS_CSS = {
+    'QUEDA ACENTUADA':       'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 8px;',
+    'QUEDA':                 'color:#C00000;font-weight:700;',
+    'CRESCIMENTO ACENTUADO': 'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 8px;',
+    'CRESCIMENTO':           'color:#375623;font-weight:700;',
+    'ESTAVEL':               'color:#0070C0;font-weight:700;',
+    'INATIVO':               'color:#6B7280;font-weight:700;',
+}
+
 st.markdown("""
 <div class="giri-header">
     <div class="giri-header-dot">&#9733;</div>
@@ -380,22 +396,33 @@ if uploaded_file:
         """, unsafe_allow_html=True)
 
     st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
+
     cols_display = ['CURVA', clie_col, vend_col] + extra + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'META']
-    df_disp = df[cols_display].copy()
+    df_disp = df[cols_display].copy().reset_index(drop=True)
 
-    def colorir(val):
-        return {
-            'QUEDA ACENTUADA':       'background-color:#FFC7CE;color:#C00000;font-weight:bold',
-            'QUEDA':                 'color:#C00000;font-weight:bold',
-            'CRESCIMENTO ACENTUADO': 'background-color:#C6EFCE;color:#375623;font-weight:bold',
-            'CRESCIMENTO':           'color:#375623;font-weight:bold',
-            'ESTAVEL':               'color:#0070C0;font-weight:bold',
-            'INATIVO':               'color:#6B7280;font-weight:bold',
-        }.get(val, '')
+    header_cart = "".join([f"<th>{c}</th>" for c in cols_display])
+    rows_cart = ""
+    for _, row in df_disp.iterrows():
+        cells = ""
+        for col_n in cols_display:
+            val = row[col_n]
+            is_cliente = (col_n == clie_col)
+            align_class = ' class="left"' if is_cliente else ''
+            if col_n == 'STATUS':
+                s = str(val)
+                css = STATUS_CSS.get(s, '')
+                cells += f'<td><span style="{css}">{s}</span></td>'
+            elif col_n in ('TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'META'):
+                cells += f'<td{align_class}>{fmt_br(val)}</td>'
+            else:
+                cells += f'<td{align_class}>{val}</td>'
+        rows_cart += f"<tr>{cells}</tr>"
 
-    styled = (
-        df_disp.style
-        .map(colorir, subset=['STATUS'])
-        .format({'TOTAL LP': '{:,.0f}', 'MEDIA LP': '{:,.0f}', 'MEDIA CP': '{:,.0f}', 'META': '{:,.0f}'})
-    )
-    st.dataframe(styled, use_container_width=True, height=500)
+    st.markdown(f"""
+    <div class="cart-wrap">
+        <table class="cart-table">
+            <thead><tr>{header_cart}</tr></thead>
+            <tbody>{rows_cart}</tbody>
+        </table>
+    </div>
+    """, unsafe_allow_html=True)
