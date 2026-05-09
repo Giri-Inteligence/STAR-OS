@@ -6,7 +6,7 @@ import datetime
 from io import BytesIO
 import xlsxwriter
 
-# 1. AMBIENTE EXECUTIVO GIRI (RESTAURADO)
+# 1. AMBIENTE EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
@@ -41,6 +41,7 @@ def engine_star(lp, cp):
     try: lp_v, cp_v = float(lp), float(cp)
     except: lp_v, cp_v = 0.0, 0.0
     
+    # MANUAL TÁTICO WILLIAM BERTO (LITERAL E INTEGRAL)
     txt_ina = "OBJETIVO: Diagnóstico de causa\nPRÉ-CONTATO: Revisar último pedido. Identificar o que parou de ser comprado e em que momento.\nCONTATO: Contato de diagnóstico. Entender o motivo da inatividade sem pressão de venda.\nORIENTAÇÃO: Não ofertar produto na primeira interação. Primeiro entender o que aconteceu. Registrar motivo antes de qualquer ação de reconquista."
     txt_q_ac = "OBJETIVO: Recuperação emergencial\nPRÉ-CONTATO: Revisar histórico completo do cliente. Identificar exatamente quais produtos caíram, em que momento e qual era o volume anterior. Calcular o gap entre a média histórica e o momento atual.\nCONTATO: Priorizar visita presencial ou ligação direta — não mensagem. Abrir diagnóstico sem pressão. Entender se houve mudança interna no cliente, problema de relacionamento ou entrada de concorrente.\nORIENTAÇÃO: Este cliente está em risco de perda. O objetivo da primeira interação não é vender — é entender. Registrar causa com precisão. Escalar para o gestor se o motivo indicar risco de ruptura definitiva."
     txt_q = "OBJETIVO: Estabilização\nPRÉ-CONTATO: Revisar histórico de mix. Identificar quais produtos reduziram ou desapareceram nos últimos 3 meses.\nCONTATO: Diagnosticar contexto atual do cliente. Investigar se houve mudança operacional, financeira ou troca de fornecedor.\nORIENTAÇÃO: Registrar causa identificada. Se houver abertura, propor recomposição de mix com base no histórico anterior."
@@ -56,9 +57,9 @@ def engine_star(lp, cp):
     if cp_v > (lp_v * 1.05): return "🟢 CRESCIMENTO", int(cp_v * 1.05), txt_cre
     return "🔵 ESTÁVEL", int(lp_v * 1.05), txt_est
 
-# --- INTERFACE ---
+# --- INTERFACE STREAMLIT ---
 st.title("GIRI | STAR-OS")
-up = st.file_uploader("Upload da Planilha", type=('xlsx', 'csv'))
+up = st.file_uploader("Upload da Base", type=('xlsx', 'csv'))
 
 if up:
     df_raw = ler_dados_seguros(up)
@@ -78,49 +79,10 @@ if up:
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
         ordem = ['CURVA'] + chaves + col_meses + ['TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'STATUS', 'META', 'AÇÃO']
 
-        # --- EXPORTAÇÃO RÍGIDA V141 ---
+        # --- EXPORTAÇÃO RÍGIDA V142 ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
-            # FORMATOS HARDCODED
-            f_h = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
-            f_txt = wb.add_format({'valign':'top', 'align':'left', 'border':1, 'text_wrap':True})
-            f_num = wb.add_format({'num_format':'#,##0', 'valign':'top', 'align':'center', 'border':1})
-            f_total = wb.add_format({'num_format':'#,##0', 'bg_color':'#F2F2F2', 'bold':True, 'valign':'top', 'align':'center', 'border':1})
-            f_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'top', 'align':'center', 'border':1})
-            f_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'top', 'align':'center', 'border':1})
-            f_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'top', 'align':'center', 'border':1})
-            f_e = wb.add_format({'font_color':'#0070C0', 'bold':True, 'valign':'top', 'align':'center', 'border':1})
-
-            ws.set_default_row(170)
-            ws.set_row(0, 45)
-            
-            for i, col in enumerate(ordem):
-                ws.write(0, i, col, f_h)
-                if col == 'AÇÃO': ws.set_column(i, i, 100, f_txt)
-                elif col == 'STATUS': ws.set_column(i, i, 22)
-                elif col == 'TOTAL LP': ws.set_column(i, i, 11)
-                elif col in col_meses or col in ['CURVA', 'MÉDIA LP', 'MÉDIA CP', 'META']: ws.set_column(i, i, 9)
-                else: ws.set_column(i, i, 30, f_txt)
-
-            for r_idx, row in df_proc.iterrows():
-                row_idx = r_idx + 1
-                for c_idx, col_name in enumerate(ordem):
-                    val = row[col_name]
-                    if col_name == 'STATUS':
-                        fmt = f_num
-                        if "QUEDA ACENTUADA" in str(val): fmt = f_qa
-                        elif "QUEDA" in str(val): fmt = f_q
-                        elif "CRESCIMENTO" in str(val): fmt = f_c
-                        elif "ESTÁVEL" in str(val): fmt = f_e
-                        ws.write_string(row_idx, c_idx, str(val), fmt)
-                    elif col_name == 'TOTAL LP':
-                        ws.write_number(row_idx, c_idx, int(val), f_total)
-                    elif col_name in ['MÉDIA LP', 'MÉDIA CP', 'META'] or col_name in col_meses:
-                        ws.write_number(row_idx, c_idx, int(val), f_num)
-                    else:
-                        ws.write_string(row_idx, c_idx, str(val), f_txt)
-
-        st.download_button("📥 BAIXAR MATRIZ STAR (V141 - RESTAURAÇÃO FINAL)", output.getvalue(), "Matriz_STAR_Final.xlsx")
+            # FORMATOS HARDCODED (DIFERENCIADOS POR T
