@@ -71,13 +71,13 @@ def engine_star(row, lp, cp):
         lp_v, cp_v = float(lp), float(cp)
     except: lp_v, cp_v = 0.0, 0.0
 
-    # MANUAIS TÁTICOS (ESTRUTURADOS COM QUEBRA DE LINHA)
+    # MANUAIS TÁTICOS (ESTRUTURADOS)
     txt_ina = "OBJETIVO: Diagnóstico de causa\nPRÉ-CONTATO: Revisar último pedido. Identificar o que parou de ser comprado.\nCONTATO: Contato de diagnóstico sem pressão.\nORIENTAÇÃO: Registrar motivo antes de qualquer ação."
-    txt_q_ac = "OBJETIVO: Recuperação emergencial\nPRÉ-CONTATO: Revisar histórico e identificar gap de volume.\nCONTATO: Priorizar ligação/visita direta. Abrir diagnóstico.\nORIENTAÇÃO: Cliente em risco de perda. Registrar causa com precisão."
-    txt_q = "OBJETIVO: Estabilização\nPRÉ-CONTATO: Identificar mix que desapareceu nos últimos 3 meses.\nCONTATO: Investigar mudança operacional ou troca de fornecedor.\nORIENTAÇÃO: Propor recomposição de mix baseada no histórico."
-    txt_est = "OBJETIVO: Blindagem e crescimento incremental\nPRÉ-CONTATO: Mapear categorias compatíveis não compradas.\nCONTATO: Manter frequência. Explorar expansão de mix.\nORIENTAÇÃO: Monitorar frequência de pedidos."
-    txt_cre = "OBJETIVO: Consolidação\nPRÉ-CONTATO: Identificar o driver do crescimento.\nCONTATO: Reforçar relacionamento e garantir abastecimento.\nORIENTAÇÃO: Proteger o cliente contra abordagem da concorrência."
-    txt_cre_ac = "OBJETIVO: Consolidação e proteção\nPRÉ-CONTATO: Avaliar se o volume é sustentável ou pontual.\nCONTATO: Reforçar presença e antecipar pedidos futuros.\nORIENTAÇÃO: Momento de maior risco de abordagem externa. Solidificar vínculo."
+    txt_q_ac = "OBJETIVO: Recuperação emergencial\nPRÉ-CONTATO: Revisar histórico e identificar gap de volume.\nCONTATO: Priorizar ligação direta. Abrir diagnóstico.\nORIENTAÇÃO: Cliente em risco. Registrar causa com precisão."
+    txt_q = "OBJETIVO: Estabilização\nPRÉ-CONTATO: Identificar mix que desapareceu recentemente.\nCONTATO: Investigar mudança operacional ou concorrência.\nORIENTAÇÃO: Propor recomposição de mix."
+    txt_est = "OBJETIVO: Blindagem e crescimento incremental\nPRÉ-CONTATO: Mapear categorias compatíveis não compradas.\nCONTATO: Manter frequência. Explorar expansão.\nORIENTAÇÃO: Monitorar frequência de pedidos."
+    txt_cre = "OBJETIVO: Consolidação\nPRÉ-CONTATO: Identificar o driver do crescimento.\nCONTATO: Reforçar relacionamento.\nORIENTAÇÃO: Proteger o cliente contra a concorrência."
+    txt_cre_ac = "OBJETIVO: Consolidação e proteção\nPRÉ-CONTATO: Avaliar se o volume é sustentável.\nCONTATO: Antecipar pedidos futuros.\nORIENTAÇÃO: Momento de maior risco de abordagem externa."
 
     if cp_v <= 0: return "⚫ INATIVO", 0, txt_ina
     if lp_v <= 0: return "🔵 ESTÁVEL", int(cp_v * 1.05), txt_est
@@ -108,12 +108,15 @@ if up:
     if not col_meses:
         st.error("Falha na detecção temporal.")
     else:
+        # ASSEPSIA PRÉ-CÁLCULO
+        for c in chaves: df_proc[c] = df_proc[c].fillna("-").astype(str)
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
+        
         col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
         
-        df_proc['TOTAL LP'] = df_proc[col_ativas].sum(axis=1).round(0).astype(int)
-        df_proc['MÉDIA LP'] = (df_proc[col_ativas].mean(axis=1)).round(0).astype(int)
-        df_proc['MÉDIA CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
+        df_proc['TOTAL LP'] = df_proc[col_ativas].sum(axis=1).fillna(0).round(0).astype(int)
+        df_proc['MÉDIA LP'] = (df_proc[col_ativas].mean(axis=1)).fillna(0).round(0).astype(int)
+        df_proc['MÉDIA CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).fillna(0).round(0).astype(int)
         
         df_proc = df_proc.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
         df_proc['CURVA'] = (df_proc['TOTAL LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
@@ -127,7 +130,7 @@ if up:
         st.subheader("MATRIZ DE DECISÃO TÁTICA")
         st.dataframe(df_proc[ordem].style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
 
-        # --- EXPORTAÇÃO EXECUTIVA (VERSÃO 131 - FIX WRAP TEXT) ---
+        # --- EXPORTAÇÃO EXECUTIVA BLINDADA (V133) ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
@@ -141,6 +144,7 @@ if up:
             meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
             total_f = wb.add_format({'num_format':'#,##0', 'bg_color':'#F2F2F2', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             
+            # GATILHOS DE STATUS
             fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
@@ -149,46 +153,53 @@ if up:
             
             ws.set_row(0, 45)
             
-            # Aplicação de Larguras
             for i, col in enumerate(ordem):
                 ws.write(0, i, col, h_f)
-                if col == 'AÇÃO': ws.set_column(i, i, 60, b_f_texto) # Largura controlada para forçar o Wrap
+                if col == 'AÇÃO': ws.set_column(i, i, 60, b_f_texto)
                 elif col == 'STATUS': ws.set_column(i, i, 22, b_f_status_base)
                 elif col == 'CLIENTE' or 'RAZAO' in str(col): ws.set_column(i, i, 35, b_f_texto)
                 elif col == 'VENDEDOR' or 'REP' in str(col) or 'CIDADE' in str(col): ws.set_column(i, i, 22, b_f_texto)
                 elif col in ('CURVA', 'TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META'): ws.set_column(i, i, 9)
                 else: ws.set_column(i, i, 9)
 
-            status_idx = ordem.index('STATUS')
-            meta_idx = ordem.index('META')
-            total_idx = ordem.index('TOTAL LP')
-            acao_idx = ordem.index('AÇÃO')
+            # INDEXAÇÃO RÍGIDA PARA EVITAR MISMATCH
+            idx_map = {col: i for i, col in enumerate(ordem)}
             
             for row_num in range(1, len(df_proc) + 1):
-                # Escreve AÇÃO explicitamente com o formato de texto wrap
-                ws.write(row_num, acao_idx, df_proc.iloc[row_num-1]['AÇÃO'], b_f_texto)
+                linha = df_proc.iloc[row_num-1]
                 
-                # Escreve STATUS com cores
-                st_val = str(df_proc.iloc[row_num-1]['STATUS'])
-                current_fmt = b_f_status_base
-                if "QUEDA ACENTUADA" in st_val: current_fmt = fmt_qa
-                elif "QUEDA" in st_val: current_fmt = fmt_q
-                elif "CRESCIMENTO" in st_val: current_fmt = fmt_c
-                elif "ESTÁVEL" in st_val: current_fmt = fmt_e
-                elif "INATIVO" in st_val: current_fmt = fmt_ina
-                ws.write(row_num, status_idx, st_val, current_fmt)
-                
-                # Escreve Meta e Total LP com seus formatos
-                ws.write(row_num, meta_idx, int(df_proc.iloc[row_num-1]['META']), meta_f)
-                ws.write(row_num, total_idx, int(df_proc.iloc[row_num-1]['TOTAL LP']), total_f)
-                
-                # Escreve demais colunas
-                for i, col in enumerate(ordem):
-                    if i not in (status_idx, meta_idx, total_idx, acao_idx):
-                        val = df_proc.iloc[row_num-1][col]
-                        fmt = b_f_texto if i <= len(chaves) else b_f_num
-                        ws.write(row_num, i, val, fmt)
+                # ESCREVE TODAS AS CÉLULAS COM PROTEÇÃO DE TIPO
+                for col_name, col_idx in idx_map.items():
+                    val = linha[col_name]
+                    
+                    # 1. TRATA STATUS
+                    if col_name == 'STATUS':
+                        st_val = str(val)
+                        fmt = b_f_status_base
+                        if "QUEDA ACENTUADA" in st_val: fmt = fmt_qa
+                        elif "QUEDA" in st_val: fmt = fmt_q
+                        elif "CRESCIMENTO" in st_val: fmt = fmt_c
+                        elif "ESTÁVEL" in st_val: fmt = fmt_e
+                        elif "INATIVO" in st_val: fmt = fmt_ina
+                        ws.write(row_num, col_idx, st_val, fmt)
+                    
+                    # 2. TRATA META E TOTAL LP (DESTAQUES)
+                    elif col_name == 'META':
+                        ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, meta_f)
+                    elif col_name == 'TOTAL LP':
+                        ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, total_f)
+                    
+                    # 3. TRATA AÇÃO (WRAP TEXT)
+                    elif col_name == 'AÇÃO':
+                        ws.write_string(row_num, col_idx, str(val) if pd.notna(val) else "-", b_f_texto)
+                    
+                    # 4. DEMAIS COLUNAS
+                    else:
+                        if col_idx <= idx_map.get(chaves[-1], 0): # Colunas de texto (Chaves)
+                            ws.write_string(row_num, col_idx, str(val) if pd.notna(val) else "-", b_f_texto)
+                        else: # Colunas numéricas (Meses e Médias)
+                            ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, b_f_num)
 
             ws.set_default_row(90)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (V131)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (V133 - ESTÁVEL)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
