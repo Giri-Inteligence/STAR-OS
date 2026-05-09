@@ -17,45 +17,48 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- MOTOR DE MAPEAMENTO E NORMALIZAÇÃO ---
+# --- MOTOR DE MAPEAMENTO E NORMALIZAÇÃO BLINDADO ---
 def identificar_colunas(df):
     mapa = {'CLIENTE': None, 'VENDEDOR': None, 'CIDADE': None, 'MESES': []}
     syn_cliente = ['EMPRESA', 'CLIENTE', 'NOME', 'RAZAO', 'IDENTIFICAO']
     syn_vendedor = ['VENDEDOR', 'REP', 'CONSULTOR', 'RESPONSAVEL', 'AGENTE', 'PATRICIA', 'JEFERSON']
     syn_cidade = ['CIDADE', 'MUNICIPIO', 'LOCALIDADE', 'UF', 'REGIAO']
-    meses_pt = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
 
     for col in df.columns:
         c_str = str(col).strip().upper()
         is_date = False
-        if isinstance(col, (pd.Timestamp, datetime.date)): is_date = True
-        elif any(m in c_str for m in meses_pt): is_date = True
-        elif re.search(r"\d{1,2}[/-]\d{2,4}", c_str): is_date = True
+        
+        # Correção Tática: \b garante que a sigla do mês não faça parte de outra palavra (ex: NOVA PACK)
+        if isinstance(col, (pd.Timestamp, datetime.date)): 
+            is_date = True
+        elif re.search(r"\b(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)\b", c_str): 
+            is_date = True
+        elif re.search(r"\b\d{1,2}[/-]\d{2,4}\b", c_str): 
+            is_date = True
             
-        if is_date and 'TOTAL' not in c_str: mapa['MESES'].append(col)
-        elif any(s in c_str for s in syn_cliente) and not mapa['CLIENTE']: mapa['CLIENTE'] = col
-        elif any(s in c_str for s in syn_vendedor) and not mapa['VENDEDOR']: mapa['VENDEDOR'] = col
-        elif any(s in c_str for s in syn_cidade) and not mapa['CIDADE']: mapa['CIDADE'] = col
+        if is_date and 'TOTAL' not in c_str: 
+            mapa['MESES'].append(col)
+        elif any(s in c_str for s in syn_cliente) and not mapa['CLIENTE']: 
+            mapa['CLIENTE'] = col
+        elif any(s in c_str for s in syn_vendedor) and not mapa['VENDEDOR']: 
+            mapa['VENDEDOR'] = col
+        elif any(s in c_str for s in syn_cidade) and not mapa['CIDADE']: 
+            mapa['CIDADE'] = col
+            
     return mapa
 
 def engine_star(row, lp, cp):
-    # Proteção de tipo: Garante que lp e cp sejam numéricos antes do cálculo
     try:
         lp = float(lp) if not pd.isna(lp) else 0.0
         cp = float(cp) if not pd.isna(cp) else 0.0
     except:
         lp, cp = 0.0, 0.0
 
-    if cp <= 0: 
-        return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn e Reconexão.\nAÇÃO: Reestabelecer contato sem viés de venda.\nORIENTAÇÃO: Identifique o motivo real da parada."
-    if lp <= 0: # Caso o cliente seja novo ou sem histórico de LP
-        return "🔵 ESTÁVEL", int(cp * 1.05), "OBJETIVO: Manutenção.\nAÇÃO: Validar satisfação inicial.\nORIENTAÇÃO: Acompanhe a integração do cliente."
-    if cp < (lp * 0.85): 
-        return "🚨 QUEDA ACENTUADA", int(lp), "OBJETIVO: Defesa de Share.\nAÇÃO: Investigar concorrência ou falha de serviço.\nORIENTAÇÃO: Entenda onde ele perde margem."
-    if cp < (lp * 0.98): 
-        return "🔴 QUEDA", int(lp), "OBJETIVO: Estabilização de Giro.\nAÇÃO: Ajuste de mix e frequência.\nORIENTAÇÃO: Sugira ajustes que reduzam perdas."
-    if cp > (lp * 1.05): 
-        return "🟢 CRESCIMENTO", int(cp * 1.05), "OBJETIVO: Expansão (Upsell).\nAÇÃO: Analisar mix de clientes similares.\nORIENTAÇÃO: Aproveite a tração para elevar o ticket médio."
+    if cp <= 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn.\nAÇÃO: Reconexão estratégica.\nORIENTAÇÃO: Identifique o motivo real da parada."
+    if lp <= 0: return "🔵 ESTÁVEL", int(cp * 1.05), "OBJETIVO: Manutenção inicial.\nAÇÃO: Validar satisfação.\nORIENTAÇÃO: Acompanhe a integração do cliente novo."
+    if cp < (lp * 0.85): return "🚨 QUEDA ACENTUADA", int(lp), "OBJETIVO: Defesa de Share.\nAÇÃO: Investigar concorrência ou falha de serviço.\nORIENTAÇÃO: Entenda onde ele perde margem."
+    if cp < (lp * 0.98): return "🔴 QUEDA", int(lp), "OBJETIVO: Estabilização.\nAÇÃO: Ajuste de mix e frequência.\nORIENTAÇÃO: Sugira ajustes que reduzam perdas."
+    if cp > (lp * 1.05): return "🟢 CRESCIMENTO", int(cp * 1.05), "OBJETIVO: Expansão (Upsell).\nAÇÃO: Analisar mix de clientes similares.\nORIENTAÇÃO: Aproveite a tração para elevar o ticket."
     return "🔵 ESTÁVEL", int(lp * 1.05), "OBJETIVO: Blindagem.\nAÇÃO: Manutenção e rituais.\nORIENTAÇÃO: Garanta a recorrência."
 
 # --- INTERFACE ---
@@ -72,7 +75,7 @@ if up:
     mapa = identificar_colunas(df_raw)
     
     if not mapa['MESES']:
-        st.error("Não identifiquei colunas de faturamento temporal. Verifique os títulos das colunas.")
+        st.error("Não identifiquei colunas de faturamento temporal. O formato dos meses não foi reconhecido.")
     else:
         df = df_raw.copy()
         for c in mapa['MESES']: df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0)
@@ -85,13 +88,12 @@ if up:
         chaves_final = list(dict.fromkeys(chaves_base + dims_sel))
         df_ag = df.groupby(chaves_final, as_index=False)[mapa['MESES']].sum()
         
-        # Filtro de meses com dados reais (Ignora o lixo futuro do arquivo da cliente)
+        # Filtro de meses com dados reais para não puxar meses de projeção vazios
         col_com_dados = [c for c in mapa['MESES'] if df_ag[c].sum() > 0]
         
         if not col_com_dados:
-            st.error("Todas as colunas de faturamento estão zeradas.")
+            st.error("Todas as colunas identificadas como meses estão zeradas.")
         else:
-            # Cálculos de Médias com Proteção de Denominador
             c_lp = col_com_dados[-min(lp_m, len(col_com_dados)):]
             c_cp = col_com_dados[-min(cp_m, len(col_com_dados)):]
             
@@ -99,17 +101,14 @@ if up:
             df_ag['MEDIA_LP'] = (df_ag['TOTAL_LP'] / max(1, len(c_lp))).round(0)
             df_ag['MEDIA_CP'] = (df_ag[c_cp].sum(axis=1) / max(1, len(c_cp))).round(0)
             
-            # ORDENAÇÃO DECRESCENTE: O maior cliente é a prioridade zero
+            # Ordenação Decrescente e Curva ABC
             df_ag = df_ag.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
-            
-            # Curva ABC baseada no histórico acumulado
             df_ag['CURVA'] = (df_ag['TOTAL_LP'].cumsum() / df_ag['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
             
-            # Aplicação segura do Método STAR
             res = df_ag.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
             df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
 
-            # --- PREPARAÇÃO PARA EXIBIÇÃO ---
+            # --- PREPARAÇÃO DE EXIBIÇÃO ---
             df_view = df_ag.copy()
             df_view = df_view.loc[:, ~df_view.columns.duplicated()]
             nomes_meses_str = [str(c).split(' ')[0] if isinstance(c, (pd.Timestamp, datetime.date)) else str(c) for c in mapa['MESES']]
@@ -118,10 +117,10 @@ if up:
             ordem_view = ['CURVA'] + chaves_final + nomes_meses_str + ['TOTAL_LP', 'STATUS', 'META', 'AÇÃO']
             ordem_view = list(dict.fromkeys(ordem_view))
 
-            st.subheader(f"GOVERNANÇA STAR: {len(df_ag)} CLIENTES ORDENADOS POR FATURAMENTO")
+            st.subheader(f"GOVERNANÇA STAR: {len(df_ag)} CLIENTES ORDENADOS")
             st.dataframe(df_view[ordem_view], use_container_width=True)
 
-            # EXPORTAÇÃO COM CABEÇALHO EXECUTIVO
+            # EXPORTAÇÃO EXCEL
             output = BytesIO()
             with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
                 df_view[ordem_view].to_excel(wr, index=False, sheet_name='STAR')
