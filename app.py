@@ -40,7 +40,6 @@ def ler_dados_seguros(file):
 def identificar_e_pivotar(df):
     cols = df.columns.tolist()
     mapa = {'CLIENTE': None, 'VENDEDOR': None, 'DATA': None, 'VALOR': None, 'MESES_COL': []}
-    
     syn_cliente = ['CLIENTE', 'EMPRESA', 'RAZAO', 'NOME']
     syn_vendedor = ['VENDEDOR', 'REP', 'CONSULTOR', 'PATRICIA', 'JEFERSON']
     syn_valor = ['VALOR', 'TOTAL', 'FATURAMENTO', 'LIQUIDO', 'BRUTO']
@@ -55,7 +54,6 @@ def identificar_e_pivotar(df):
         if any(s in c_str for s in syn_valor) and not mapa['VALOR']: mapa['VALOR'] = c
         if ('DATA' in c_str or 'EMISSAO' in c_str) and not mapa['DATA']: mapa['DATA'] = c
 
-    # Pivotagem para relatórios transacionais (ex: Tortelli)
     if len(mapa['MESES_COL']) <= 1 and mapa['DATA'] and mapa['VALOR']:
         df[mapa['DATA']] = pd.to_datetime(df[mapa['DATA']], errors='coerce')
         df = df.dropna(subset=[mapa['DATA']])
@@ -73,7 +71,7 @@ def engine_star(row, lp, cp):
     except: lp_v, cp_v = 0.0, 0.0
 
     if cp_v <= 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn.\nAÇÃO: Reconexão estratégica.\nORIENTAÇÃO: Identifique o motivo real da parada."
-    if lp_v <= 0: return "🔵 NOVO", int(cp_v * 1.05), "OBJETIVO: Manutenção.\nAÇÃO: Validar satisfação inicial.\nORIENTAÇÃO: Acompanhe a integração do cliente."
+    if lp_v <= 0: return "🔵 NOVO", int(cp_v * 1.05), "OBJETIVO: Manutenção.\nAÇÃO: Validar satisfação inicial.\nORIENTAÇÃO: Acompanhe a integração do cliente novo."
     if cp_v < (lp_v * 0.85): return "🚨 QUEDA ACENTUADA", int(lp_v), "OBJETIVO: Defesa de Share.\nAÇÃO: Investigar concorrência.\nORIENTAÇÃO: Entenda onde ele perde margem."
     if cp_v < (lp_v * 0.98): return "🔴 QUEDA", int(lp_v), "OBJETIVO: Estabilização.\nAÇÃO: Ajuste de mix.\nORIENTAÇÃO: Sugira ajustes que reduzam perdas."
     if cp_v > (lp_v * 1.05): return "🟢 CRESCIMENTO", int(cp_v * 1.05), "OBJETIVO: Expansão.\nAÇÃO: Upsell tático.\nORIENTAÇÃO: Eleve o ticket médio."
@@ -96,16 +94,11 @@ if up:
         st.error("Não identifiquei dados temporais no arquivo.")
     else:
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
-        
-        # Filtro de sanidade para ignorar colunas vazias
         col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
         
-        c_lp = col_ativas[-min(lp_m, len(col_ativas)):]
-        c_cp = col_ativas[-min(cp_m, len(col_ativas)):]
-        
-        df_proc['MEDIA_LP'] = (df_proc[c_lp].mean(axis=1)).round(0)
-        df_proc['MEDIA_CP'] = (df_proc[c_cp].mean(axis=1)).round(0)
-        df_proc['TOTAL_LP'] = df_proc[c_lp].sum(axis=1).round(0)
+        df_proc['MEDIA_LP'] = (df_proc[col_ativas[-min(lp_m, len(col_ativas)):]].mean(axis=1)).round(0)
+        df_proc['MEDIA_CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0)
+        df_proc['TOTAL_LP'] = df_proc[col_ativas[-min(lp_m, len(col_ativas)):]].sum(axis=1).round(0)
         
         df_proc = df_proc.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
         df_proc['CURVA'] = (df_proc['TOTAL_LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
@@ -113,20 +106,39 @@ if up:
         res = df_proc.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
 
-        # ORDEM DE EXIBIÇÃO FORÇANDO AS MÉDIAS
+        # ORDEM DE EXIBIÇÃO
         ordem = ['CURVA'] + chaves + col_meses + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
-        
-        st.subheader(f"Matriz de Decisão Tática (Hierarquia por Faturamento Total)")
+        st.subheader("Matriz de Decisão Tática (Centralizada)")
         st.dataframe(df_proc[ordem], use_container_width=True)
 
+        # --- EXPORTAÇÃO COM ALTA ESTÉTICA ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
-            h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter'})
-            for i, col in enumerate(ordem): ws.write(0, i, col, h_f)
-            ws.set_default_row(75)
-            ws.set_column(1, 1, 45)
-            ws.set_column(len(ordem)-1, len(ordem)-1, 80)
+            
+            # Formatos com vertical alignment centralizado
+            h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
+            b_f = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
+            n_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
+            
+            # Loop de escrita e ajuste de largura dinâmico
+            for i, col in enumerate(ordem):
+                # Escreve cabeçalho
+                ws.write(0, i, col, h_f)
+                
+                # Cálculo de largura: tamanho do nome da coluna + respiro (padding)
+                # Para colunas críticas (Ação e Cliente), largura maior fixa
+                if col == 'AÇÃO':
+                    width = 80
+                elif col in chaves:
+                    width = 45
+                else:
+                    width = max(len(str(col)) + 6, 12)
+                
+                ws.set_column(i, i, width, n_f if i > len(chaves) and i < len(ordem)-3 else b_f)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (COM EVIDÊNCIAS)", output.getvalue(), "Giri_Matriz_STAR_V122.xlsx")
+            # Altura das linhas para respiro visual
+            ws.set_default_row(75)
+
+        st.download_button("📥 EXPORTAR MATRIZ STAR (ESTÉTICA EXECUTIVA)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
