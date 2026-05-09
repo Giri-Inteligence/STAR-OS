@@ -119,7 +119,7 @@ def gerar_excel(df_raw, final_ordem, clie_col, vend_col, meses_col):
             'valign': 'vcenter', 'align': 'center', 'border': 1, 'font_name': 'Arial'
         })
 
-        ws.set_default_row(95)
+        ws.set_default_row(125)
         ws.set_row(0, 40)
 
         larguras = {
