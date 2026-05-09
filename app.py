@@ -17,6 +17,28 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# --- MOTOR DE LEITURA INTELIGENTE (ANTI-CABEÇALHOS DE ERP) ---
+def ler_dados_seguros(file):
+    """Varre as primeiras linhas para encontrar o verdadeiro cabeçalho da tabela."""
+    if file.name.endswith('xlsx'):
+        df_temp = pd.read_excel(file, header=None, nrows=15)
+    else:
+        df_temp = pd.read_csv(file, header=None, nrows=15)
+        
+    header_idx = 0
+    # Procura a linha que contém os títulos reais das colunas
+    for i in range(len(df_temp)):
+        row_str = " ".join([str(x).upper() for x in df_temp.iloc[i].fillna('')])
+        if "CLIENTE" in row_str or "EMPRESA" in row_str or "JAN" in row_str or "VENDEDOR" in row_str:
+            header_idx = i
+            break
+            
+    # Carrega o arquivo novamente, mas começando da linha correta
+    if file.name.endswith('xlsx'):
+        return pd.read_excel(file, header=header_idx)
+    else:
+        return pd.read_csv(file, header=header_idx)
+
 # --- MOTOR DE MAPEAMENTO E NORMALIZAÇÃO BLINDADO ---
 def identificar_colunas(df):
     mapa = {'CLIENTE': None, 'VENDEDOR': None, 'CIDADE': None, 'MESES': []}
@@ -28,7 +50,6 @@ def identificar_colunas(df):
         c_str = str(col).strip().upper()
         is_date = False
         
-        # Correção Tática: \b garante que a sigla do mês não faça parte de outra palavra (ex: NOVA PACK)
         if isinstance(col, (pd.Timestamp, datetime.date)): 
             is_date = True
         elif re.search(r"\b(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)\b", c_str): 
@@ -68,10 +89,15 @@ with st.sidebar:
     cp_m = st.number_input("Meses Curto Prazo", value=3, min_value=1)
 
 st.title("STAR-OS | MATRIZ DE DECISÃO TÁTICA")
-up = st.file_uploader("Upload da Planilha", type=['xlsx', 'csv'])
+up = st.file_uploader("Upload da Planilha (Aceita Exportações de ERP)", type=['xlsx', 'csv'])
 
 if up:
-    df_raw = pd.read_excel(up) if up.name.endswith('xlsx') else pd.read_csv(up)
+    # 1. Carrega o arquivo usando o motor inteligente que ignora títulos inúteis do ERP
+    df_raw = ler_dados_seguros(up)
+    
+    # Padroniza as colunas em maiúsculo para o mapeamento
+    df_raw.columns = [str(c).strip().upper() for c in df_raw.columns]
+    
     mapa = identificar_colunas(df_raw)
     
     if not mapa['MESES']:
