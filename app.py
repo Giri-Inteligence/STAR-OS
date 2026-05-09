@@ -17,7 +17,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- MOTOR DE INTELIGÊNCIA DE DADOS ---
+# --- MOTOR DE LEITURA E TRANSFORMAÇÃO ---
 def ler_dados_seguros(file):
     file.seek(0)
     if file.name.endswith('xlsx'):
@@ -46,7 +46,6 @@ def identificar_e_pivotar(df):
     syn_valor = ['VALOR', 'TOTAL', 'FATURAMENTO', 'LIQUIDO', 'BRUTO']
     meses_pt = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
 
-    # Identifica se é Matriz (Horizontal) ou Transacional (Vertical)
     for c in cols:
         c_str = str(c).upper()
         if any(m in c_str for m in meses_pt) or re.search(r"\d{1,2}[/-]\d{2,4}", c_str):
@@ -56,22 +55,16 @@ def identificar_e_pivotar(df):
         if any(s in c_str for s in syn_valor) and not mapa['VALOR']: mapa['VALOR'] = c
         if ('DATA' in c_str or 'EMISSAO' in c_str) and not mapa['DATA']: mapa['DATA'] = c
 
-    # CASO 1: TRANSACIONAL (Relatório Tortelli - Vendas em linhas)
+    # Pivotagem para relatórios transacionais (ex: Tortelli)
     if len(mapa['MESES_COL']) <= 1 and mapa['DATA'] and mapa['VALOR']:
         df[mapa['DATA']] = pd.to_datetime(df[mapa['DATA']], errors='coerce')
         df = df.dropna(subset=[mapa['DATA']])
-        # Cria coluna de referência Jan/25
         df['MES_REF'] = df[mapa['DATA']].dt.strftime('%b/%y').str.upper()
-        
         chaves = [c for c in [mapa['CLIENTE'], mapa['VENDEDOR']] if c]
         df_pivot = df.pivot_table(index=chaves, columns='MES_REF', values=mapa['VALOR'], aggfunc='sum').fillna(0).reset_index()
-        
-        # Reordena colunas de meses cronologicamente
         meses_ordenados = sorted(df_pivot.columns[len(chaves):], key=lambda x: datetime.datetime.strptime(x, '%b/%y'))
-        df_pivot = df_pivot[chaves + meses_ordenados]
-        return df_pivot, meses_ordenados, chaves
+        return df_pivot[chaves + meses_ordenados], meses_ordenados, chaves
 
-    # CASO 2: MATRIZ (Relatório Nova Pack - Meses em colunas)
     return df, mapa['MESES_COL'], [c for c in [mapa['CLIENTE'], mapa['VENDEDOR']] if c]
 
 def engine_star(row, lp, cp):
@@ -92,36 +85,38 @@ with st.sidebar:
     lp_m = st.number_input("Meses Longo Prazo", value=12)
     cp_m = st.number_input("Meses Curto Prazo", value=3)
 
-st.title("STAR-OS | INTELIGÊNCIA DE ARQUITETURA COMERCIAL")
-up = st.file_uploader("Upload da Planilha (Matriz ou Transacional)", type=['xlsx', 'csv'])
+st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
+up = st.file_uploader("Upload da Planilha", type=['xlsx', 'csv'])
 
 if up:
     df_raw = ler_dados_seguros(up)
     df_proc, col_meses, chaves = identificar_e_pivotar(df_raw)
     
     if not col_meses:
-        st.error("Não identifiquei dados temporais (Datas ou Meses) no arquivo.")
+        st.error("Não identifiquei dados temporais no arquivo.")
     else:
-        # Cálculos de Governança
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         
-        c_lp = col_meses[-min(lp_m, len(col_meses)):]
-        c_cp = col_meses[-min(cp_m, len(col_meses)):]
+        # Filtro de sanidade para ignorar colunas vazias
+        col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
         
+        c_lp = col_ativas[-min(lp_m, len(col_ativas)):]
+        c_cp = col_ativas[-min(cp_m, len(col_ativas)):]
+        
+        df_proc['MEDIA_LP'] = (df_proc[c_lp].mean(axis=1)).round(0)
+        df_proc['MEDIA_CP'] = (df_proc[c_cp].mean(axis=1)).round(0)
         df_proc['TOTAL_LP'] = df_proc[c_lp].sum(axis=1).round(0)
-        df_proc['MEDIA_LP'] = (df_proc['TOTAL_LP'] / max(1, len(c_lp))).round(0)
-        df_proc['MEDIA_CP'] = (df_proc[c_cp].sum(axis=1) / max(1, len(c_cp))).round(0)
         
-        # HIERARQUIA DECRESCENTE (REGRA DE OURO)
         df_proc = df_proc.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
         df_proc['CURVA'] = (df_proc['TOTAL_LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
         
         res = df_proc.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
 
-        # Exibição
-        ordem = ['CURVA'] + chaves + col_meses + ['TOTAL_LP', 'STATUS', 'META', 'AÇÃO']
-        st.subheader(f"Governança STAR: {len(df_proc)} Clientes")
+        # ORDEM DE EXIBIÇÃO FORÇANDO AS MÉDIAS
+        ordem = ['CURVA'] + chaves + col_meses + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
+        
+        st.subheader(f"Matriz de Decisão Tática (Hierarquia por Faturamento Total)")
         st.dataframe(df_proc[ordem], use_container_width=True)
 
         output = BytesIO()
@@ -134,4 +129,4 @@ if up:
             ws.set_column(1, 1, 45)
             ws.set_column(len(ordem)-1, len(ordem)-1, 80)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR", output.getvalue(), "Giri_Matriz_STAR.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (COM EVIDÊNCIAS)", output.getvalue(), "Giri_Matriz_STAR_V122.xlsx")
