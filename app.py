@@ -456,7 +456,9 @@ if uploaded_file:
             })
         df_vend = pd.DataFrame(rows).sort_values('RECEITA TOTAL', ascending=False)
         st.dataframe(
-            df_vend.style.format({'RECEITA TOTAL': 'R$ {:,.0f}'}),
+            df_vend.style
+            .format({'RECEITA TOTAL': lambda x: f"R$ {fmt_br(x)}"})
+            .set_properties(**{'text-align': 'center'}),
             use_container_width=True, hide_index=True
         )
 
