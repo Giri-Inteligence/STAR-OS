@@ -71,21 +71,21 @@ def engine_star(row, lp, cp):
         lp_v, cp_v = float(lp), float(cp)
     except: lp_v, cp_v = 0.0, 0.0
 
-    # MANUAIS DE EXECUÇÃO TÁTICA (GIRI STANDARD)
-    txt_inativo = "OBJETIVO: Diagnóstico de causa\nPRÉ-CONTATO: Revisar último pedido. Identificar o que parou de ser comprado e em que momento.\nCONTATO: Contato de diagnóstico. Entender o motivo da inatividade sem pressão de venda.\nORIENTAÇÃO: Não ofertar produto na primeira interação. Primeiro entender o que aconteceu. Registrar motivo antes de qualquer ação de reconquista."
-    txt_queda_ac = "OBJETIVO: Recuperação emergencial\nPRÉ-CONTATO: Revisar histórico completo do cliente. Identificar exatamente quais produtos caíram, em que momento e qual era o volume anterior. Calcular o gap entre a média histórica e o momento atual.\nCONTATO: Priorizar visita presencial ou ligação direta — não mensagem. Abrir diagnóstico sem pressão. Entender se houve mudança interna no cliente, problema de relacionamento ou entrada de concorrente.\nORIENTAÇÃO: Este cliente está em risco de perda. O objetivo da primeira interação não é vender — é entender. Registrar causa com precisão. Escalar para o gestor se o motivo indicar risco de ruptura definitiva."
-    txt_queda = "OBJETIVO: Estabilização\nPRÉ-CONTATO: Revisar histórico de mix. Identificar quais produtos reduziram ou desapareceram nos últimos 3 meses.\nCONTATO: Diagnosticar contexto atual do cliente. Investigar se houve mudança operacional, financeira ou troca de fornecedor.\nORIENTAÇÃO: Registrar causa identificada. Se houver abertura, propor recomposição de mix com base no histórico anterior."
-    txt_estavel = "OBJETIVO: Blindagem e crescimento incremental\nPRÉ-CONTATO: Revisar mix atual. Mapear categorias que o cliente não compra mas que são compatíveis com seu perfil.\nCONTATO: Manter frequência de relacionamento. Explorar oportunidade de expansão de mix.\nORIENTAÇÃO: Cliente estável não é cliente seguro. Monitorar frequência de pedidos e introduzir novos itens gradualmente."
-    txt_cresc = "OBJETIVO: Consolidação\nPRÉ-CONTATO: Identificar o driver do crescimento. Avaliar se é sazonalidade ou mudança estrutural no cliente.\nCONTATO: Reforçar relacionamento. Garantir abastecimento e antecipar demanda dos próximos períodos.\nORIENTAÇÃO: Proteger o cliente. Momento de crescimento é o de maior risco de abordagem pelo concorrente."
-    txt_cresc_ac = "OBJETIVO: Consolidação e proteção\nPRÉ-CONTATO: Identificar quais produtos puxaram o crescimento. Avaliar se o cliente tem capacidade de sustentar esse volume ou se é pontual. Verificar se há mix ainda não explorado.\nCONTATO: Reforçar presença. Garantir que o abastecimento está adequado ao novo patamar de compra. Antecipar pedidos futuros.\nORIENTAÇÃO: Crescimento acentuado atrai concorrência. Este é o momento de maior risco de abordagem externa. Aumentar frequência de contato e solidificar o relacionamento antes que o concorrente perceba a oportunidade."
+    # MANUAIS TÁTICOS (ESTRUTURADOS COM QUEBRA DE LINHA)
+    txt_ina = "OBJETIVO: Diagnóstico de causa\nPRÉ-CONTATO: Revisar último pedido. Identificar o que parou de ser comprado.\nCONTATO: Contato de diagnóstico sem pressão.\nORIENTAÇÃO: Registrar motivo antes de qualquer ação."
+    txt_q_ac = "OBJETIVO: Recuperação emergencial\nPRÉ-CONTATO: Revisar histórico e identificar gap de volume.\nCONTATO: Priorizar ligação/visita direta. Abrir diagnóstico.\nORIENTAÇÃO: Cliente em risco de perda. Registrar causa com precisão."
+    txt_q = "OBJETIVO: Estabilização\nPRÉ-CONTATO: Identificar mix que desapareceu nos últimos 3 meses.\nCONTATO: Investigar mudança operacional ou troca de fornecedor.\nORIENTAÇÃO: Propor recomposição de mix baseada no histórico."
+    txt_est = "OBJETIVO: Blindagem e crescimento incremental\nPRÉ-CONTATO: Mapear categorias compatíveis não compradas.\nCONTATO: Manter frequência. Explorar expansão de mix.\nORIENTAÇÃO: Monitorar frequência de pedidos."
+    txt_cre = "OBJETIVO: Consolidação\nPRÉ-CONTATO: Identificar o driver do crescimento.\nCONTATO: Reforçar relacionamento e garantir abastecimento.\nORIENTAÇÃO: Proteger o cliente contra abordagem da concorrência."
+    txt_cre_ac = "OBJETIVO: Consolidação e proteção\nPRÉ-CONTATO: Avaliar se o volume é sustentável ou pontual.\nCONTATO: Reforçar presença e antecipar pedidos futuros.\nORIENTAÇÃO: Momento de maior risco de abordagem externa. Solidificar vínculo."
 
-    if cp_v <= 0: return "⚫ INATIVO", 0, txt_inativo
-    if lp_v <= 0: return "🔵 ESTÁVEL", int(cp_v * 1.05), txt_estavel
-    if cp_v < (lp_v * 0.85): return "🚨 QUEDA ACENTUADA", int(lp_v), txt_queda_ac
-    if cp_v < (lp_v * 0.98): return "🔴 QUEDA", int(lp_v), txt_queda
-    if cp_v > (lp_v * 1.20): return "🚀 CRESCIMENTO ACENTUADO", int(cp_v * 1.05), txt_cresc_ac
-    if cp_v > (lp_v * 1.05): return "🟢 CRESCIMENTO", int(cp_v * 1.05), txt_cresc
-    return "🔵 ESTÁVEL", int(lp_v * 1.05), txt_estavel
+    if cp_v <= 0: return "⚫ INATIVO", 0, txt_ina
+    if lp_v <= 0: return "🔵 ESTÁVEL", int(cp_v * 1.05), txt_est
+    if cp_v < (lp_v * 0.85): return "🚨 QUEDA ACENTUADA", int(lp_v), txt_q_ac
+    if cp_v < (lp_v * 0.98): return "🔴 QUEDA", int(lp_v), txt_q
+    if cp_v > (lp_v * 1.20): return "🚀 CRESCIMENTO ACENTUADO", int(cp_v * 1.05), txt_cre_ac
+    if cp_v > (lp_v * 1.05): return "🟢 CRESCIMENTO", int(cp_v * 1.05), txt_cre
+    return "🔵 ESTÁVEL", int(lp_v * 1.05), txt_est
 
 def format_sem_centavos(val):
     try:
@@ -116,7 +116,7 @@ if up:
         df_proc['MÉDIA CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
         
         df_proc = df_proc.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
-        df_proc['CURVA'] = (df_proc['TOTAL LP'].cumsum() / df_proc['TOTAL LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
+        df_proc['CURVA'] = (df_proc['TOTAL LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
         
         res = df_proc.apply(lambda r: engine_star(r, r['MÉDIA LP'], r['MÉDIA CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
@@ -127,12 +127,13 @@ if up:
         st.subheader("MATRIZ DE DECISÃO TÁTICA")
         st.dataframe(df_proc[ordem].style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
 
-        # --- EXPORTAÇÃO EXECUTIVA BLINDADA ---
+        # --- EXPORTAÇÃO EXECUTIVA (VERSÃO 131 - FIX WRAP TEXT) ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
+            # FORMATOS
             h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
             b_f_texto = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             b_f_num = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
@@ -148,10 +149,11 @@ if up:
             
             ws.set_row(0, 45)
             
+            # Aplicação de Larguras
             for i, col in enumerate(ordem):
                 ws.write(0, i, col, h_f)
-                if col == 'AÇÃO': ws.set_column(i, i, 85, b_f_texto)
-                elif col == 'STATUS': ws.set_column(i, i, 26, b_f_status_base) # Ajustado para comportar CRESCIMENTO ACENTUADO
+                if col == 'AÇÃO': ws.set_column(i, i, 60, b_f_texto) # Largura controlada para forçar o Wrap
+                elif col == 'STATUS': ws.set_column(i, i, 22, b_f_status_base)
                 elif col == 'CLIENTE' or 'RAZAO' in str(col): ws.set_column(i, i, 35, b_f_texto)
                 elif col == 'VENDEDOR' or 'REP' in str(col) or 'CIDADE' in str(col): ws.set_column(i, i, 22, b_f_texto)
                 elif col in ('CURVA', 'TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META'): ws.set_column(i, i, 9)
@@ -160,26 +162,33 @@ if up:
             status_idx = ordem.index('STATUS')
             meta_idx = ordem.index('META')
             total_idx = ordem.index('TOTAL LP')
+            acao_idx = ordem.index('AÇÃO')
             
             for row_num in range(1, len(df_proc) + 1):
-                ws.write(row_num, meta_idx, int(df_proc.iloc[row_num-1]['META']), meta_f)
-                ws.write(row_num, total_idx, int(df_proc.iloc[row_num-1]['TOTAL LP']), total_f)
+                # Escreve AÇÃO explicitamente com o formato de texto wrap
+                ws.write(row_num, acao_idx, df_proc.iloc[row_num-1]['AÇÃO'], b_f_texto)
                 
+                # Escreve STATUS com cores
                 st_val = str(df_proc.iloc[row_num-1]['STATUS'])
                 current_fmt = b_f_status_base
                 if "QUEDA ACENTUADA" in st_val: current_fmt = fmt_qa
                 elif "QUEDA" in st_val: current_fmt = fmt_q
-                elif "CRESCIMENTO" in st_val: current_fmt = fmt_c # Absorve Crescimento Acentuado com o mesmo verde executivo
+                elif "CRESCIMENTO" in st_val: current_fmt = fmt_c
                 elif "ESTÁVEL" in st_val: current_fmt = fmt_e
                 elif "INATIVO" in st_val: current_fmt = fmt_ina
-                
                 ws.write(row_num, status_idx, st_val, current_fmt)
                 
+                # Escreve Meta e Total LP com seus formatos
+                ws.write(row_num, meta_idx, int(df_proc.iloc[row_num-1]['META']), meta_f)
+                ws.write(row_num, total_idx, int(df_proc.iloc[row_num-1]['TOTAL LP']), total_f)
+                
+                # Escreve demais colunas
                 for i, col in enumerate(ordem):
-                    if i not in (status_idx, meta_idx, total_idx) and i > len(chaves):
+                    if i not in (status_idx, meta_idx, total_idx, acao_idx):
                         val = df_proc.iloc[row_num-1][col]
-                        ws.write(row_num, i, val, b_f_num)
+                        fmt = b_f_texto if i <= len(chaves) else b_f_num
+                        ws.write(row_num, i, val, fmt)
 
-            ws.set_default_row(90) # Expansão de respiro para leitura do manual de 4 blocos
+            ws.set_default_row(90)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (MANUAL TÁTICO ATIVO)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (V131)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
