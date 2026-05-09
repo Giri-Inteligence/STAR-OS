@@ -6,7 +6,6 @@ import plotly.graph_objects as go
 
 st.set_page_config(page_title="Giri | STAR", layout="wide")
 
-# ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] { background: #EDF1F7; }
@@ -43,7 +42,6 @@ st.markdown("""
     margin: 0;
     letter-spacing: 0.5px;
 }
-
 .section-title {
     font-size: 0.68rem;
     font-weight: 800;
@@ -53,7 +51,6 @@ st.markdown("""
     margin: 28px 0 12px 0;
     padding-left: 2px;
 }
-
 .kpi-wrap {
     background: #FFFFFF;
     border-radius: 14px;
@@ -98,7 +95,6 @@ st.markdown("""
     color: #B0BAC9;
     line-height: 1.4;
 }
-
 .chart-wrap {
     background: #FFFFFF;
     border-radius: 14px;
@@ -113,7 +109,6 @@ st.markdown("""
     color: #8A93A2;
     margin-bottom: 2px;
 }
-
 .stDownloadButton > button {
     background: linear-gradient(135deg, #001233 0%, #003087 50%, #0056b3 100%) !important;
     color: #FFFFFF !important;
@@ -125,24 +120,12 @@ st.markdown("""
     letter-spacing: 1px !important;
     width: 100% !important;
     box-shadow: 0 6px 24px rgba(0,18,51,0.35) !important;
-    transition: opacity 0.2s !important;
 }
-.stDownloadButton > button:hover {
-    opacity: 0.88 !important;
-}
-
-.filter-wrap {
-    background: #FFFFFF;
-    border-radius: 14px;
-    padding: 18px 22px;
-    box-shadow: 0 2px 18px rgba(0,0,0,0.07);
-    margin-bottom: 4px;
-}
+.stDownloadButton > button:hover { opacity: 0.88 !important; }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── ENGINE STAR ───────────────────────────────────────────────────────────────
 def engine_star(lp, cp):
     try:
         lp_v, cp_v = float(lp), float(cp)
@@ -207,14 +190,12 @@ def engine_star(lp, cp):
     return "ESTAVEL", int(lp_v * 1.05), txt_est
 
 
-# ── NOMES DAS ABAS ────────────────────────────────────────────────────────────
 def get_tab_names(vendors):
     first_map = {}
     for v in vendors:
         parts = str(v).strip().split()
         first = parts[0] if parts else str(v)
         first_map.setdefault(first, []).append(v)
-
     result = {}
     for first, vlist in first_map.items():
         if len(vlist) == 1:
@@ -227,12 +208,11 @@ def get_tab_names(vendors):
     return result
 
 
-# ── FORMATOS EXCEL (criados uma vez por workbook) ─────────────────────────────
 def get_excel_formats(wb):
     base = {'font_name': 'Arial', 'border': 1}
     return {
         'hdr':   wb.add_format({**base, 'bold': True, 'bg_color': '#002060', 'font_color': '#FFFFFF', 'align': 'center', 'valign': 'vcenter', 'text_wrap': True}),
-        'txt':   wb.add_format({**base, 'valign': 'vcenter', 'align': 'left',   'text_wrap': True}),
+        'txt':   wb.add_format({**base, 'valign': 'vcenter', 'align': 'left', 'text_wrap': True}),
         'num':   wb.add_format({**base, 'num_format': '#,##0', 'valign': 'vcenter', 'align': 'center'}),
         'total': wb.add_format({**base, 'num_format': '#,##0', 'bg_color': '#D9D9D9', 'bold': True, 'font_color': '#000000', 'valign': 'vcenter', 'align': 'center'}),
         'qa':    wb.add_format({**base, 'bg_color': '#FFC7CE', 'font_color': '#C00000', 'bold': True, 'valign': 'vcenter', 'align': 'center'}),
@@ -244,7 +224,6 @@ def get_excel_formats(wb):
     }
 
 
-# ── ESCREVE UMA ABA FORMATADA ─────────────────────────────────────────────────
 def write_sheet(ws, df, final_ordem, clie_col, vend_col, meses_col, fmts):
     larguras = {
         'CURVA': 7, clie_col: 30, vend_col: 22,
@@ -253,17 +232,14 @@ def write_sheet(ws, df, final_ordem, clie_col, vend_col, meses_col, fmts):
     }
     ws.set_default_row(125)
     ws.set_row(0, 40)
-
-    for i, col in enumerate(final_ordem):
-        ws.write(0, i, col, fmts['hdr'])
-        ws.set_column(i, i, larguras.get(col, 8))
-
     status_fmt = {
         'QUEDA ACENTUADA': fmts['qa'], 'QUEDA': fmts['q'],
         'CRESCIMENTO ACENTUADO': fmts['ca'], 'CRESCIMENTO': fmts['c'],
         'ESTAVEL': fmts['e'], 'INATIVO': fmts['i'],
     }
-
+    for i, col in enumerate(final_ordem):
+        ws.write(0, i, col, fmts['hdr'])
+        ws.set_column(i, i, larguras.get(col, 8))
     for r_idx, row in df.iterrows():
         xl_r = r_idx + 1
         for c_idx, col_n in enumerate(final_ordem):
@@ -279,29 +255,23 @@ def write_sheet(ws, df, final_ordem, clie_col, vend_col, meses_col, fmts):
                 ws.write_string(xl_r, c_idx, str(val), fmts['txt'])
 
 
-# ── GERAR EXCEL MULTI-ABA ─────────────────────────────────────────────────────
 def gerar_excel(df_raw, final_ordem, clie_col, vend_col, meses_col):
     buffer = BytesIO()
-    vendors = sorted(df_raw[vend_col].astype(str).unique().tolist())
+    vendors = sorted(df_raw[vend_col].dropna().astype(str).unique().tolist())
     tab_names = get_tab_names(vendors)
-
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
         wb = writer.book
         fmts = get_excel_formats(wb)
-
         df_raw[final_ordem].to_excel(writer, index=False, sheet_name='GERAL')
         write_sheet(writer.sheets['GERAL'], df_raw.reset_index(drop=True), final_ordem, clie_col, vend_col, meses_col, fmts)
-
         for vendor in vendors:
             df_v = df_raw[df_raw[vend_col].astype(str) == vendor].reset_index(drop=True)
             tab = tab_names[vendor]
             df_v[final_ordem].to_excel(writer, index=False, sheet_name=tab)
             write_sheet(writer.sheets[tab], df_v, final_ordem, clie_col, vend_col, meses_col, fmts)
-
     return buffer.getvalue()
 
 
-# ── KPI HTML ──────────────────────────────────────────────────────────────────
 def kpi(lbl, val, sub, color):
     return f"""
     <div class="kpi-wrap {color}">
@@ -312,8 +282,7 @@ def kpi(lbl, val, sub, color):
     """
 
 
-# ── STATUS CORES ──────────────────────────────────────────────────────────────
-STATUS_ORDER  = ['CRESCIMENTO ACENTUADO', 'CRESCIMENTO', 'ESTAVEL', 'QUEDA', 'QUEDA ACENTUADA', 'INATIVO']
+STATUS_ORDER = ['CRESCIMENTO ACENTUADO', 'CRESCIMENTO', 'ESTAVEL', 'QUEDA', 'QUEDA ACENTUADA', 'INATIVO']
 STATUS_COLORS = {
     'CRESCIMENTO ACENTUADO': '#1A6B2A',
     'CRESCIMENTO':           '#52C471',
@@ -324,13 +293,12 @@ STATUS_COLORS = {
 }
 
 
-# ── UI ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="giri-header">
     <div class="giri-header-dot">&#9733;</div>
     <div>
         <h1>GIRI | SISTEMA DE GOVERNANCA STAR</h1>
-        <p>PAINEL DE GOVERNANCA COMERCIAL &nbsp;&#8212;&nbsp; GESTAO DE CARTEIRA B2B</p>
+        <p>PAINEL DE GOVERNANCA COMERCIAL &#8212; GESTAO DE CARTEIRA B2B</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -349,7 +317,7 @@ if uploaded_file:
     meses_col = [c for c in cols if any(m in c for m in ("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"))]
     clie_col  = next((c for c in cols if any(x in c for x in ("CLIENTE","NOME","RAZAO"))), cols[0])
     vend_col  = next((c for c in cols if any(x in c for x in ("VENDEDOR","REP"))), cols[1] if len(cols) > 1 else cols[0])
-    cida_col  = next((c for c in cols if any(x in c for x in ("CIDADE","MUNICIPIO","LOCALIDADE","REGIAO","CIDADE"))), None)
+    cida_col  = next((c for c in cols if any(x in c for x in ("CIDADE","MUNICIPIO","LOCALIDADE","REGIAO"))), None)
 
     for c in meses_col:
         df_raw[c] = pd.to_numeric(df_raw[c], errors='coerce').fillna(0)
@@ -368,12 +336,11 @@ if uploaded_file:
     extra = [cida_col] if cida_col else []
     final_ordem = ['CURVA', clie_col, vend_col] + extra + meses_col + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'META', 'ACAO']
 
-    # ── FILTROS + DOWNLOAD ────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
     fc = st.columns([2, 2, 2])
 
     with fc[0]:
-        vendedores = ["Todos"] + sorted(df_raw[vend_col].astype(str).unique().tolist())
+        vendedores = ["Todos"] + sorted(df_raw[vend_col].dropna().astype(str).unique().tolist())
         sel_vend = st.selectbox("Vendedor", vendedores)
 
     with fc[1]:
@@ -394,24 +361,22 @@ if uploaded_file:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-    # Aplicar filtros
     df = df_raw.copy()
     if sel_vend != "Todos":
         df = df[df[vend_col].astype(str) == sel_vend]
     if cida_col and sel_cida != "Todas":
         df = df[df[cida_col].astype(str) == sel_cida]
 
-    total   = len(df)
-    curva_a = len(df[df['CURVA'] == 'A'])
-    pct_a   = curva_a / total * 100 if total > 0 else 0
-    rec_tot = df['TOTAL LP'].sum()
+    total       = len(df)
+    curva_a     = len(df[df['CURVA'] == 'A'])
+    pct_a       = curva_a / total * 100 if total > 0 else 0
+    rec_tot     = df['TOTAL LP'].sum()
     risco_mask  = df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO'])
     rec_risco   = df.loc[risco_mask, 'TOTAL LP'].sum()
     pct_risco   = rec_risco / rec_tot * 100 if rec_tot > 0 else 0
     queda_mask  = df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA'])
     potencial   = max(0, (df.loc[queda_mask, 'META'] - df.loc[queda_mask, 'MEDIA CP']).sum())
 
-    # ── KPIs ──────────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
     k1, k2, k3, k4 = st.columns(4)
     with k1:
@@ -423,7 +388,6 @@ if uploaded_file:
     with k4:
         st.markdown(kpi("Potencial de Recuperacao", f"R$ {potencial:,.0f}", "Gap META vs MEDIA CP nos clientes em queda", "green"), unsafe_allow_html=True)
 
-    # ── GRAFICOS ──────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1, g2 = st.columns([3, 2])
 
@@ -433,11 +397,10 @@ if uploaded_file:
         values = [status_counts[s] for s in labels]
         colors = [STATUS_COLORS[s] for s in labels]
         pcts   = [v / total * 100 if total > 0 else 0 for v in values]
-
         fig1 = go.Figure(go.Bar(
             x=values, y=labels, orientation='h',
             marker_color=colors,
-            text=[f"  {v} clientes ({p:.0f}%)" for v, p in zip(values, pcts)],
+            text=[f"  {v} ({p:.0f}%)" for v, p in zip(values, pcts)],
             textposition='outside',
             textfont=dict(size=11, family='Arial', color='#374151'),
         ))
@@ -458,7 +421,6 @@ if uploaded_file:
         cv_labels = ['A', 'B', 'C']
         cv_values = [curva_counts.get(c, 0) for c in cv_labels]
         cv_colors = ['#001845', '#0056b3', '#7EB8F7']
-
         fig2 = go.Figure(go.Pie(
             labels=cv_labels, values=cv_values,
             hole=0.58,
@@ -476,20 +438,19 @@ if uploaded_file:
         st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # ── PERFORMANCE POR VENDEDOR ──────────────────────────────────────────────
     if sel_vend == "Todos":
         st.markdown('<div class="section-title">PERFORMANCE POR VENDEDOR</div>', unsafe_allow_html=True)
         rows = []
-        for v in sorted(df[vend_col].astype(str).unique()):
+        for v in sorted(df[vend_col].dropna().astype(str).unique()):
             dv = df[df[vend_col].astype(str) == v]
             rows.append({
-                'VENDEDOR':        v,
-                'CLIENTES':        len(dv),
-                'CURVA A':         len(dv[dv['CURVA'] == 'A']),
-                'RECEITA TOTAL':   dv['TOTAL LP'].sum(),
-                'EM RISCO':        len(dv[dv['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO'])]),
-                'CRESCIMENTO':     len(dv[dv['STATUS'].isin(['CRESCIMENTO', 'CRESCIMENTO ACENTUADO'])]),
-                'INATIVOS':        len(dv[dv['STATUS'] == 'INATIVO']),
+                'VENDEDOR':      v,
+                'CLIENTES':      len(dv),
+                'CURVA A':       len(dv[dv['CURVA'] == 'A']),
+                'RECEITA TOTAL': dv['TOTAL LP'].sum(),
+                'EM RISCO':      len(dv[dv['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO'])]),
+                'CRESCIMENTO':   len(dv[dv['STATUS'].isin(['CRESCIMENTO', 'CRESCIMENTO ACENTUADO'])]),
+                'INATIVOS':      len(dv[dv['STATUS'] == 'INATIVO']),
             })
         df_vend = pd.DataFrame(rows).sort_values('RECEITA TOTAL', ascending=False)
         st.dataframe(
@@ -497,9 +458,7 @@ if uploaded_file:
             use_container_width=True, hide_index=True
         )
 
-    # ── TABELA DE CLIENTES ────────────────────────────────────────────────────
     st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
-
     cols_display = ['CURVA', clie_col, vend_col] + extra + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'META']
     df_disp = df[cols_display].copy()
 
