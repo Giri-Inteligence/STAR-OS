@@ -6,7 +6,7 @@ import datetime
 from io import BytesIO
 import xlsxwriter
 
-# DESIGN EXECUTIVO GIRI
+# 1. DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
@@ -18,7 +18,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# MOTOR DE LEITURA E TRANSFORMAÇÃO
+# --- MOTOR DE LEITURA E TRANSFORMAÇÃO ---
 def ler_dados_seguros(file):
     file.seek(0)
     if file.name.endswith('xlsx'):
@@ -84,11 +84,10 @@ def format_sem_centavos(val):
         return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
     except: return val
 
-# INTERFACE E GOVERNANÇA
+# --- INTERFACE ---
 with st.sidebar:
     st.markdown("## GIRI | GOVERNANÇA")
     cp_m = st.number_input("Meses Curto Prazo", value=3, min_value=1)
-    st.markdown("Longo Prazo: Dinâmico (Totalidade do histórico).")
 
 st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
 up = st.file_uploader("Upload da Planilha", type=('xlsx', 'csv'))
@@ -103,13 +102,13 @@ if up:
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
         
-        # Consolidação Numérica com Nomenclatura Preparada para Empilhamento
+        # Consolidação Numérica (Empilhamento de cabeçalho garantido por espaço)
         df_proc['TOTAL LP'] = df_proc[col_ativas].sum(axis=1).round(0).astype(int)
         df_proc['MÉDIA LP'] = (df_proc[col_ativas].mean(axis=1)).round(0).astype(int)
         df_proc['MÉDIA CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
         
         df_proc = df_proc.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
-        df_proc['CURVA'] = (df_proc['TOTAL LP'].cumsum() / df_proc['TOTAL LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
+        df_proc['CURVA'] = (df_proc['TOTAL LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
         
         res = df_proc.apply(lambda r: engine_star(r, r['MÉDIA LP'], r['MÉDIA CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
@@ -120,7 +119,7 @@ if up:
         st.subheader("MATRIZ DE DECISÃO TÁTICA")
         st.dataframe(df_proc[ordem].style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
 
-        # EXPORTAÇÃO EXECUTIVA E GEOMETRIA DE DADOS
+        # --- EXPORTAÇÃO DE ALTA DENSIDADE (VERSÃO 129) ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
@@ -133,31 +132,38 @@ if up:
             b_f_status_base = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
             
-            # GATILHOS DE STATUS
+            # FORMATO DE DESTAQUE: TOTAL LP (Cinza Claro e Negrito)
+            total_f = wb.add_format({'num_format':'#,##0', 'bg_color':'#F2F2F2', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
+            
+            # GATILHOS VISUAIS
             fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_e = wb.add_format({'font_color':'#0070C0', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_ina = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             
-            # CONFIGURAÇÃO DE LINHA E EMPILHAMENTO DE CABEÇALHO
-            ws.set_row(0, 45) # Altura expandida na linha zero para acomodar o texto empilhado
+            ws.set_row(0, 45) # Altura para empilhamento do cabeçalho
             
             for i, col in enumerate(ordem):
                 ws.write(0, i, col, h_f)
-                # COMPRESSÃO AGRESSIVA DAS COLUNAS
+                # COMPRESSÃO E LARGURA
                 if col == 'AÇÃO': ws.set_column(i, i, 75, b_f_texto)
                 elif col == 'STATUS': ws.set_column(i, i, 22, b_f_status_base)
                 elif col == 'CLIENTE' or 'RAZAO' in str(col): ws.set_column(i, i, 35, b_f_texto)
                 elif col == 'VENDEDOR' or 'REP' in str(col) or 'CIDADE' in str(col): ws.set_column(i, i, 22, b_f_texto)
-                elif col in ('CURVA', 'TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META'): ws.set_column(i, i, 9, meta_f if col == 'META' else b_f_num)
-                else: ws.set_column(i, i, 9, b_f_num) # Meses cronológicos também comprimidos
+                elif col in ('CURVA', 'TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META'): ws.set_column(i, i, 9)
+                else: ws.set_column(i, i, 9)
 
             status_idx = ordem.index('STATUS')
             meta_idx = ordem.index('META')
+            total_idx = ordem.index('TOTAL LP')
             
             for row_num in range(1, len(df_proc) + 1):
+                # Escreve Meta e Status (Gatilhos de sempre)
                 ws.write(row_num, meta_idx, int(df_proc.iloc[row_num-1]['META']), meta_f)
+                
+                # APLICA DESTAQUE AO TOTAL LP
+                ws.write(row_num, total_idx, int(df_proc.iloc[row_num-1]['TOTAL LP']), total_f)
                 
                 st_val = str(df_proc.iloc[row_num-1]['STATUS'])
                 current_fmt = b_f_status_base
@@ -168,7 +174,13 @@ if up:
                 elif "INATIVO" in st_val: current_fmt = fmt_ina
                 
                 ws.write(row_num, status_idx, st_val, current_fmt)
+                
+                # Escreve as colunas numéricas restantes com o formato padrão centralizado
+                for i, col in enumerate(ordem):
+                    if i not in (status_idx, meta_idx, total_idx) and i > len(chaves):
+                        val = df_proc.iloc[row_num-1][col]
+                        ws.write(row_num, i, val, b_f_num)
 
             ws.set_default_row(75)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (ALTA DENSIDADE)", output.getvalue(), "Giri_Matriz_STAR_Densidade.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (DESTAQUE TOTAL)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
