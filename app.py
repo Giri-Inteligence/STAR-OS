@@ -59,6 +59,7 @@ st.markdown("""
     height: 100%;
     position: relative;
     overflow: hidden;
+    text-align: center;
 }
 .kpi-wrap::before {
     content: "";
@@ -124,6 +125,10 @@ st.markdown("""
 .stDownloadButton > button:hover { opacity: 0.88 !important; }
 </style>
 """, unsafe_allow_html=True)
+
+
+def fmt_br(value):
+    return f"{int(value):,}".replace(",", ".")
 
 
 def engine_star(lp, cp):
@@ -292,7 +297,6 @@ STATUS_COLORS = {
     'INATIVO':               '#9CA3AF',
 }
 
-
 st.markdown("""
 <div class="giri-header">
     <div class="giri-header-dot">&#9733;</div>
@@ -342,7 +346,6 @@ if uploaded_file:
     with fc[0]:
         vendedores = ["Todos"] + sorted(df_raw[vend_col].dropna().astype(str).unique().tolist())
         sel_vend = st.selectbox("Vendedor", vendedores)
-
     with fc[1]:
         if cida_col:
             cidades = ["Todas"] + sorted(df_raw[cida_col].dropna().astype(str).unique().tolist())
@@ -350,7 +353,6 @@ if uploaded_file:
         else:
             sel_cida = "Todas"
             st.caption("Coluna de cidade nao encontrada.")
-
     with fc[2]:
         st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
         excel_bytes = gerar_excel(df_raw, final_ordem, clie_col, vend_col, meses_col)
@@ -367,26 +369,26 @@ if uploaded_file:
     if cida_col and sel_cida != "Todas":
         df = df[df[cida_col].astype(str) == sel_cida]
 
-    total       = len(df)
-    curva_a     = len(df[df['CURVA'] == 'A'])
-    pct_a       = curva_a / total * 100 if total > 0 else 0
-    rec_tot     = df['TOTAL LP'].sum()
-    risco_mask  = df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO'])
-    rec_risco   = df.loc[risco_mask, 'TOTAL LP'].sum()
-    pct_risco   = rec_risco / rec_tot * 100 if rec_tot > 0 else 0
-    queda_mask  = df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA'])
-    potencial   = max(0, (df.loc[queda_mask, 'META'] - df.loc[queda_mask, 'MEDIA CP']).sum())
+    total      = len(df)
+    curva_a    = len(df[df['CURVA'] == 'A'])
+    pct_a      = curva_a / total * 100 if total > 0 else 0
+    rec_tot    = df['TOTAL LP'].sum()
+    risco_mask = df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO'])
+    rec_risco  = df.loc[risco_mask, 'TOTAL LP'].sum()
+    pct_risco  = rec_risco / rec_tot * 100 if rec_tot > 0 else 0
+    queda_mask = df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA'])
+    potencial  = max(0, (df.loc[queda_mask, 'META'] - df.loc[queda_mask, 'MEDIA CP']).sum())
 
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
     k1, k2, k3, k4 = st.columns(4)
     with k1:
-        st.markdown(kpi("Total de Clientes", f"{total}", f"Curva A: {curva_a} clientes ({pct_a:.0f}%)", "blue"), unsafe_allow_html=True)
+        st.markdown(kpi("Total de Clientes", fmt_br(total), f"Curva A: {curva_a} clientes ({pct_a:.0f}%)", "blue"), unsafe_allow_html=True)
     with k2:
-        st.markdown(kpi("Receita Total LP", f"R$ {rec_tot:,.0f}", "Faturamento acumulado do periodo", "blue"), unsafe_allow_html=True)
+        st.markdown(kpi("Receita Total LP", f"R$ {fmt_br(rec_tot)}", "Faturamento acumulado do periodo", "blue"), unsafe_allow_html=True)
     with k3:
-        st.markdown(kpi("Receita em Risco", f"R$ {rec_risco:,.0f}", f"{pct_risco:.0f}% da receita total da carteira", "red"), unsafe_allow_html=True)
+        st.markdown(kpi("Receita em Risco", f"R$ {fmt_br(rec_risco)}", f"{pct_risco:.0f}% da receita total da carteira", "red"), unsafe_allow_html=True)
     with k4:
-        st.markdown(kpi("Potencial de Recuperacao", f"R$ {potencial:,.0f}", "Gap META vs MEDIA CP nos clientes em queda", "green"), unsafe_allow_html=True)
+        st.markdown(kpi("Potencial de Recuperacao", f"R$ {fmt_br(potencial)}", "Gap META vs MEDIA CP nos clientes em queda", "green"), unsafe_allow_html=True)
 
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1, g2 = st.columns([3, 2])
