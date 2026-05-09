@@ -6,7 +6,7 @@ import datetime
 from io import BytesIO
 import xlsxwriter
 
-# 1. DESIGN EXECUTIVO GIRI
+# DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
@@ -18,7 +18,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- MOTOR DE LEITURA E TRANSFORMAÇÃO ---
+# MOTOR DE LEITURA E TRANSFORMAÇÃO
 def ler_dados_seguros(file):
     file.seek(0)
     if file.name.endswith('xlsx'):
@@ -84,10 +84,11 @@ def format_sem_centavos(val):
         return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
     except: return val
 
-# --- INTERFACE ---
+# INTERFACE E GOVERNANÇA
 with st.sidebar:
     st.markdown("## GIRI | GOVERNANÇA")
     cp_m = st.number_input("Meses Curto Prazo", value=3, min_value=1)
+    st.markdown("Longo Prazo: Dinâmico (Totalidade do histórico).")
 
 st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
 up = st.file_uploader("Upload da Planilha", type=('xlsx', 'csv'))
@@ -102,52 +103,55 @@ if up:
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
         
-        df_proc['TOTAL_LP'] = df_proc[col_ativas].sum(axis=1).round(0).astype(int)
-        df_proc['MEDIA_LP'] = (df_proc[col_ativas].mean(axis=1)).round(0).astype(int)
-        df_proc['MEDIA_CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
+        # Consolidação Numérica com Nomenclatura Preparada para Empilhamento
+        df_proc['TOTAL LP'] = df_proc[col_ativas].sum(axis=1).round(0).astype(int)
+        df_proc['MÉDIA LP'] = (df_proc[col_ativas].mean(axis=1)).round(0).astype(int)
+        df_proc['MÉDIA CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
         
-        df_proc = df_proc.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
-        df_proc['CURVA'] = (df_proc['TOTAL_LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
+        df_proc = df_proc.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
+        df_proc['CURVA'] = (df_proc['TOTAL LP'].cumsum() / df_proc['TOTAL LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
         
-        res = df_proc.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
+        res = df_proc.apply(lambda r: engine_star(r, r['MÉDIA LP'], r['MÉDIA CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
 
-        ordem = ['CURVA'] + chaves + col_meses + ['TOTAL_LP', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
-        cols_numericas = col_meses + ['TOTAL_LP', 'MEDIA_LP', 'MEDIA_CP', 'META']
+        ordem = ['CURVA'] + chaves + col_meses + ['TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'STATUS', 'META', 'AÇÃO']
+        cols_numericas = col_meses + ['TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META']
         
         st.subheader("MATRIZ DE DECISÃO TÁTICA")
         st.dataframe(df_proc[ordem].style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
 
-        # --- EXPORTAÇÃO COM OTIMIZAÇÃO DE LARGURA (V127) ---
+        # EXPORTAÇÃO EXECUTIVA E GEOMETRIA DE DADOS
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
-            # FORMATOS
+            # FORMATOS TRAVADOS
             h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
             b_f_texto = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             b_f_num = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             b_f_status_base = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
             
-            # GATILHOS VISUAIS
+            # GATILHOS DE STATUS
             fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_e = wb.add_format({'font_color':'#0070C0', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_ina = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             
-            # MOTOR DE LARGURA INTELIGENTE (SEM ESPAÇO EXCESSIVO)
+            # CONFIGURAÇÃO DE LINHA E EMPILHAMENTO DE CABEÇALHO
+            ws.set_row(0, 45) # Altura expandida na linha zero para acomodar o texto empilhado
+            
             for i, col in enumerate(ordem):
                 ws.write(0, i, col, h_f)
+                # COMPRESSÃO AGRESSIVA DAS COLUNAS
                 if col == 'AÇÃO': ws.set_column(i, i, 75, b_f_texto)
                 elif col == 'STATUS': ws.set_column(i, i, 22, b_f_status_base)
                 elif col == 'CLIENTE' or 'RAZAO' in str(col): ws.set_column(i, i, 35, b_f_texto)
                 elif col == 'VENDEDOR' or 'REP' in str(col) or 'CIDADE' in str(col): ws.set_column(i, i, 22, b_f_texto)
-                elif col == 'META': ws.set_column(i, i, 14, meta_f)
-                elif col in ('CURVA', 'MEDIA_LP', 'MEDIA_CP', 'TOTAL_LP'): ws.set_column(i, i, 12, b_f_num)
-                else: ws.set_column(i, i, 11, b_f_num) # Meses cronológicos
+                elif col in ('CURVA', 'TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META'): ws.set_column(i, i, 9, meta_f if col == 'META' else b_f_num)
+                else: ws.set_column(i, i, 9, b_f_num) # Meses cronológicos também comprimidos
 
             status_idx = ordem.index('STATUS')
             meta_idx = ordem.index('META')
@@ -167,4 +171,4 @@ if up:
 
             ws.set_default_row(75)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (VERSÃO OTIMIZADA)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (ALTA DENSIDADE)", output.getvalue(), "Giri_Matriz_STAR_Densidade.xlsx")
