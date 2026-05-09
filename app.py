@@ -37,6 +37,13 @@ st.markdown("""
 .kpi-val.green { color: #1A6B2A; }
 .kpi-val.gold  { color: #9E6A00; }
 .kpi-sub { font-size: 0.73rem; color: #B0BAC9; line-height: 1.4; }
+.kpi-breakdown { font-size: 0.72rem; color: #6B7A99; margin-top: 8px; font-weight: 600; }
+.kpi-breakdown span { margin: 0 4px; }
+.ind-wrap { background: #FFFFFF; border-radius: 14px; padding: 18px 22px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); text-align: center; position: relative; overflow: hidden; }
+.ind-wrap::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 14px 14px 0 0; background: linear-gradient(90deg,#001845,#0056b3); }
+.ind-lbl { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: #8A93A2; margin-bottom: 8px; }
+.ind-val { font-size: 1.5rem; font-weight: 800; color: #0D1B2A; margin-bottom: 5px; }
+.ind-sub { font-size: 0.72rem; color: #B0BAC9; }
 .chart-wrap { background: #FFFFFF; border-radius: 14px; padding: 20px 22px 10px 22px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); }
 .chart-lbl { font-size: 1.0rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #1A2540; text-align: center; margin-bottom: 8px; }
 .vend-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.88rem; }
@@ -46,7 +53,7 @@ st.markdown("""
 .vend-table tr:hover td { background:#F5F7FB; }
 .vend-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:hidden; }
 .cart-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.85rem; }
-.cart-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:11px 14px; text-align:center; letter-spacing:0.8px; font-size:0.72rem; text-transform:uppercase; position:sticky; top:0; }
+.cart-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:11px 14px; text-align:center; letter-spacing:0.8px; font-size:0.72rem; text-transform:uppercase; }
 .cart-table td { padding:10px 14px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; }
 .cart-table td.left { text-align:left; }
 .cart-table tr:last-child td { border-bottom:none; }
@@ -208,14 +215,10 @@ def gerar_excel(df_raw, final_ordem, clie_col, vend_col, meses_col):
     return buffer.getvalue()
 
 
-def kpi(lbl, val, sub, color):
-    return f"""
-    <div class="kpi-wrap {color}">
-        <div class="kpi-lbl">{lbl}</div>
-        <div class="kpi-val {color}">{val}</div>
-        <div class="kpi-sub">{sub}</div>
-    </div>
-    """
+def var_html(pct):
+    color = "#1A6B2A" if pct >= 0 else "#C00000"
+    sign  = "+" if pct >= 0 else ""
+    return f'<span style="color:{color};font-weight:700">{sign}{pct:.1f}%</span>'
 
 
 STATUS_ORDER = ['CRESCIMENTO ACENTUADO', 'CRESCIMENTO', 'ESTAVEL', 'QUEDA', 'QUEDA ACENTUADA', 'INATIVO']
@@ -224,7 +227,6 @@ STATUS_COLORS = {
     'ESTAVEL': '#0070C0', 'QUEDA': '#FF6B6B',
     'QUEDA ACENTUADA': '#C00000', 'INATIVO': '#9CA3AF',
 }
-
 STATUS_CSS = {
     'QUEDA ACENTUADA':       'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 8px;',
     'QUEDA':                 'color:#C00000;font-weight:700;',
@@ -301,27 +303,106 @@ if uploaded_file:
     if cida_col and sel_cida != "Todas":
         df = df[df[cida_col].astype(str) == sel_cida]
 
-    total      = len(df)
-    curva_a    = len(df[df['CURVA'] == 'A'])
-    pct_a      = curva_a / total * 100 if total > 0 else 0
-    rec_tot    = df['TOTAL LP'].sum()
-    risco_mask = df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO'])
-    rec_risco  = df.loc[risco_mask, 'TOTAL LP'].sum()
-    pct_risco  = rec_risco / rec_tot * 100 if rec_tot > 0 else 0
-    queda_mask = df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA'])
-    potencial  = max(0, (df.loc[queda_mask, 'META'] - df.loc[queda_mask, 'MEDIA CP']).sum())
+    # ── CALCULOS DOS CARDS ────────────────────────────────────────────────────
+    ultimo_mes   = meses_col[-1]
+    penultimo    = meses_col[-2] if len(meses_col) > 1 else meses_col[-1]
 
+    total = len(df)
+    n_a   = len(df[df['CURVA'] == 'A'])
+    n_b   = len(df[df['CURVA'] == 'B'])
+    n_c   = len(df[df['CURVA'] == 'C'])
+
+    df_a         = df[df['CURVA'] == 'A']
+    rec_a_ult    = df_a[ultimo_mes].sum()
+    rec_a_pen    = df_a[penultimo].sum()
+    var_rec_a    = (rec_a_ult - rec_a_pen) / rec_a_pen * 100 if rec_a_pen > 0 else 0
+
+    meta_total   = df['META'].sum()
+    meta_a       = df[df['CURVA'] == 'A']['META'].sum()
+    meta_b       = df[df['CURVA'] == 'B']['META'].sum()
+    meta_c       = df[df['CURVA'] == 'C']['META'].sum()
+
+    risco_mask   = (df['CURVA'] == 'A') & (df['STATUS'].isin(['QUEDA', 'QUEDA ACENTUADA', 'INATIVO']))
+    risco_a      = df.loc[risco_mask, 'MEDIA LP'].sum()
+    n_risco_a    = risco_mask.sum()
+
+    ticket_ult   = df_a[ultimo_mes].mean() if n_a > 0 else 0
+    ticket_pen   = df_a[penultimo].mean()  if n_a > 0 else 0
+    var_ticket   = (ticket_ult - ticket_pen) / ticket_pen * 100 if ticket_pen > 0 else 0
+
+    saude_mask   = (df['CURVA'] == 'A') & (df['STATUS'].isin(['CRESCIMENTO', 'CRESCIMENTO ACENTUADO', 'ESTAVEL']))
+    n_saudaveis  = saude_mask.sum()
+    idx_saude    = n_saudaveis / n_a * 100 if n_a > 0 else 0
+    saude_color  = "#1A6B2A" if idx_saude >= 70 else ("#F4A500" if idx_saude >= 50 else "#C00000")
+
+    # ── CARDS ─────────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
     k1, k2, k3, k4 = st.columns(4)
-    with k1:
-        st.markdown(kpi("Total de Clientes", fmt_br(total), f"Curva A: {curva_a} clientes ({pct_a:.0f}%)", "blue"), unsafe_allow_html=True)
-    with k2:
-        st.markdown(kpi("Receita Total LP", f"R$ {fmt_br(rec_tot)}", "Faturamento acumulado do periodo", "blue"), unsafe_allow_html=True)
-    with k3:
-        st.markdown(kpi("Receita em Risco", f"R$ {fmt_br(rec_risco)}", f"{pct_risco:.0f}% da receita total da carteira", "red"), unsafe_allow_html=True)
-    with k4:
-        st.markdown(kpi("Potencial de Recuperacao", f"R$ {fmt_br(potencial)}", "Gap META vs MEDIA CP nos clientes em queda", "green"), unsafe_allow_html=True)
 
+    with k1:
+        st.markdown(f"""
+        <div class="kpi-wrap blue">
+            <div class="kpi-lbl">COMPOSICAO DA CARTEIRA</div>
+            <div class="kpi-val blue">{fmt_br(total)}</div>
+            <div class="kpi-breakdown">
+                <span>A: {n_a}</span> | <span>B: {n_b}</span> | <span>C: {n_c}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with k2:
+        st.markdown(f"""
+        <div class="kpi-wrap blue">
+            <div class="kpi-lbl">RECEITA CURVA A &mdash; {ultimo_mes}</div>
+            <div class="kpi-val blue">R$ {fmt_br(rec_a_ult)}</div>
+            <div class="kpi-sub">vs {penultimo}: {var_html(var_rec_a)}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with k3:
+        st.markdown(f"""
+        <div class="kpi-wrap gold">
+            <div class="kpi-lbl">META DO MES</div>
+            <div class="kpi-val gold">R$ {fmt_br(meta_total)}</div>
+            <div class="kpi-breakdown">
+                <span>A: R$ {fmt_br(meta_a)}</span><br>
+                <span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with k4:
+        st.markdown(f"""
+        <div class="kpi-wrap red">
+            <div class="kpi-lbl">RECEITA EM RISCO &mdash; CURVA A</div>
+            <div class="kpi-val red">R$ {fmt_br(risco_a)}</div>
+            <div class="kpi-sub">{n_risco_a} clientes A em queda ou inativos</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ── INDICADORES COMPLEMENTARES ────────────────────────────────────────────
+    st.markdown('<div class="section-title">INDICADORES CURVA A</div>', unsafe_allow_html=True)
+    i1, i2 = st.columns(2)
+
+    with i1:
+        st.markdown(f"""
+        <div class="ind-wrap">
+            <div class="ind-lbl">TICKET MEDIO CURVA A &mdash; {ultimo_mes}</div>
+            <div class="ind-val">R$ {fmt_br(ticket_ult)}</div>
+            <div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with i2:
+        st.markdown(f"""
+        <div class="ind-wrap">
+            <div class="ind-lbl">INDICE DE SAUDE &mdash; CURVA A</div>
+            <div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div>
+            <div class="ind-sub">{n_saudaveis} de {n_a} clientes A em crescimento ou estaveis</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ── GRAFICOS ──────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1, g2 = st.columns([3, 2])
 
@@ -366,6 +447,7 @@ if uploaded_file:
         st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # ── PERFORMANCE POR VENDEDOR ──────────────────────────────────────────────
     if sel_vend == "Todos":
         st.markdown('<div class="section-title">PERFORMANCE POR VENDEDOR</div>', unsafe_allow_html=True)
         rows = []
@@ -395,8 +477,8 @@ if uploaded_file:
         </div>
         """, unsafe_allow_html=True)
 
+    # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
     st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
-
     cols_display = ['CURVA', clie_col, vend_col] + extra + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'META']
     df_disp = df[cols_display].copy().reset_index(drop=True)
 
@@ -406,8 +488,7 @@ if uploaded_file:
         cells = ""
         for col_n in cols_display:
             val = row[col_n]
-            is_cliente = (col_n == clie_col)
-            align_class = ' class="left"' if is_cliente else ''
+            align_class = ' class="left"' if col_n == clie_col else ''
             if col_n == 'STATUS':
                 s = str(val)
                 css = STATUS_CSS.get(s, '')
