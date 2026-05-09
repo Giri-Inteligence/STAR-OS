@@ -71,13 +71,13 @@ def engine_star(row, lp, cp):
         lp_v, cp_v = float(lp), float(cp)
     except: lp_v, cp_v = 0.0, 0.0
 
-    # MANUAIS TÁTICOS (ESTRUTURADOS)
-    txt_ina = "OBJETIVO: Diagnóstico de causa\nPRÉ-CONTATO: Revisar último pedido. Identificar o que parou de ser comprado.\nCONTATO: Contato de diagnóstico sem pressão.\nORIENTAÇÃO: Registrar motivo antes de qualquer ação."
-    txt_q_ac = "OBJETIVO: Recuperação emergencial\nPRÉ-CONTATO: Revisar histórico e identificar gap de volume.\nCONTATO: Priorizar ligação direta. Abrir diagnóstico.\nORIENTAÇÃO: Cliente em risco. Registrar causa com precisão."
-    txt_q = "OBJETIVO: Estabilização\nPRÉ-CONTATO: Identificar mix que desapareceu recentemente.\nCONTATO: Investigar mudança operacional ou concorrência.\nORIENTAÇÃO: Propor recomposição de mix."
-    txt_est = "OBJETIVO: Blindagem e crescimento incremental\nPRÉ-CONTATO: Mapear categorias compatíveis não compradas.\nCONTATO: Manter frequência. Explorar expansão.\nORIENTAÇÃO: Monitorar frequência de pedidos."
-    txt_cre = "OBJETIVO: Consolidação\nPRÉ-CONTATO: Identificar o driver do crescimento.\nCONTATO: Reforçar relacionamento.\nORIENTAÇÃO: Proteger o cliente contra a concorrência."
-    txt_cre_ac = "OBJETIVO: Consolidação e proteção\nPRÉ-CONTATO: Avaliar se o volume é sustentável.\nCONTATO: Antecipar pedidos futuros.\nORIENTAÇÃO: Momento de maior risco de abordagem externa."
+    # MANUAL TÁTICO WILLIAM BERTO - INTEGRAL
+    txt_ina = "OBJETIVO: Diagnóstico de causa\nPRÉ-CONTATO: Revisar último pedido. Identificar o que parou de ser comprado e em que momento.\nCONTATO: Contato de diagnóstico. Entender o motivo da inatividade sem pressão de venda.\nORIENTAÇÃO: Não ofertar produto na primeira interação. Primeiro entender o que aconteceu. Registrar motivo antes de qualquer ação de reconquista."
+    txt_q_ac = "OBJETIVO: Recuperação emergencial\nPRÉ-CONTATO: Revisar histórico completo do cliente. Identificar exatamente quais produtos caíram, em que momento e qual era o volume anterior. Calcular o gap entre a média histórica e o momento atual.\nCONTATO: Priorizar visita presencial ou ligação direta — não mensagem. Abrir diagnóstico sem pressão. Entender se houve mudança interna no cliente, problema de relacionamento ou entrada de concorrente.\nORIENTAÇÃO: Este cliente está em risco de perda. O objetivo da primeira interação não é vender — é entender. Registrar causa com precisão. Escalar para o gestor se o motivo indicar risco de ruptura definitiva."
+    txt_q = "OBJETIVO: Estabilização\nPRÉ-CONTATO: Revisar histórico de mix. Identificar quais produtos reduziram ou desapareceram nos últimos 3 meses.\nCONTATO: Diagnosticar contexto atual do cliente. Investigar se houve mudança operacional, financeira ou troca de fornecedor.\nORIENTAÇÃO: Registrar causa identificada. Se houver abertura, propor recomposição de mix com base no histórico anterior."
+    txt_est = "OBJETIVO: Blindagem e crescimento incremental\nPRÉ-CONTATO: Revisar mix atual. Mapear categorias que o cliente não compra mas que são compatíveis com seu perfil.\nCONTATO: Manter frequência de relacionamento. Explorar oportunidade de expansão de mix.\nORIENTAÇÃO: Cliente estável não é cliente seguro. Monitorar frequência de pedidos e introduzir novos itens gradualmente."
+    txt_cre = "OBJETIVO: Consolidação\nPRÉ-CONTATO: Identificar o driver do crescimento. Avaliar se é sazonalidade ou mudança estrutural no cliente.\nCONTATO: Reforçar relacionamento. Garantir abastecimento e antecipar demanda dos próximos períodos.\nORIENTAÇÃO: Proteger o cliente. Momento de crescimento é o de maior risco de abordagem pelo concorrente."
+    txt_cre_ac = "OBJETIVO: Consolidação e proteção\nPRÉ-CONTATO: Identificar quais produtos puxaram o crescimento. Avaliar se o cliente tem capacidade de sustentar esse volume ou se é pontual. Verificar se há mix ainda não explorado.\nCONTATO: Reforçar presença. Garantir que o abastecimento está adequado ao novo patamar de compra. Antecipar pedidos futuros.\nORIENTAÇÃO: Crescimento acentuado atrai concorrência. Este é o momento de maior risco de abordagem externa. Aumentar frequência de contato e solidificar o relacionamento antes que o concorrente perceba a oportunidade."
 
     if cp_v <= 0: return "⚫ INATIVO", 0, txt_ina
     if lp_v <= 0: return "🔵 ESTÁVEL", int(cp_v * 1.05), txt_est
@@ -108,7 +108,6 @@ if up:
     if not col_meses:
         st.error("Falha na detecção temporal.")
     else:
-        # ASSEPSIA PRÉ-CÁLCULO
         for c in chaves: df_proc[c] = df_proc[c].fillna("-").astype(str)
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         
@@ -130,13 +129,12 @@ if up:
         st.subheader("MATRIZ DE DECISÃO TÁTICA")
         st.dataframe(df_proc[ordem].style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
 
-        # --- EXPORTAÇÃO EXECUTIVA BLINDADA (V133) ---
+        # --- EXPORTAÇÃO EXECUTIVA BLINDADA (V134) ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
-            # FORMATOS
             h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
             b_f_texto = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             b_f_num = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
@@ -144,7 +142,6 @@ if up:
             meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
             total_f = wb.add_format({'num_format':'#,##0', 'bg_color':'#F2F2F2', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             
-            # GATILHOS DE STATUS
             fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
@@ -162,17 +159,11 @@ if up:
                 elif col in ('CURVA', 'TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META'): ws.set_column(i, i, 9)
                 else: ws.set_column(i, i, 9)
 
-            # INDEXAÇÃO RÍGIDA PARA EVITAR MISMATCH
             idx_map = {col: i for i, col in enumerate(ordem)}
-            
             for row_num in range(1, len(df_proc) + 1):
                 linha = df_proc.iloc[row_num-1]
-                
-                # ESCREVE TODAS AS CÉLULAS COM PROTEÇÃO DE TIPO
                 for col_name, col_idx in idx_map.items():
                     val = linha[col_name]
-                    
-                    # 1. TRATA STATUS
                     if col_name == 'STATUS':
                         st_val = str(val)
                         fmt = b_f_status_base
@@ -181,25 +172,19 @@ if up:
                         elif "CRESCIMENTO" in st_val: fmt = fmt_c
                         elif "ESTÁVEL" in st_val: fmt = fmt_e
                         elif "INATIVO" in st_val: fmt = fmt_ina
-                        ws.write(row_num, col_idx, st_val, fmt)
-                    
-                    # 2. TRATA META E TOTAL LP (DESTAQUES)
+                        ws.write_string(row_num, col_idx, st_val, fmt)
                     elif col_name == 'META':
                         ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, meta_f)
                     elif col_name == 'TOTAL LP':
                         ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, total_f)
-                    
-                    # 3. TRATA AÇÃO (WRAP TEXT)
                     elif col_name == 'AÇÃO':
                         ws.write_string(row_num, col_idx, str(val) if pd.notna(val) else "-", b_f_texto)
-                    
-                    # 4. DEMAIS COLUNAS
                     else:
-                        if col_idx <= idx_map.get(chaves[-1], 0): # Colunas de texto (Chaves)
-                            ws.write_string(row_num, col_idx, str(val) if pd.notna(val) else "-", b_f_texto)
-                        else: # Colunas numéricas (Meses e Médias)
+                        if col_idx <= idx_map.get(chaves[-1], 0) or col_name == 'CURVA':
+                            ws.write_string(row_num, col_idx, str(val) if pd.notna(val) else "-", b_f_texto if col_name != 'CURVA' else b_f_num)
+                        else:
                             ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, b_f_num)
 
-            ws.set_default_row(90)
+            ws.set_default_row(110) # Altura otimizada para o manual tático completo
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (V133 - ESTÁVEL)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (MANUAL DEFINITIVO)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
