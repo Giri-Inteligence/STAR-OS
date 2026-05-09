@@ -103,12 +103,13 @@ st.markdown("""
     box-shadow: 0 2px 18px rgba(0,0,0,0.07);
 }
 .chart-lbl {
-    font-size: 0.68rem;
-    font-weight: 700;
+    font-size: 1.0rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1.3px;
-    color: #8A93A2;
-    margin-bottom: 2px;
+    letter-spacing: 1.5px;
+    color: #1A2540;
+    text-align: center;
+    margin-bottom: 8px;
 }
 .stDownloadButton > button {
     background: linear-gradient(135deg, #001233 0%, #003087 50%, #0056b3 100%) !important;
