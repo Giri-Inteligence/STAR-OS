@@ -14,7 +14,6 @@ st.markdown("""
     .stApp { background: radial-gradient(circle at 50% 50%, #001f3f 0%, #000c18 60%, #00050a 100%); color: #ffffff; }
     h1, h2, h3, h4 { color: #f0f2f6 !important; font-family: 'Inter', sans-serif; text-transform: uppercase; }
     div[data-testid="stDataFrame"] td { white-space: pre-wrap !important; vertical-align: middle !important; text-align: center !important; }
-    div[data-testid="stDataFrame"] td:nth-child(2), div[data-testid="stDataFrame"] td:nth-child(3) { text-align: left !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -87,12 +86,6 @@ def engine_star(row, lp, cp):
     if cp_v > (lp_v * 1.05): return "🟢 CRESCIMENTO", int(cp_v * 1.05), txt_cre
     return "🔵 ESTÁVEL", int(lp_v * 1.05), txt_est
 
-def format_sem_centavos(val):
-    try:
-        if pd.isna(val) or val == 0: return "-"
-        return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
-    except: return val
-
 # --- INTERFACE ---
 with st.sidebar:
     st.markdown("## GIRI | GOVERNANÇA")
@@ -105,86 +98,56 @@ if up:
     df_raw = ler_dados_seguros(up)
     df_proc, col_meses, chaves = identificar_e_pivotar(df_raw)
     
-    if not col_meses:
-        st.error("Falha na detecção temporal.")
-    else:
+    if col_meses:
         for c in chaves: df_proc[c] = df_proc[c].fillna("-").astype(str)
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         
         col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
-        
-        df_proc['TOTAL LP'] = df_proc[col_ativas].sum(axis=1).fillna(0).round(0).astype(int)
-        df_proc['MÉDIA LP'] = (df_proc[col_ativas].mean(axis=1)).fillna(0).round(0).astype(int)
-        df_proc['MÉDIA CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).fillna(0).round(0).astype(int)
+        df_proc['TOTAL LP'] = df_proc[col_ativas].sum(axis=1).fillna(0).astype(int)
+        df_proc['MÉDIA LP'] = (df_proc[col_ativas].mean(axis=1)).fillna(0).astype(int)
+        df_proc['MÉDIA CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).fillna(0).astype(int)
         
         df_proc = df_proc.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
-        df_proc['CURVA'] = (df_proc['TOTAL LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
+        df_proc['CURVA'] = (df_proc['TOTAL LP'].cumsum() / df_proc['TOTAL LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
         
         res = df_proc.apply(lambda r: engine_star(r, r['MÉDIA LP'], r['MÉDIA CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
 
         ordem = ['CURVA'] + chaves + col_meses + ['TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'STATUS', 'META', 'AÇÃO']
-        cols_numericas = col_meses + ['TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META']
         
-        st.subheader("MATRIZ DE DECISÃO TÁTICA")
-        st.dataframe(df_proc[ordem].style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
-
-        # --- EXPORTAÇÃO EXECUTIVA BLINDADA (V134) ---
+        # EXPORTAÇÃO CORRIGIDA (V135)
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
+            # FORMATOS EXECUTIVOS
             h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
-            b_f_texto = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
-            b_f_num = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
-            b_f_status_base = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
-            meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
-            total_f = wb.add_format({'num_format':'#,##0', 'bg_color':'#F2F2F2', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
+            b_f_texto = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'text_wrap':True})
+            b_f_num = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1})
+            total_f = wb.add_format({'num_format':'#,##0', 'bg_color':'#F2F2F2', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             
-            fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
-            fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
-            fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
-            fmt_e = wb.add_format({'font_color':'#0070C0', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
-            fmt_ina = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
-            
-            ws.set_row(0, 45)
+            # APLICAÇÃO DE LARGURA E ALTURA
+            ws.set_default_row(180) # ALTURA PARA CABER O MANUAL TODO
+            ws.set_row(0, 40) # Cabeçalho menor
             
             for i, col in enumerate(ordem):
                 ws.write(0, i, col, h_f)
-                if col == 'AÇÃO': ws.set_column(i, i, 60, b_f_texto)
-                elif col == 'STATUS': ws.set_column(i, i, 22, b_f_status_base)
-                elif col == 'CLIENTE' or 'RAZAO' in str(col): ws.set_column(i, i, 35, b_f_texto)
-                elif col == 'VENDEDOR' or 'REP' in str(col) or 'CIDADE' in str(col): ws.set_column(i, i, 22, b_f_texto)
-                elif col in ('CURVA', 'TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META'): ws.set_column(i, i, 9)
-                else: ws.set_column(i, i, 9)
+                if col == 'AÇÃO': ws.set_column(i, i, 80, b_f_texto)
+                elif col == 'STATUS': ws.set_column(i, i, 20, b_f_texto)
+                elif col in chaves: ws.set_column(i, i, 30, b_f_texto)
+                elif col == 'TOTAL LP': ws.set_column(i, i, 12, total_f)
+                else: ws.set_column(i, i, 10, b_f_num)
 
-            idx_map = {col: i for i, col in enumerate(ordem)}
-            for row_num in range(1, len(df_proc) + 1):
-                linha = df_proc.iloc[row_num-1]
-                for col_name, col_idx in idx_map.items():
-                    val = linha[col_name]
-                    if col_name == 'STATUS':
-                        st_val = str(val)
-                        fmt = b_f_status_base
-                        if "QUEDA ACENTUADA" in st_val: fmt = fmt_qa
-                        elif "QUEDA" in st_val: fmt = fmt_q
-                        elif "CRESCIMENTO" in st_val: fmt = fmt_c
-                        elif "ESTÁVEL" in st_val: fmt = fmt_e
-                        elif "INATIVO" in st_val: fmt = fmt_ina
-                        ws.write_string(row_num, col_idx, st_val, fmt)
-                    elif col_name == 'META':
-                        ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, meta_f)
-                    elif col_name == 'TOTAL LP':
-                        ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, total_f)
-                    elif col_name == 'AÇÃO':
-                        ws.write_string(row_num, col_idx, str(val) if pd.notna(val) else "-", b_f_texto)
+            # ESCREVER DADOS COM SEGURANÇA
+            for r_idx, row in df_proc.iterrows():
+                for c_idx, col_name in enumerate(ordem):
+                    val = row[col_name]
+                    if col_name == 'AÇÃO':
+                        ws.write_string(r_idx + 1, c_idx, str(val), b_f_texto)
+                    elif col_name in ['TOTAL LP', 'MÉDIA LP', 'MÉDIA CP', 'META'] or col_name in col_meses:
+                        ws.write_number(r_idx + 1, c_idx, int(val), total_f if col_name == 'TOTAL LP' else b_f_num)
                     else:
-                        if col_idx <= idx_map.get(chaves[-1], 0) or col_name == 'CURVA':
-                            ws.write_string(row_num, col_idx, str(val) if pd.notna(val) else "-", b_f_texto if col_name != 'CURVA' else b_f_num)
-                        else:
-                            ws.write_number(row_num, col_idx, int(val) if pd.notna(val) else 0, b_f_num)
+                        ws.write_string(r_idx + 1, c_idx, str(val), b_f_texto)
 
-            ws.set_default_row(110) # Altura otimizada para o manual tático completo
-
-        st.download_button("📥 EXPORTAR MATRIZ STAR (MANUAL DEFINITIVO)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
+        st.download_button("📥 BAIXAR MATRIZ STAR (V135 - LEITURA COMPLETA)", output.getvalue(), "Matriz_STAR_Giri_V135.xlsx")
