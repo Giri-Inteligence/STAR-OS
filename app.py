@@ -246,7 +246,7 @@ if uploaded_file:
 
     styled = (
         df_display.style
-        .applymap(colorir_status, subset=['STATUS'])
+        .map(colorir_status, subset=['STATUS'])
         .format({
             'TOTAL LP': '{:,.0f}',
             'MÉDIA LP': '{:,.0f}',
