@@ -6,7 +6,7 @@ import datetime
 from io import BytesIO
 import xlsxwriter
 
-# DESIGN EXECUTIVO GIRI
+# 1. DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
@@ -18,7 +18,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# MOTOR DE LEITURA E TRANSFORMAÇÃO
+# --- MOTOR DE LEITURA E TRANSFORMAÇÃO ---
 def ler_dados_seguros(file):
     file.seek(0)
     if file.name.endswith('xlsx'):
@@ -29,7 +29,7 @@ def ler_dados_seguros(file):
     header_idx = 0
     for i in range(len(df_temp)):
         row_str = " ".join([str(x).upper() for x in df_temp.iloc[i].fillna('')])
-        if any(k in row_str for k in ["CLIENTE", "EMPRESA", "DATA", "VENDEDOR", "VALOR"]):
+        if any(k in row_str for k in ("CLIENTE", "EMPRESA", "DATA", "VENDEDOR", "VALOR")):
             header_idx = i
             break
             
@@ -41,10 +41,10 @@ def ler_dados_seguros(file):
 def identificar_e_pivotar(df):
     cols = df.columns.tolist()
     mapa = {'CLIENTE': None, 'VENDEDOR': None, 'DATA': None, 'VALOR': None, 'MESES_COL': []}
-    syn_cliente = ['CLIENTE', 'EMPRESA', 'RAZAO', 'NOME']
-    syn_vendedor = ['VENDEDOR', 'REP', 'CONSULTOR', 'PATRICIA', 'JEFERSON']
-    syn_valor = ['VALOR', 'TOTAL', 'FATURAMENTO', 'LIQUIDO', 'BRUTO']
-    meses_pt = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+    syn_cliente = ("CLIENTE", "EMPRESA", "RAZAO", "NOME")
+    syn_vendedor = ("VENDEDOR", "REP", "CONSULTOR", "PATRICIA", "JEFERSON")
+    syn_valor = ("VALOR", "TOTAL", "FATURAMENTO", "LIQUIDO", "BRUTO")
+    meses_pt = ("JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
 
     for c in cols:
         c_str = str(c).upper()
@@ -53,18 +53,18 @@ def identificar_e_pivotar(df):
         if any(s in c_str for s in syn_cliente) and not mapa['CLIENTE']: mapa['CLIENTE'] = c
         if any(s in c_str for s in syn_vendedor) and not mapa['VENDEDOR']: mapa['VENDEDOR'] = c
         if any(s in c_str for s in syn_valor) and not mapa['VALOR']: mapa['VALOR'] = c
-        if ('DATA' in c_str or 'EMISSAO' in c_str) and not mapa['DATA']: mapa['DATA'] = c
+        if ("DATA" in c_str or "EMISSAO" in c_str) and not mapa['DATA']: mapa['DATA'] = c
 
     if len(mapa['MESES_COL']) <= 1 and mapa['DATA'] and mapa['VALOR']:
         df[mapa['DATA']] = pd.to_datetime(df[mapa['DATA']], errors='coerce')
-        df = df.dropna(subset=[mapa['DATA']])
+        df = df.dropna(subset=(mapa['DATA']))
         df['MES_REF'] = df[mapa['DATA']].dt.strftime('%b/%y').str.upper()
-        chaves = [c for c in [mapa['CLIENTE'], mapa['VENDEDOR']] if c]
+        chaves = [c for c in (mapa['CLIENTE'], mapa['VENDEDOR']) if c]
         df_pivot = df.pivot_table(index=chaves, columns='MES_REF', values=mapa['VALOR'], aggfunc='sum').fillna(0).reset_index()
         meses_ordenados = sorted(df_pivot.columns[len(chaves):], key=lambda x: datetime.datetime.strptime(x, '%b/%y'))
         return df_pivot[chaves + meses_ordenados], meses_ordenados, chaves
 
-    return df, mapa['MESES_COL'], [c for c in [mapa['CLIENTE'], mapa['VENDEDOR']] if c]
+    return df, mapa['MESES_COL'], [c for c in (mapa['CLIENTE'], mapa['VENDEDOR']) if c]
 
 def engine_star(row, lp, cp):
     try:
@@ -84,65 +84,68 @@ def format_sem_centavos(val):
         return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
     except: return val
 
-# INTERFACE E GOVERNANÇA
+# --- INTERFACE ---
 with st.sidebar:
     st.markdown("## GIRI | GOVERNANÇA")
     cp_m = st.number_input("Meses Curto Prazo", value=3, min_value=1)
-    st.markdown("O horizonte de Longo Prazo opera com o alcance máximo detectado na matriz de dados.")
+    st.markdown("Longo Prazo: Dinâmico (Totalidade do histórico detectado).")
 
 st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
-up = st.file_uploader("Upload da Planilha", type=['xlsx', 'csv'])
+up = st.file_uploader("Upload da Planilha", type=('xlsx', 'csv'))
 
 if up:
     df_raw = ler_dados_seguros(up)
     df_proc, col_meses, chaves = identificar_e_pivotar(df_raw)
     
     if not col_meses:
-        st.error("Falha na arquitetura de dados: ausência de vetor temporal.")
+        st.error("Falha na detecção temporal.")
     else:
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
         
-        c_lp = col_ativas
-        c_cp = col_ativas[-min(cp_m, len(col_ativas)):]
+        # Consolidação de Médias e Total (Sem centavos)
+        df_proc['TOTAL_LP'] = df_proc[col_ativas].sum(axis=1).round(0).astype(int)
+        df_proc['MEDIA_LP'] = (df_proc[col_ativas].mean(axis=1)).round(0).astype(int)
+        df_proc['MEDIA_CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
         
-        df_proc['MEDIA_LP'] = (df_proc[c_lp].mean(axis=1)).round(0).astype(int)
-        df_proc['MEDIA_CP'] = (df_proc[c_cp].mean(axis=1)).round(0).astype(int)
-        df_proc['TOTAL_LP'] = df_proc[c_lp].sum(axis=1).round(0).astype(int)
-        
+        # Hierarquia e Curva ABC
         df_proc = df_proc.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
         df_proc['CURVA'] = (df_proc['TOTAL_LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
         
         res = df_proc.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
 
-        ordem = ['CURVA'] + chaves + col_meses + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
+        # Ordem de Colunas (Total de Longo Prazo posicionado após os meses)
+        ordem = ['CURVA'] + chaves + col_meses + ['TOTAL_LP', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
         
-        cols_numericas = col_meses + ['MEDIA_LP', 'MEDIA_CP', 'TOTAL_LP', 'META']
-        df_view_tela = df_proc[ordem].copy()
-        
+        cols_numericas = col_meses + ['TOTAL_LP', 'MEDIA_LP', 'MEDIA_CP', 'META']
         st.subheader("MATRIZ DE DECISÃO TÁTICA")
-        st.dataframe(df_view_tela.style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
+        st.dataframe(df_proc[ordem].style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
 
+        # --- EXPORTAÇÃO EXECUTIVA (VERSÃO 126) ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
+            # Formatos Travados
             h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
             b_f_texto = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             b_f_num = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
+            b_f_status_base = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
             
+            # Gatilhos de Status (Sempre Centralizados)
             fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_e = wb.add_format({'font_color':'#0070C0', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
+            fmt_ina = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             
             for i, col in enumerate(ordem):
                 ws.write(0, i, col, h_f)
                 if col == 'AÇÃO': ws.set_column(i, i, 85, b_f_texto)
-                elif col == 'STATUS': ws.set_column(i, i, 22)
+                elif col == 'STATUS': ws.set_column(i, i, 25, b_f_status_base)
                 elif col in chaves: ws.set_column(i, i, 45, b_f_texto)
                 elif col == 'META': ws.set_column(i, i, 18, meta_f)
                 else: ws.set_column(i, i, 16, b_f_num)
@@ -154,14 +157,15 @@ if up:
                 ws.write(row_num, meta_idx, int(df_proc.iloc[row_num-1]['META']), meta_f)
                 
                 st_val = str(df_proc.iloc[row_num-1]['STATUS'])
-                current_fmt = b_f_texto
+                current_fmt = b_f_status_base # Força centralização para qualquer status
                 if "QUEDA ACENTUADA" in st_val: current_fmt = fmt_qa
                 elif "QUEDA" in st_val: current_fmt = fmt_q
                 elif "CRESCIMENTO" in st_val: current_fmt = fmt_c
                 elif "ESTÁVEL" in st_val: current_fmt = fmt_e
+                elif "INATIVO" in st_val: current_fmt = fmt_ina
                 
                 ws.write(row_num, status_idx, st_val, current_fmt)
 
             ws.set_default_row(75)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (V126)", output.getvalue(), "Giri_Matriz_STAR_V126.xlsx")
