@@ -6,7 +6,7 @@ import datetime
 from io import BytesIO
 import xlsxwriter
 
-# 1. DESIGN EXECUTIVO GIRI
+# DESIGN EXECUTIVO GIRI
 st.set_page_config(page_title="Giri Strategic Hub", layout="wide")
 
 st.markdown("""
@@ -18,7 +18,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- MOTOR DE LEITURA E TRANSFORMAÇÃO ---
+# MOTOR DE LEITURA E TRANSFORMAÇÃO
 def ler_dados_seguros(file):
     file.seek(0)
     if file.name.endswith('xlsx'):
@@ -84,11 +84,11 @@ def format_sem_centavos(val):
         return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
     except: return val
 
-# --- INTERFACE ---
+# INTERFACE E GOVERNANÇA
 with st.sidebar:
     st.markdown("## GIRI | GOVERNANÇA")
-    lp_m = st.number_input("Meses Longo Prazo", value=12)
-    cp_m = st.number_input("Meses Curto Prazo", value=3)
+    cp_m = st.number_input("Meses Curto Prazo", value=3, min_value=1)
+    st.markdown("O horizonte de Longo Prazo opera com o alcance máximo detectado na matriz de dados.")
 
 st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
 up = st.file_uploader("Upload da Planilha", type=['xlsx', 'csv'])
@@ -98,15 +98,17 @@ if up:
     df_proc, col_meses, chaves = identificar_e_pivotar(df_raw)
     
     if not col_meses:
-        st.error("Não identifiquei dados temporais no arquivo.")
+        st.error("Falha na arquitetura de dados: ausência de vetor temporal.")
     else:
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
         
-        # O ".round(0).astype(int)" força a remoção de centavos na raiz dos dados
-        df_proc['MEDIA_LP'] = (df_proc[col_ativas[-min(lp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
-        df_proc['MEDIA_CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
-        df_proc['TOTAL_LP'] = df_proc[col_ativas[-min(lp_m, len(col_ativas)):]].sum(axis=1).round(0).astype(int)
+        c_lp = col_ativas
+        c_cp = col_ativas[-min(cp_m, len(col_ativas)):]
+        
+        df_proc['MEDIA_LP'] = (df_proc[c_lp].mean(axis=1)).round(0).astype(int)
+        df_proc['MEDIA_CP'] = (df_proc[c_cp].mean(axis=1)).round(0).astype(int)
+        df_proc['TOTAL_LP'] = df_proc[c_lp].sum(axis=1).round(0).astype(int)
         
         df_proc = df_proc.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
         df_proc['CURVA'] = (df_proc['TOTAL_LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
@@ -116,26 +118,22 @@ if up:
 
         ordem = ['CURVA'] + chaves + col_meses + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
         
-        # Limpeza visual na tela
         cols_numericas = col_meses + ['MEDIA_LP', 'MEDIA_CP', 'TOTAL_LP', 'META']
         df_view_tela = df_proc[ordem].copy()
         
-        st.subheader("Matriz de Decisão Tática")
+        st.subheader("MATRIZ DE DECISÃO TÁTICA")
         st.dataframe(df_view_tela.style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
 
-        # --- EXPORTAÇÃO EXECUTIVA COM TRAVAS RÍGIDAS DE ESTÉTICA ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
-            # FORMATOS TRAVADOS (Sem casas decimais, alinhamento absoluto)
             h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
             b_f_texto = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             b_f_num = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
             
-            # CORES TRAVADAS (Com centralização horizontal e vertical)
             fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
@@ -143,12 +141,11 @@ if up:
             
             for i, col in enumerate(ordem):
                 ws.write(0, i, col, h_f)
-                # TRAVA DE LARGURA DE COLUNAS
                 if col == 'AÇÃO': ws.set_column(i, i, 85, b_f_texto)
-                elif col == 'STATUS': ws.set_column(i, i, 22) # Espaço exato para QUEDA ACENTUADA
+                elif col == 'STATUS': ws.set_column(i, i, 22)
                 elif col in chaves: ws.set_column(i, i, 45, b_f_texto)
                 elif col == 'META': ws.set_column(i, i, 18, meta_f)
-                else: ws.set_column(i, i, 16, b_f_num) # Meses e Médias
+                else: ws.set_column(i, i, 16, b_f_num)
 
             status_idx = ordem.index('STATUS')
             meta_idx = ordem.index('META')
@@ -167,4 +164,4 @@ if up:
 
             ws.set_default_row(75)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (ESTÉTICA DEFINITIVA)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
