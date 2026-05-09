@@ -88,7 +88,6 @@ def format_sem_centavos(val):
 with st.sidebar:
     st.markdown("## GIRI | GOVERNANÇA")
     cp_m = st.number_input("Meses Curto Prazo", value=3, min_value=1)
-    st.markdown("Longo Prazo: Dinâmico (Totalidade do histórico detectado).")
 
 st.title("STAR-OS | SISTEMA DE GOVERNANÇA")
 up = st.file_uploader("Upload da Planilha", type=('xlsx', 'csv'))
@@ -103,52 +102,52 @@ if up:
         for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         col_ativas = [c for c in col_meses if df_proc[c].sum() > 0]
         
-        # Consolidação de Médias e Total (Sem centavos)
         df_proc['TOTAL_LP'] = df_proc[col_ativas].sum(axis=1).round(0).astype(int)
         df_proc['MEDIA_LP'] = (df_proc[col_ativas].mean(axis=1)).round(0).astype(int)
         df_proc['MEDIA_CP'] = (df_proc[col_ativas[-min(cp_m, len(col_ativas)):]].mean(axis=1)).round(0).astype(int)
         
-        # Hierarquia e Curva ABC
         df_proc = df_proc.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
         df_proc['CURVA'] = (df_proc['TOTAL_LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
         
         res = df_proc.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
 
-        # Ordem de Colunas (Total de Longo Prazo posicionado após os meses)
         ordem = ['CURVA'] + chaves + col_meses + ['TOTAL_LP', 'MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
-        
         cols_numericas = col_meses + ['TOTAL_LP', 'MEDIA_LP', 'MEDIA_CP', 'META']
+        
         st.subheader("MATRIZ DE DECISÃO TÁTICA")
         st.dataframe(df_proc[ordem].style.format({c: format_sem_centavos for c in cols_numericas}), use_container_width=True)
 
-        # --- EXPORTAÇÃO EXECUTIVA (VERSÃO 126) ---
+        # --- EXPORTAÇÃO COM OTIMIZAÇÃO DE LARGURA (V127) ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
-            # Formatos Travados
+            # FORMATOS
             h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
             b_f_texto = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             b_f_num = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             b_f_status_base = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
             
-            # Gatilhos de Status (Sempre Centralizados)
+            # GATILHOS VISUAIS
             fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_e = wb.add_format({'font_color':'#0070C0', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
             fmt_ina = wb.add_format({'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
             
+            # MOTOR DE LARGURA INTELIGENTE (SEM ESPAÇO EXCESSIVO)
             for i, col in enumerate(ordem):
                 ws.write(0, i, col, h_f)
-                if col == 'AÇÃO': ws.set_column(i, i, 85, b_f_texto)
-                elif col == 'STATUS': ws.set_column(i, i, 25, b_f_status_base)
-                elif col in chaves: ws.set_column(i, i, 45, b_f_texto)
-                elif col == 'META': ws.set_column(i, i, 18, meta_f)
-                else: ws.set_column(i, i, 16, b_f_num)
+                if col == 'AÇÃO': ws.set_column(i, i, 75, b_f_texto)
+                elif col == 'STATUS': ws.set_column(i, i, 22, b_f_status_base)
+                elif col == 'CLIENTE' or 'RAZAO' in str(col): ws.set_column(i, i, 35, b_f_texto)
+                elif col == 'VENDEDOR' or 'REP' in str(col) or 'CIDADE' in str(col): ws.set_column(i, i, 22, b_f_texto)
+                elif col == 'META': ws.set_column(i, i, 14, meta_f)
+                elif col in ('CURVA', 'MEDIA_LP', 'MEDIA_CP', 'TOTAL_LP'): ws.set_column(i, i, 12, b_f_num)
+                else: ws.set_column(i, i, 11, b_f_num) # Meses cronológicos
 
             status_idx = ordem.index('STATUS')
             meta_idx = ordem.index('META')
@@ -157,7 +156,7 @@ if up:
                 ws.write(row_num, meta_idx, int(df_proc.iloc[row_num-1]['META']), meta_f)
                 
                 st_val = str(df_proc.iloc[row_num-1]['STATUS'])
-                current_fmt = b_f_status_base # Força centralização para qualquer status
+                current_fmt = b_f_status_base
                 if "QUEDA ACENTUADA" in st_val: current_fmt = fmt_qa
                 elif "QUEDA" in st_val: current_fmt = fmt_q
                 elif "CRESCIMENTO" in st_val: current_fmt = fmt_c
@@ -168,4 +167,4 @@ if up:
 
             ws.set_default_row(75)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (V126)", output.getvalue(), "Giri_Matriz_STAR_V126.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (VERSÃO OTIMIZADA)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
