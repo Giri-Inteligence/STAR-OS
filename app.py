@@ -71,7 +71,7 @@ def engine_star(row, lp, cp):
     except: lp_v, cp_v = 0.0, 0.0
 
     if cp_v <= 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn.\nAÇÃO: Reconexão estratégica.\nORIENTAÇÃO: Identifique o motivo real da parada."
-    if lp_v <= 0: return "🔵 NOVO", int(cp_v * 1.05), "OBJETIVO: Manutenção.\nAÇÃO: Validar satisfação inicial.\nORIENTAÇÃO: Acompanhe a integração do cliente novo."
+    if lp_v <= 0: return "🔵 ESTÁVEL", int(cp_v * 1.05), "OBJETIVO: Manutenção.\nAÇÃO: Validar satisfação inicial.\nORIENTAÇÃO: Acompanhe a integração do cliente novo."
     if cp_v < (lp_v * 0.85): return "🚨 QUEDA ACENTUADA", int(lp_v), "OBJETIVO: Defesa de Share.\nAÇÃO: Investigar concorrência.\nORIENTAÇÃO: Entenda onde ele perde margem."
     if cp_v < (lp_v * 0.98): return "🔴 QUEDA", int(lp_v), "OBJETIVO: Estabilização.\nAÇÃO: Ajuste de mix.\nORIENTAÇÃO: Sugira ajustes que reduzam perdas."
     if cp_v > (lp_v * 1.05): return "🟢 CRESCIMENTO", int(cp_v * 1.05), "OBJETIVO: Expansão.\nAÇÃO: Upsell tático.\nORIENTAÇÃO: Eleve o ticket médio."
@@ -106,39 +106,55 @@ if up:
         res = df_proc.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
         df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
 
-        # ORDEM DE EXIBIÇÃO
         ordem = ['CURVA'] + chaves + col_meses + ['MEDIA_LP', 'MEDIA_CP', 'STATUS', 'META', 'AÇÃO']
-        st.subheader("Matriz de Decisão Tática (Centralizada)")
+        st.subheader("Matriz de Decisão Tática")
         st.dataframe(df_proc[ordem], use_container_width=True)
 
-        # --- EXPORTAÇÃO COM ALTA ESTÉTICA ---
+        # --- EXPORTAÇÃO EXECUTIVA V124 ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
             df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
             wb, ws = wr.book, wr.sheets['STAR']
             
-            # Formatos com vertical alignment centralizado
+            # FORMATOS BASE
             h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
             b_f = wb.add_format({'valign':'vcenter', 'align':'left', 'border':1, 'border_color':'#D9D9D9', 'text_wrap':True})
             n_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'border':1, 'border_color':'#D9D9D9'})
+            meta_f = wb.add_format({'num_format':'#,##0', 'valign':'vcenter', 'align':'center', 'bold':True, 'border':1, 'border_color':'#D9D9D9'})
             
-            # Loop de escrita e ajuste de largura dinâmico
+            # FORMATOS CONDICIONAIS DE STATUS
+            fmt_qa = wb.add_format({'bg_color':'#FFC7CE', 'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
+            fmt_q = wb.add_format({'font_color':'#9C0006', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
+            fmt_c = wb.add_format({'font_color':'#006100', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
+            fmt_e = wb.add_format({'font_color':'#0070C0', 'bold':True, 'valign':'vcenter', 'align':'center', 'border':1})
+            
+            # ESCRITA DE CABEÇALHOS E AJUSTE DE LARGURA
             for i, col in enumerate(ordem):
-                # Escreve cabeçalho
                 ws.write(0, i, col, h_f)
-                
-                # Cálculo de largura: tamanho do nome da coluna + respiro (padding)
-                # Para colunas críticas (Ação e Cliente), largura maior fixa
-                if col == 'AÇÃO':
-                    width = 80
-                elif col in chaves:
-                    width = 45
-                else:
-                    width = max(len(str(col)) + 6, 12)
-                
-                ws.set_column(i, i, width, n_f if i > len(chaves) and i < len(ordem)-3 else b_f)
+                if col == 'AÇÃO': width = 85
+                elif col in chaves: width = 45
+                elif col == 'META': width = 18
+                else: width = max(len(str(col)) + 8, 14)
+                ws.set_column(i, i, width)
 
-            # Altura das linhas para respiro visual
+            # APLICAÇÃO DE FORMATOS NAS CÉLULAS
+            status_idx = ordem.index('STATUS')
+            meta_idx = ordem.index('META')
+            
+            for row_num in range(1, len(df_proc) + 1):
+                # META: CENTRALIZAÇÃO TOTAL
+                ws.write(row_num, meta_idx, df_proc.iloc[row_num-1]['META'], meta_f)
+                
+                # STATUS: FORMATAÇÃO CONDICIONAL MANUAL VIA WRITE
+                st_val = str(df_proc.iloc[row_num-1]['STATUS'])
+                current_fmt = b_f
+                if "QUEDA ACENTUADA" in st_val: current_fmt = fmt_qa
+                elif "QUEDA" in st_val: current_fmt = fmt_q
+                elif "CRESCIMENTO" in st_val: current_fmt = fmt_c
+                elif "ESTÁVEL" in st_val: current_fmt = fmt_e
+                
+                ws.write(row_num, status_idx, st_val, current_fmt)
+
             ws.set_default_row(75)
 
-        st.download_button("📥 EXPORTAR MATRIZ STAR (ESTÉTICA EXECUTIVA)", output.getvalue(), "Giri_Matriz_STAR_Final.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR (ESTÉTICA V124)", output.getvalue(), "Giri_Matriz_STAR_V124.xlsx")
