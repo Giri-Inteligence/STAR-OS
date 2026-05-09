@@ -17,158 +17,121 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- MOTOR DE LEITURA INTELIGENTE (CORREÇÃO DE PONTEIRO) ---
+# --- MOTOR DE INTELIGÊNCIA DE DADOS ---
 def ler_dados_seguros(file):
-    """Lê o arquivo de forma segura, ignorando cabeçalhos falsos de ERPs."""
-    file.seek(0) # Rebobina o arquivo para a estaca zero
+    file.seek(0)
     if file.name.endswith('xlsx'):
         df_temp = pd.read_excel(file, header=None, nrows=15)
     else:
         df_temp = pd.read_csv(file, header=None, nrows=15)
-        
+    
     header_idx = 0
-    # Procura a linha que contém as palavras-chave do negócio
     for i in range(len(df_temp)):
         row_str = " ".join([str(x).upper() for x in df_temp.iloc[i].fillna('')])
-        if any(k in row_str for k in ["CLIENTE", "EMPRESA", "JAN", "FEV", "VENDEDOR", "CIDADE"]):
+        if any(k in row_str for k in ["CLIENTE", "EMPRESA", "DATA", "VENDEDOR", "VALOR"]):
             header_idx = i
             break
             
-    file.seek(0) # Rebobina NOVAMENTE para a leitura oficial
-    if file.name.endswith('xlsx'):
-        return pd.read_excel(file, header=header_idx)
-    else:
-        return pd.read_csv(file, header=header_idx)
+    file.seek(0)
+    df = pd.read_excel(file, header=header_idx) if file.name.endswith('xlsx') else pd.read_csv(file, header=header_idx)
+    df.columns = [str(c).strip().upper() for c in df.columns]
+    return df
 
-# --- MOTOR DE MAPEAMENTO E NORMALIZAÇÃO ---
-def identificar_colunas(df):
-    mapa = {'CLIENTE': None, 'VENDEDOR': None, 'CIDADE': None, 'MESES': []}
-    syn_cliente = ['EMPRESA', 'CLIENTE', 'NOME', 'RAZAO', 'IDENTIFICAO']
-    syn_vendedor = ['VENDEDOR', 'REP', 'CONSULTOR', 'RESPONSAVEL', 'AGENTE', 'PATRICIA', 'JEFERSON']
-    syn_cidade = ['CIDADE', 'MUNICIPIO', 'LOCALIDADE', 'UF', 'REGIAO']
+def identificar_e_pivotar(df):
+    cols = df.columns.tolist()
+    mapa = {'CLIENTE': None, 'VENDEDOR': None, 'DATA': None, 'VALOR': None, 'MESES_COL': []}
+    
+    syn_cliente = ['CLIENTE', 'EMPRESA', 'RAZAO', 'NOME']
+    syn_vendedor = ['VENDEDOR', 'REP', 'CONSULTOR', 'PATRICIA', 'JEFERSON']
+    syn_valor = ['VALOR', 'TOTAL', 'FATURAMENTO', 'LIQUIDO', 'BRUTO']
+    meses_pt = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
 
-    for col in df.columns:
-        c_str = str(col).strip().upper()
-        is_date = False
+    # Identifica se é Matriz (Horizontal) ou Transacional (Vertical)
+    for c in cols:
+        c_str = str(c).upper()
+        if any(m in c_str for m in meses_pt) or re.search(r"\d{1,2}[/-]\d{2,4}", c_str):
+            mapa['MESES_COL'].append(c)
+        if any(s in c_str for s in syn_cliente) and not mapa['CLIENTE']: mapa['CLIENTE'] = c
+        if any(s in c_str for s in syn_vendedor) and not mapa['VENDEDOR']: mapa['VENDEDOR'] = c
+        if any(s in c_str for s in syn_valor) and not mapa['VALOR']: mapa['VALOR'] = c
+        if ('DATA' in c_str or 'EMISSAO' in c_str) and not mapa['DATA']: mapa['DATA'] = c
+
+    # CASO 1: TRANSACIONAL (Relatório Tortelli - Vendas em linhas)
+    if len(mapa['MESES_COL']) <= 1 and mapa['DATA'] and mapa['VALOR']:
+        df[mapa['DATA']] = pd.to_datetime(df[mapa['DATA']], errors='coerce')
+        df = df.dropna(subset=[mapa['DATA']])
+        # Cria coluna de referência Jan/25
+        df['MES_REF'] = df[mapa['DATA']].dt.strftime('%b/%y').str.upper()
         
-        if isinstance(col, (pd.Timestamp, datetime.date)): 
-            is_date = True
-        elif re.search(r"\b(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)\b", c_str): 
-            is_date = True
-        elif re.search(r"\b\d{1,2}[/-]\d{2,4}\b", c_str): 
-            is_date = True
-            
-        if is_date and 'TOTAL' not in c_str: 
-            mapa['MESES'].append(col)
-        elif any(s in c_str for s in syn_cliente) and not mapa['CLIENTE']: 
-            mapa['CLIENTE'] = col
-        elif any(s in c_str for s in syn_vendedor) and not mapa['VENDEDOR']: 
-            mapa['VENDEDOR'] = col
-        elif any(s in c_str for s in syn_cidade) and not mapa['CIDADE']: 
-            mapa['CIDADE'] = col
-            
-    return mapa
+        chaves = [c for c in [mapa['CLIENTE'], mapa['VENDEDOR']] if c]
+        df_pivot = df.pivot_table(index=chaves, columns='MES_REF', values=mapa['VALOR'], aggfunc='sum').fillna(0).reset_index()
+        
+        # Reordena colunas de meses cronologicamente
+        meses_ordenados = sorted(df_pivot.columns[len(chaves):], key=lambda x: datetime.datetime.strptime(x, '%b/%y'))
+        df_pivot = df_pivot[chaves + meses_ordenados]
+        return df_pivot, meses_ordenados, chaves
 
-# --- NÚCLEO TÁTICO BLINDADO (ANTI-STRING) ---
+    # CASO 2: MATRIZ (Relatório Nova Pack - Meses em colunas)
+    return df, mapa['MESES_COL'], [c for c in [mapa['CLIENTE'], mapa['VENDEDOR']] if c]
+
 def engine_star(row, lp, cp):
-    # Imunidade Numérica: Garante que lixo textual vire zero e não quebre a ferramenta
     try:
-        cp_val = float(str(cp).replace(',', '.')) if pd.notnull(cp) and str(cp).strip() not in ['', '-'] else 0.0
-    except: cp_val = 0.0
-        
-    try:
-        lp_val = float(str(lp).replace(',', '.')) if pd.notnull(lp) and str(lp).strip() not in ['', '-'] else 0.0
-    except: lp_val = 0.0
+        lp_v, cp_v = float(lp), float(cp)
+    except: lp_v, cp_v = 0.0, 0.0
 
-    if cp_val <= 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn.\nAÇÃO: Reconexão estratégica.\nORIENTAÇÃO: Identifique o motivo real da parada."
-    if lp_val <= 0: return "🔵 ESTÁVEL", int(cp_val * 1.05), "OBJETIVO: Manutenção inicial.\nAÇÃO: Validar satisfação.\nORIENTAÇÃO: Acompanhe a integração do cliente novo."
-    if cp_val < (lp_val * 0.85): return "🚨 QUEDA ACENTUADA", int(lp_val), "OBJETIVO: Defesa de Share.\nAÇÃO: Investigar concorrência ou falha de serviço.\nORIENTAÇÃO: Entenda onde ele perde margem."
-    if cp_val < (lp_val * 0.98): return "🔴 QUEDA", int(lp_val), "OBJETIVO: Estabilização.\nAÇÃO: Ajuste de mix e frequência.\nORIENTAÇÃO: Sugira ajustes que reduzam perdas."
-    if cp_val > (lp_val * 1.05): return "🟢 CRESCIMENTO", int(cp_val * 1.05), "OBJETIVO: Expansão (Upsell).\nAÇÃO: Analisar mix de clientes similares.\nORIENTAÇÃO: Aproveite a tração para elevar o ticket."
-    return "🔵 ESTÁVEL", int(lp_val * 1.05), "OBJETIVO: Blindagem.\nAÇÃO: Manutenção e rituais.\nORIENTAÇÃO: Garanta a recorrência."
-
-def format_br(val):
-    try:
-        if pd.isna(val) or val == 0: return "-"
-        return f"{int(val):,}".replace(",", "X").replace(".", ",").replace("X", ".")
-    except: return val
+    if cp_v <= 0: return "⚫ INATIVO", 0, "OBJETIVO: Diagnóstico de Churn.\nAÇÃO: Reconexão estratégica.\nORIENTAÇÃO: Identifique o motivo real da parada."
+    if lp_v <= 0: return "🔵 NOVO", int(cp_v * 1.05), "OBJETIVO: Manutenção.\nAÇÃO: Validar satisfação inicial.\nORIENTAÇÃO: Acompanhe a integração do cliente."
+    if cp_v < (lp_v * 0.85): return "🚨 QUEDA ACENTUADA", int(lp_v), "OBJETIVO: Defesa de Share.\nAÇÃO: Investigar concorrência.\nORIENTAÇÃO: Entenda onde ele perde margem."
+    if cp_v < (lp_v * 0.98): return "🔴 QUEDA", int(lp_v), "OBJETIVO: Estabilização.\nAÇÃO: Ajuste de mix.\nORIENTAÇÃO: Sugira ajustes que reduzam perdas."
+    if cp_v > (lp_v * 1.05): return "🟢 CRESCIMENTO", int(cp_v * 1.05), "OBJETIVO: Expansão.\nAÇÃO: Upsell tático.\nORIENTAÇÃO: Eleve o ticket médio."
+    return "🔵 ESTÁVEL", int(lp_v * 1.05), "OBJETIVO: Blindagem.\nAÇÃO: Rituais de gestão.\nORIENTAÇÃO: Garanta a recorrência."
 
 # --- INTERFACE ---
 with st.sidebar:
     st.markdown("## GIRI | GOVERNANÇA")
-    lp_m = st.number_input("Meses Longo Prazo", value=12, min_value=1)
-    cp_m = st.number_input("Meses Curto Prazo", value=3, min_value=1)
+    lp_m = st.number_input("Meses Longo Prazo", value=12)
+    cp_m = st.number_input("Meses Curto Prazo", value=3)
 
-st.title("STAR-OS | MATRIZ DE DECISÃO TÁTICA")
-up = st.file_uploader("Upload da Planilha (Aceita Exportações de ERP)", type=['xlsx', 'csv'])
+st.title("STAR-OS | INTELIGÊNCIA DE ARQUITETURA COMERCIAL")
+up = st.file_uploader("Upload da Planilha (Matriz ou Transacional)", type=['xlsx', 'csv'])
 
 if up:
     df_raw = ler_dados_seguros(up)
-    df_raw.columns = [str(c).strip().upper() for c in df_raw.columns]
+    df_proc, col_meses, chaves = identificar_e_pivotar(df_raw)
     
-    mapa = identificar_colunas(df_raw)
-    
-    if not mapa['MESES']:
-        st.error("Erro Estrutural: Não foi possível identificar as colunas de faturamento mensal.")
+    if not col_meses:
+        st.error("Não identifiquei dados temporais (Datas ou Meses) no arquivo.")
     else:
-        df = df_raw.copy()
-        for c in mapa['MESES']: df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0)
+        # Cálculos de Governança
+        for c in col_meses: df_proc[c] = pd.to_numeric(df_proc[c], errors='coerce').fillna(0)
         
-        chaves_base = [mapa['CLIENTE'] or df.columns[0]]
-        with st.sidebar:
-            st.subheader("CHAVES")
-            dims_sel = [d for d in [mapa['VENDEDOR'], mapa['CIDADE']] if d and st.checkbox(d, key=f"c_{d}")]
+        c_lp = col_meses[-min(lp_m, len(col_meses)):]
+        c_cp = col_meses[-min(cp_m, len(col_meses)):]
         
-        chaves_final = list(dict.fromkeys(chaves_base + dims_sel))
-        df_ag = df.groupby(chaves_final, as_index=False)[mapa['MESES']].sum()
+        df_proc['TOTAL_LP'] = df_proc[c_lp].sum(axis=1).round(0)
+        df_proc['MEDIA_LP'] = (df_proc['TOTAL_LP'] / max(1, len(c_lp))).round(0)
+        df_proc['MEDIA_CP'] = (df_proc[c_cp].sum(axis=1) / max(1, len(c_cp))).round(0)
         
-        # Filtro de Sanidade: Ignora meses projetados vazios
-        col_com_dados = [c for c in mapa['MESES'] if df_ag[c].sum() > 0]
+        # HIERARQUIA DECRESCENTE (REGRA DE OURO)
+        df_proc = df_proc.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
+        df_proc['CURVA'] = (df_proc['TOTAL_LP'].cumsum() / df_proc['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
         
-        if not col_com_dados:
-            st.error("O arquivo lido não possui faturamento válido (valores maiores que zero) nas colunas detectadas.")
-        else:
-            c_lp = col_com_dados[-min(lp_m, len(col_com_dados)):]
-            c_cp = col_com_dados[-min(cp_m, len(col_com_dados)):]
-            
-            df_ag['TOTAL_LP'] = df_ag[c_lp].sum(axis=1).round(0)
-            df_ag['MEDIA_LP'] = (df_ag['TOTAL_LP'] / max(1, len(c_lp))).round(0)
-            df_ag['MEDIA_CP'] = (df_ag[c_cp].sum(axis=1) / max(1, len(c_cp))).round(0)
-            
-            df_ag = df_ag.sort_values('TOTAL_LP', ascending=False).reset_index(drop=True)
-            df_ag['CURVA'] = (df_ag['TOTAL_LP'].cumsum() / df_ag['TOTAL_LP'].sum()).apply(lambda x: 'A' if x <= 0.8 else ('B' if x <= 0.95 else 'C'))
-            
-            res = df_ag.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
-            df_ag['STATUS'], df_ag['META'], df_ag['AÇÃO'] = zip(*res)
+        res = df_proc.apply(lambda r: engine_star(r, r['MEDIA_LP'], r['MEDIA_CP']), axis=1)
+        df_proc['STATUS'], df_proc['META'], df_proc['AÇÃO'] = zip(*res)
 
-            # --- PREPARAÇÃO DE EXIBIÇÃO (ANTI-DUPLICIDADE) ---
-            df_view = df_ag.copy()
-            df_view = df_view.loc[:, ~df_view.columns.duplicated()]
-            
-            nomes_meses_str = [str(c).split(' ')[0] if isinstance(c, (pd.Timestamp, datetime.date)) else str(c) for c in mapa['MESES']]
-            df_view = df_view.rename(columns=dict(zip(mapa['MESES'], nomes_meses_str)))
+        # Exibição
+        ordem = ['CURVA'] + chaves + col_meses + ['TOTAL_LP', 'STATUS', 'META', 'AÇÃO']
+        st.subheader(f"Governança STAR: {len(df_proc)} Clientes")
+        st.dataframe(df_proc[ordem], use_container_width=True)
 
-            ordem_view = ['CURVA'] + chaves_final + nomes_meses_str + ['TOTAL_LP', 'STATUS', 'META', 'AÇÃO']
-            ordem_view = list(dict.fromkeys(ordem_view))
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
+            df_proc[ordem].to_excel(wr, index=False, sheet_name='STAR')
+            wb, ws = wr.book, wr.sheets['STAR']
+            h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter'})
+            for i, col in enumerate(ordem): ws.write(0, i, col, h_f)
+            ws.set_default_row(75)
+            ws.set_column(1, 1, 45)
+            ws.set_column(len(ordem)-1, len(ordem)-1, 80)
 
-            st.subheader(f"GOVERNANÇA STAR: {len(df_ag)} CLIENTES PRIORIZADOS")
-            
-            # Formatação Executiva na Tela
-            cols_format = [c for c in nomes_meses_str + ['TOTAL_LP', 'META'] if c in df_view.columns]
-            st.dataframe(df_view[ordem_view].style.format({c: format_br for c in cols_format}), use_container_width=True)
-
-            # EXPORTAÇÃO EXCEL C-LEVEL
-            output = BytesIO()
-            with pd.ExcelWriter(output, engine='xlsxwriter') as wr:
-                df_view[ordem_view].to_excel(wr, index=False, sheet_name='STAR')
-                wb, ws = wr.book, wr.sheets['STAR']
-                
-                # Cores e Contrastes Fixados
-                h_f = wb.add_format({'bold':True, 'bg_color':'#002060', 'font_color':'#FFFFFF', 'border':1, 'align':'center', 'valign':'vcenter', 'text_wrap':True})
-                
-                for i, col in enumerate(ordem_view): ws.write(0, i, col, h_f)
-                ws.set_default_row(75)
-                ws.set_column(1, 1, 45) # Identidade do Cliente
-                ws.set_column(len(ordem_view)-1, len(ordem_view)-1, 80) # Instruções STAR
-
-            st.download_button("📥 EXPORTAR LAUDO DE GOVERNANÇA", output.getvalue(), "Matriz_STAR_Giri.xlsx")
+        st.download_button("📥 EXPORTAR MATRIZ STAR", output.getvalue(), "Giri_Matriz_STAR.xlsx")
