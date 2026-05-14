@@ -3,7 +3,7 @@ import pandas as pd
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
-import html as htmllib  # <-- ADICIONADO: escape de caracteres HTML
+import html as htmllib
 
 st.set_page_config(page_title="Giri | STAR", layout="wide")
 
@@ -422,10 +422,8 @@ if uploaded_file:
     st.markdown('<div class="section-title">INDICADORES CURVA A</div>', unsafe_allow_html=True)
     i1, i2 = st.columns(2)
     with i1:
-        st.markdown(f"""<div class="ind-wrap">
+        st.markdown(f"""
+        <div class="ind-wrap">
             <div class="ind-lbl">TICKET MEDIO CURVA A &mdash; {ultimo_mes}</div>
             <div class="ind-val">R$ {fmt_br(ticket_ult)}</div>
             <div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div>
-        </div>""", unsafe_allow_html=True)
-    with i2:
-        st.markdown(f"""<div class="ind-wrap
