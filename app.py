@@ -46,6 +46,20 @@ st.markdown("""
 .ind-sub { font-size: 0.72rem; color: #B0BAC9; }
 .chart-wrap { background: #FFFFFF; border-radius: 14px; padding: 20px 22px 10px 22px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); }
 .chart-lbl { font-size: 1.0rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #1A2540; text-align: center; margin-bottom: 8px; }
+.ana-wrap { background: #FFFFFF; border-radius: 14px; padding: 20px 24px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); }
+.ana-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.3px; color: #1A2540; margin-bottom: 14px; text-align: center; }
+.ana-table { width: 100%; border-collapse: collapse; font-family: Arial; font-size: 0.83rem; }
+.ana-table th { background: #1A2540; color: #FFFFFF; font-weight: 700; padding: 9px 14px; text-align: center; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.8px; }
+.ana-table td { padding: 9px 14px; text-align: center; color: #1A2540; border-bottom: 1px solid #E5EAF2; font-weight: 500; }
+.ana-table tr:last-child td { border-bottom: none; }
+.ana-table tr:hover td { background: #F5F7FB; }
+.rec-ativo   { background: #C6EFCE; color: #375623; font-weight: 700; border-radius: 6px; padding: 2px 10px; }
+.rec-atencao { background: #FFEB9C; color: #9C6500; font-weight: 700; border-radius: 6px; padding: 2px 10px; }
+.rec-risco   { background: #FFC7CE; color: #9C0006; font-weight: 700; border-radius: 6px; padding: 2px 10px; }
+.rec-critico { background: #C00000; color: #FFFFFF; font-weight: 700; border-radius: 6px; padding: 2px 10px; }
+.cli-list-wrap { background: #FFFFFF; border-radius: 14px; padding: 20px 24px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); }
+.cli-list-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.3px; color: #1A2540; margin-bottom: 14px; }
+.cli-badge { display: inline-block; font-size: 0.70rem; font-weight: 700; padding: 2px 10px; border-radius: 6px; margin-bottom: 10px; }
 .vend-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.88rem; }
 .vend-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:12px 16px; text-align:center; letter-spacing:0.8px; font-size:0.75rem; text-transform:uppercase; }
 .vend-table td { padding:12px 16px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; }
@@ -216,9 +230,22 @@ def gerar_excel(df_raw, final_ordem, clie_col, vend_col, meses_col):
 
 
 def var_html(pct):
+    if pct is None:
+        return '<span style="color:#B0BAC9">--</span>'
     color = "#1A6B2A" if pct >= 0 else "#C00000"
     sign  = "+" if pct >= 0 else ""
     return f'<span style="color:{color};font-weight:700">{sign}{pct:.1f}%</span>'
+
+
+def recencia_label(meses_atras):
+    if meses_atras == 0:
+        return '<span class="rec-ativo">0-30 dias</span>', '0-30 dias'
+    elif meses_atras == 1:
+        return '<span class="rec-atencao">31-60 dias</span>', '31-60 dias'
+    elif meses_atras == 2:
+        return '<span class="rec-risco">61-90 dias</span>', '61-90 dias'
+    else:
+        return '<span class="rec-critico">Acima de 90 dias</span>', 'Acima de 90 dias'
 
 
 STATUS_ORDER = ['CRESCIMENTO ACENTUADO', 'CRESCIMENTO', 'ESTAVEL', 'QUEDA', 'QUEDA ACENTUADA', 'INATIVO']
@@ -249,7 +276,6 @@ st.markdown("""
 uploaded_file = st.file_uploader("Faca upload da base (XLSX ou CSV)", type=['xlsx', 'csv'])
 
 if uploaded_file:
-    # ── LEITURA COM DETECCAO AUTOMATICA DE HEADER E SEPARADOR ────────────────
     def detectar_header(file):
         keywords = ("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")
         for h in range(6):
@@ -263,7 +289,6 @@ if uploaded_file:
         return 0
 
     file_name = uploaded_file.name
-
     if file_name.endswith('xlsx'):
         header_row = detectar_header(uploaded_file)
         uploaded_file.seek(0)
@@ -296,6 +321,14 @@ if uploaded_file:
 
     res = df_raw.apply(lambda r: engine_star(r['MEDIA LP'], r['MEDIA CP']), axis=1)
     df_raw['STATUS'], df_raw['META'], df_raw['ACAO'] = zip(*res)
+
+    # RECENCIA: meses atras desde ultima compra > 0
+    def calc_recencia(row):
+        for i in range(len(meses_col) - 1, -1, -1):
+            if row[meses_col[i]] > 0:
+                return len(meses_col) - 1 - i
+        return len(meses_col)
+    df_raw['MESES_SEM_COMPRA'] = df_raw.apply(calc_recencia, axis=1)
 
     extra = [cida_col] if cida_col else []
     final_ordem = ['CURVA', clie_col, vend_col] + extra + meses_col + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'META', 'ACAO']
@@ -330,6 +363,7 @@ if uploaded_file:
 
     ultimo_mes = meses_col[-1]
     penultimo  = meses_col[-2] if len(meses_col) > 1 else meses_col[-1]
+    last3      = meses_col[-3:] if len(meses_col) >= 3 else meses_col
 
     total    = len(df)
     n_a      = len(df[df['CURVA'] == 'A'])
@@ -354,57 +388,152 @@ if uploaded_file:
     idx_saude   = n_saudaveis / n_a * 100 if n_a > 0 else 0
     saude_color = "#1A6B2A" if idx_saude >= 70 else ("#F4A500" if idx_saude >= 50 else "#C00000")
 
+    # ── CARDS ─────────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
     k1, k2, k3, k4 = st.columns(4)
     with k1:
-        st.markdown(f"""
-        <div class="kpi-wrap blue">
+        st.markdown(f"""<div class="kpi-wrap blue">
             <div class="kpi-lbl">COMPOSICAO DA CARTEIRA</div>
             <div class="kpi-val blue">{fmt_br(total)}</div>
             <div class="kpi-breakdown"><span>A: {n_a}</span> | <span>B: {n_b}</span> | <span>C: {n_c}</span></div>
         </div>""", unsafe_allow_html=True)
     with k2:
-        st.markdown(f"""
-        <div class="kpi-wrap blue">
+        st.markdown(f"""<div class="kpi-wrap blue">
             <div class="kpi-lbl">RECEITA CURVA A &mdash; {ultimo_mes}</div>
             <div class="kpi-val blue">R$ {fmt_br(rec_a_ult)}</div>
             <div class="kpi-sub">vs {penultimo}: {var_html(var_rec_a)}</div>
         </div>""", unsafe_allow_html=True)
     with k3:
-        st.markdown(f"""
-        <div class="kpi-wrap gold">
+        st.markdown(f"""<div class="kpi-wrap gold">
             <div class="kpi-lbl">META DO MES</div>
             <div class="kpi-val gold">R$ {fmt_br(meta_total)}</div>
-            <div class="kpi-breakdown">
-                <span>A: R$ {fmt_br(meta_a)}</span><br>
-                <span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span>
-            </div>
+            <div class="kpi-breakdown"><span>A: R$ {fmt_br(meta_a)}</span><br>
+            <span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span></div>
         </div>""", unsafe_allow_html=True)
     with k4:
-        st.markdown(f"""
-        <div class="kpi-wrap red">
+        st.markdown(f"""<div class="kpi-wrap red">
             <div class="kpi-lbl">RECEITA EM RISCO &mdash; CURVA A</div>
             <div class="kpi-val red">R$ {fmt_br(risco_a)}</div>
             <div class="kpi-sub">{n_risco_a} clientes A em queda ou inativos</div>
         </div>""", unsafe_allow_html=True)
 
+    # ── INDICADORES CURVA A ────────────────────────────────────────────────────
     st.markdown('<div class="section-title">INDICADORES CURVA A</div>', unsafe_allow_html=True)
     i1, i2 = st.columns(2)
     with i1:
-        st.markdown(f"""
-        <div class="ind-wrap">
+        st.markdown(f"""<div class="ind-wrap">
             <div class="ind-lbl">TICKET MEDIO CURVA A &mdash; {ultimo_mes}</div>
             <div class="ind-val">R$ {fmt_br(ticket_ult)}</div>
             <div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div>
         </div>""", unsafe_allow_html=True)
     with i2:
-        st.markdown(f"""
-        <div class="ind-wrap">
+        st.markdown(f"""<div class="ind-wrap">
             <div class="ind-lbl">INDICE DE SAUDE &mdash; CURVA A</div>
             <div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div>
             <div class="ind-sub">{n_saudaveis} de {n_a} clientes A em crescimento ou estaveis</div>
         </div>""", unsafe_allow_html=True)
 
+    # ── ANALISE DETALHADA CURVA A ──────────────────────────────────────────────
+    st.markdown('<div class="section-title">ANALISE DETALHADA CURVA A</div>', unsafe_allow_html=True)
+
+    col_fat, col_ticket = st.columns(2)
+
+    # FATURAMENTO ULTIMOS 3 MESES
+    with col_fat:
+        fat_rows = ""
+        for i, mes in enumerate(last3):
+            fat = df_a[mes].sum()
+            if i == 0:
+                var_pct = None
+            else:
+                prev = df_a[last3[i-1]].sum()
+                var_pct = (fat - prev) / prev * 100 if prev > 0 else None
+            fat_rows += f"<tr><td>{mes}</td><td>R$ {fmt_br(fat)}</td><td>{var_html(var_pct)}</td></tr>"
+        st.markdown(f"""
+        <div class="ana-wrap">
+            <div class="ana-title">FATURAMENTO CURVA A &mdash; ULTIMOS 3 MESES</div>
+            <table class="ana-table">
+                <thead><tr><th>MES</th><th>FATURAMENTO</th><th>VARIACAO</th></tr></thead>
+                <tbody>{fat_rows}</tbody>
+            </table>
+        </div>""", unsafe_allow_html=True)
+
+    # TICKET MEDIO ULTIMOS 3 MESES
+    with col_ticket:
+        tick_rows = ""
+        for mes in last3:
+            ativos  = int((df_a[mes] > 0).sum())
+            fat     = df_a[mes].sum()
+            ticket  = fat / ativos if ativos > 0 else 0
+            tick_rows += f"<tr><td>{mes}</td><td>{ativos}</td><td>R$ {fmt_br(fat)}</td><td>R$ {fmt_br(ticket)}</td></tr>"
+        st.markdown(f"""
+        <div class="ana-wrap">
+            <div class="ana-title">TICKET MEDIO CURVA A &mdash; ULTIMOS 3 MESES</div>
+            <table class="ana-table">
+                <thead><tr><th>MES</th><th>CLIENTES ATIVOS</th><th>FATURAMENTO</th><th>TICKET MEDIO</th></tr></thead>
+                <tbody>{tick_rows}</tbody>
+            </table>
+        </div>""", unsafe_allow_html=True)
+
+    # RECENCIA DE COMPRA CURVA A
+    st.markdown("<div style='margin-top:16px'></div>", unsafe_allow_html=True)
+    rec_col, lista_col = st.columns([1, 2])
+
+    with rec_col:
+        faixas = [
+            ('0-30 dias',       '<span class="rec-ativo">Ativo recente</span>',   0),
+            ('31-60 dias',      '<span class="rec-atencao">Atencao</span>',        1),
+            ('61-90 dias',      '<span class="rec-risco">Risco alto</span>',       2),
+            ('Acima de 90 dias','<span class="rec-critico">Inativo critico</span>', 99),
+        ]
+        rec_rows = ""
+        for faixa, badge, meses_ref in faixas:
+            if meses_ref == 99:
+                count = int((df_a['MESES_SEM_COMPRA'] >= 3).sum())
+            else:
+                count = int((df_a['MESES_SEM_COMPRA'] == meses_ref).sum())
+            pct = count / n_a * 100 if n_a > 0 else 0
+            rec_rows += f"<tr><td>{badge}</td><td>{faixa}</td><td>{count}</td><td>{pct:.0f}%</td></tr>"
+        st.markdown(f"""
+        <div class="ana-wrap">
+            <div class="ana-title">RECENCIA DE COMPRA &mdash; CURVA A</div>
+            <table class="ana-table">
+                <thead><tr><th>CLASSIFICACAO</th><th>FAIXA</th><th>CLIENTES</th><th>%</th></tr></thead>
+                <tbody>{rec_rows}</tbody>
+            </table>
+        </div>""", unsafe_allow_html=True)
+
+    # LISTA NOMINAL POR FAIXA
+    with lista_col:
+        faixas_lista = [
+            ('Ativo recente',   'rec-ativo',   '#375623', df_a[df_a['MESES_SEM_COMPRA'] == 0]),
+            ('Atencao',         'rec-atencao', '#9C6500', df_a[df_a['MESES_SEM_COMPRA'] == 1]),
+            ('Risco alto',      'rec-risco',   '#9C0006', df_a[df_a['MESES_SEM_COMPRA'] == 2]),
+            ('Inativo critico', 'rec-critico', '#FFFFFF', df_a[df_a['MESES_SEM_COMPRA'] >= 3]),
+        ]
+        lista_html = ""
+        for label, css_class, txt_color, subset in faixas_lista:
+            if len(subset) == 0:
+                continue
+            nomes = "".join([
+                f"<tr><td class='left'>{row[clie_col]}</td><td>{row[vend_col]}</td><td>R$ {fmt_br(row[ultimo_mes])}</td></tr>"
+                for _, row in subset.iterrows()
+            ])
+            lista_html += f"""
+            <div style="margin-bottom:12px">
+                <span class="{css_class}" style="font-size:0.72rem;font-weight:800;padding:3px 12px;border-radius:6px;display:inline-block;margin-bottom:8px">{label} ({len(subset)})</span>
+                <table class="ana-table">
+                    <thead><tr><th style="text-align:left">CLIENTE</th><th>VENDEDOR</th><th>{ultimo_mes}</th></tr></thead>
+                    <tbody>{nomes}</tbody>
+                </table>
+            </div>"""
+        st.markdown(f"""
+        <div class="cli-list-wrap">
+            <div class="ana-title">CLIENTES CURVA A POR RECENCIA DE COMPRA</div>
+            {lista_html}
+        </div>""", unsafe_allow_html=True)
+
+    # ── GRAFICOS ──────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1, g2 = st.columns([3, 2])
     with g1:
@@ -447,6 +576,7 @@ if uploaded_file:
         st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # ── PERFORMANCE POR VENDEDOR ──────────────────────────────────────────────
     if sel_vend == "Todos":
         st.markdown('<div class="section-title">PERFORMANCE POR VENDEDOR</div>', unsafe_allow_html=True)
         rows = []
@@ -475,6 +605,7 @@ if uploaded_file:
             </table>
         </div>""", unsafe_allow_html=True)
 
+    # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
     st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
     cols_display = ['CURVA', clie_col, vend_col] + extra + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'META']
     df_disp = df[cols_display].copy().reset_index(drop=True)
