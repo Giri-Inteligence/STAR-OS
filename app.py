@@ -11,6 +11,7 @@ st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] { background: #EDF1F7; }
 [data-testid="stHeader"] { background: transparent; }
+
 .giri-header {
     background: linear-gradient(120deg, #001233 0%, #003087 55%, #0056b3 100%);
     border-radius: 18px; padding: 30px 38px; margin-bottom: 28px;
@@ -23,48 +24,92 @@ st.markdown("""
     justify-content: center; font-size: 22px; flex-shrink: 0;
 }
 .giri-header h1 { color: #FFFFFF; font-size: 1.45rem; font-weight: 800; letter-spacing: 1.2px; margin: 0 0 3px 0; }
-.giri-header p  { color: rgba(255,255,255,0.55); font-size: 0.80rem; margin: 0; letter-spacing: 0.5px; }
-.section-title  { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #6B7A99; margin: 28px 0 12px 0; padding-left: 2px; }
-.kpi-wrap { background: #FFFFFF; border-radius: 14px; padding: 20px 22px 16px 22px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); height: 100%; position: relative; overflow: hidden; text-align: center; }
-.kpi-wrap::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 14px 14px 0 0; }
+.giri-header p  { color: rgba(255,255,255,0.65); font-size: 0.80rem; margin: 0; letter-spacing: 0.5px; }
+
+.section-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #1A2540;
+    margin: 32px 0 14px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #D1D9E6;
+}
+
+.kpi-wrap {
+    background: #FFFFFF; border-radius: 14px; padding: 20px 22px 16px 22px;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.07); height: 100%;
+    position: relative; overflow: hidden; text-align: center;
+}
+.kpi-wrap::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    border-radius: 14px 14px 0 0;
+}
 .kpi-wrap.blue::before  { background: linear-gradient(90deg,#0056b3,#00A3E0); }
 .kpi-wrap.red::before   { background: linear-gradient(90deg,#C00000,#FF6B6B); }
-.kpi-wrap.green::before { background: linear-gradient(90deg,#1A6B2A,#52C471); }
-.kpi-wrap.gold::before  { background: linear-gradient(90deg,#9E6A00,#F4C430); }
-.kpi-lbl { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: #8A93A2; margin-bottom: 10px; }
-.kpi-val { font-size: 1.85rem; font-weight: 800; line-height: 1; margin-bottom: 7px; color: #0D1B2A; }
-.kpi-val.blue  { color: #0056b3; }
-.kpi-val.red   { color: #C00000; }
-.kpi-val.green { color: #1A6B2A; }
-.kpi-val.gold  { color: #9E6A00; }
-.kpi-sub { font-size: 0.73rem; color: #B0BAC9; line-height: 1.4; }
-.kpi-breakdown { font-size: 0.72rem; color: #6B7A99; margin-top: 8px; font-weight: 600; }
+.kpi-wrap.dark::before  { background: linear-gradient(90deg,#1A2540,#3A4A6B); }
+
+.kpi-lbl {
+    font-size: 0.70rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.3px; color: #4B5568; margin-bottom: 10px;
+}
+.kpi-val {
+    font-size: 1.85rem; font-weight: 800; line-height: 1;
+    margin-bottom: 7px; color: #0D1B2A;
+}
+.kpi-val.red { color: #C00000; }
+.kpi-sub {
+    font-size: 0.74rem; color: #4B5568; line-height: 1.4;
+}
+.kpi-breakdown {
+    font-size: 0.74rem; color: #4B5568; margin-top: 8px; font-weight: 600;
+}
 .kpi-breakdown span { margin: 0 4px; }
-.ind-wrap { background: #FFFFFF; border-radius: 14px; padding: 18px 22px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); text-align: center; position: relative; overflow: hidden; }
-.ind-wrap::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 14px 14px 0 0; background: linear-gradient(90deg,#001845,#0056b3); }
-.ind-lbl { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: #8A93A2; margin-bottom: 8px; }
+
+.ind-wrap {
+    background: #FFFFFF; border-radius: 14px; padding: 18px 22px;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.07); text-align: center;
+    position: relative; overflow: hidden;
+}
+.ind-wrap::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    border-radius: 14px 14px 0 0; background: linear-gradient(90deg,#001845,#0056b3);
+}
+.ind-lbl { font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: #4B5568; margin-bottom: 8px; }
 .ind-val { font-size: 1.5rem; font-weight: 800; color: #0D1B2A; margin-bottom: 5px; }
-.ind-sub { font-size: 0.72rem; color: #B0BAC9; }
-.chart-wrap { background: #FFFFFF; border-radius: 14px; padding: 20px 22px 10px 22px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); }
-.chart-lbl { font-size: 1.0rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #1A2540; text-align: center; margin-bottom: 8px; }
+.ind-sub { font-size: 0.74rem; color: #4B5568; }
+
+.chart-wrap {
+    background: #FFFFFF; border-radius: 14px; padding: 20px 22px 10px 22px;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.07);
+}
+.chart-lbl {
+    font-size: 1.0rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #1A2540; text-align: center; margin-bottom: 8px;
+}
+
 .ana-wrap { background: #FFFFFF; border-radius: 14px; padding: 20px 24px; box-shadow: 0 2px 18px rgba(0,0,0,0.07); }
-.ana-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.3px; color: #1A2540; margin-bottom: 14px; text-align: center; }
-.ana-table { width: 100%; border-collapse: collapse; font-family: Arial; font-size: 0.83rem; }
-.ana-table th { background: #1A2540; color: #FFFFFF; font-weight: 700; padding: 9px 14px; text-align: center; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.8px; }
-.ana-table td { padding: 9px 14px; text-align: center; color: #1A2540; border-bottom: 1px solid #E5EAF2; font-weight: 500; }
+.ana-title { font-size: 0.80rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.3px; color: #1A2540; margin-bottom: 14px; text-align: center; }
+.ana-table { width: 100%; border-collapse: collapse; font-family: Arial; font-size: 0.85rem; }
+.ana-table th { background: #1A2540; color: #FFFFFF; font-weight: 700; padding: 10px 14px; text-align: center; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; }
+.ana-table td { padding: 10px 14px; text-align: center; color: #1A2540; border-bottom: 1px solid #E5EAF2; font-weight: 500; font-size: 0.85rem; }
 .ana-table td.left { text-align: left; }
 .ana-table tr:last-child td { border-bottom: none; }
 .ana-table tr:hover td { background: #F5F7FB; }
-.rec-ativo   { background: #C6EFCE; color: #375623; font-weight: 700; border-radius: 6px; padding: 3px 10px; font-size: 0.80rem; }
-.rec-atencao { background: #FFEB9C; color: #9C6500; font-weight: 700; border-radius: 6px; padding: 3px 10px; font-size: 0.80rem; }
-.rec-risco   { background: #FFC7CE; color: #9C0006; font-weight: 700; border-radius: 6px; padding: 3px 10px; font-size: 0.80rem; }
-.rec-critico { background: #C00000; color: #FFFFFF; font-weight: 700; border-radius: 6px; padding: 3px 10px; font-size: 0.80rem; }
+
+.rec-ativo   { background: #C6EFCE; color: #375623; font-weight: 700; border-radius: 6px; padding: 3px 10px; font-size: 0.82rem; }
+.rec-atencao { background: #FFEB9C; color: #7A4F00; font-weight: 700; border-radius: 6px; padding: 3px 10px; font-size: 0.82rem; }
+.rec-risco   { background: #FFC7CE; color: #7A0000; font-weight: 700; border-radius: 6px; padding: 3px 10px; font-size: 0.82rem; }
+.rec-critico { background: #C00000; color: #FFFFFF; font-weight: 700; border-radius: 6px; padding: 3px 10px; font-size: 0.82rem; }
+
 .vend-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.88rem; }
 .vend-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:12px 16px; text-align:center; letter-spacing:0.8px; font-size:0.75rem; text-transform:uppercase; }
 .vend-table td { padding:12px 16px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; }
 .vend-table tr:last-child td { border-bottom:none; }
 .vend-table tr:hover td { background:#F5F7FB; }
 .vend-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:hidden; }
+
 .cart-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.85rem; }
 .cart-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:11px 14px; text-align:center; letter-spacing:0.8px; font-size:0.72rem; text-transform:uppercase; }
 .cart-table td { padding:10px 14px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; }
@@ -72,6 +117,7 @@ st.markdown("""
 .cart-table tr:last-child td { border-bottom:none; }
 .cart-table tr:hover td { background:#F5F7FB; }
 .cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
+
 .stDownloadButton > button {
     background: linear-gradient(135deg, #001233 0%, #003087 50%, #0056b3 100%) !important;
     color: #FFFFFF !important; border: none !important; border-radius: 12px !important;
@@ -230,7 +276,7 @@ def gerar_excel(df_raw, final_ordem, clie_col, vend_col, meses_col):
 
 def var_html(pct):
     if pct is None:
-        return '<span style="color:#B0BAC9">--</span>'
+        return '<span style="color:#9CA3AF">--</span>'
     color = "#1A6B2A" if pct >= 0 else "#C00000"
     sign  = "+" if pct >= 0 else ""
     return f'<span style="color:{color};font-weight:700">{sign}{pct:.1f}%</span>'
@@ -317,15 +363,6 @@ if uploaded_file:
         return len(meses_col)
     df_raw['MESES_SEM_COMPRA'] = df_raw.apply(calc_recencia, axis=1)
 
-    def ultimo_mes_compra(row):
-        for i in range(len(meses_col) - 1, -1, -1):
-            if row[meses_col[i]] > 0:
-                return meses_col[i], row[meses_col[i]]
-        return None, 0
-    df_raw[['ULT_MES_COMPRA', 'ULT_VAL_COMPRA']] = df_raw.apply(
-        lambda r: pd.Series(ultimo_mes_compra(r)), axis=1
-    )
-
     extra = [cida_col] if cida_col else []
     final_ordem = ['CURVA', clie_col, vend_col] + extra + meses_col + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'META', 'ACAO']
 
@@ -382,7 +419,7 @@ if uploaded_file:
     saude_mask  = (df['CURVA'] == 'A') & (df['STATUS'].isin(['CRESCIMENTO', 'CRESCIMENTO ACENTUADO', 'ESTAVEL']))
     n_saudaveis = saude_mask.sum()
     idx_saude   = n_saudaveis / n_a * 100 if n_a > 0 else 0
-    saude_color = "#1A6B2A" if idx_saude >= 70 else ("#F4A500" if idx_saude >= 50 else "#C00000")
+    saude_color = "#1A6B2A" if idx_saude >= 70 else ("#B07D00" if idx_saude >= 50 else "#C00000")
 
     # ── CARDS ─────────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
@@ -390,19 +427,19 @@ if uploaded_file:
     with k1:
         st.markdown(f"""<div class="kpi-wrap blue">
             <div class="kpi-lbl">COMPOSICAO DA CARTEIRA</div>
-            <div class="kpi-val blue">{fmt_br(total)}</div>
+            <div class="kpi-val">{fmt_br(total)}</div>
             <div class="kpi-breakdown"><span>A: {n_a}</span> | <span>B: {n_b}</span> | <span>C: {n_c}</span></div>
         </div>""", unsafe_allow_html=True)
     with k2:
         st.markdown(f"""<div class="kpi-wrap blue">
             <div class="kpi-lbl">RECEITA CURVA A &mdash; {ultimo_mes}</div>
-            <div class="kpi-val blue">R$ {fmt_br(rec_a_ult)}</div>
+            <div class="kpi-val">R$ {fmt_br(rec_a_ult)}</div>
             <div class="kpi-sub">vs {penultimo}: {var_html(var_rec_a)}</div>
         </div>""", unsafe_allow_html=True)
     with k3:
-        st.markdown(f"""<div class="kpi-wrap gold">
+        st.markdown(f"""<div class="kpi-wrap dark">
             <div class="kpi-lbl">META DO MES</div>
-            <div class="kpi-val gold">R$ {fmt_br(meta_total)}</div>
+            <div class="kpi-val">R$ {fmt_br(meta_total)}</div>
             <div class="kpi-breakdown"><span>A: R$ {fmt_br(meta_a)}</span><br>
             <span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span></div>
         </div>""", unsafe_allow_html=True)
@@ -431,7 +468,6 @@ if uploaded_file:
 
     # ── ANALISE DETALHADA CURVA A ──────────────────────────────────────────────
     st.markdown('<div class="section-title">ANALISE DETALHADA CURVA A</div>', unsafe_allow_html=True)
-
     col_fat, col_ticket = st.columns(2)
 
     with col_fat:
@@ -464,26 +500,21 @@ if uploaded_file:
     # ── RECENCIA DE COMPRA ─────────────────────────────────────────────────────
     st.markdown("<div style='margin-top:16px'></div>", unsafe_allow_html=True)
 
-    # Labels dinamicos baseados nos meses reais
     label_0  = f"Comprou em {meses_col[-1]}"
     label_1  = f"Ultimo pedido em {meses_col[-2]}" if len(meses_col) > 1 else "Ultimo pedido ha 1 mes"
     label_2  = f"Ultimo pedido em {meses_col[-3]}" if len(meses_col) > 2 else "Ultimo pedido ha 2 meses"
     label_3p = f"Sem compra desde {meses_col[-4]} ou antes" if len(meses_col) > 3 else "Sem compra ha 3+ meses"
 
     faixas_rec = [
-        (label_0,  '<span class="rec-ativo">Ativo recente</span>',    0,   0),
-        (label_1,  '<span class="rec-atencao">Atencao</span>',         1,   1),
-        (label_2,  '<span class="rec-risco">Risco alto</span>',        2,   2),
-        (label_3p, '<span class="rec-critico">Inativo critico</span>', 99, 99),
+        (label_0,  '<span class="rec-ativo">Ativo recente</span>',    0),
+        (label_1,  '<span class="rec-atencao">Atencao</span>',         1),
+        (label_2,  '<span class="rec-risco">Risco alto</span>',        2),
+        (label_3p, '<span class="rec-critico">Inativo critico</span>', 99),
     ]
-
     rec_rows = ""
-    for criterio, badge, m_min, m_max in faixas_rec:
-        if m_max == 99:
-            count = int((df_a['MESES_SEM_COMPRA'] >= 3).sum())
-        else:
-            count = int((df_a['MESES_SEM_COMPRA'] == m_min).sum())
-        pct = count / n_a * 100 if n_a > 0 else 0
+    for criterio, badge, m_ref in faixas_rec:
+        count = int((df_a['MESES_SEM_COMPRA'] >= 3).sum()) if m_ref == 99 else int((df_a['MESES_SEM_COMPRA'] == m_ref).sum())
+        pct   = count / n_a * 100 if n_a > 0 else 0
         rec_rows += f"<tr><td>{badge}</td><td style='text-align:left'>{criterio}</td><td>{count}</td><td>{pct:.0f}%</td></tr>"
 
     st.markdown(f"""<div class="ana-wrap">
@@ -496,6 +527,7 @@ if uploaded_file:
     # ── GRAFICOS ──────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1, g2 = st.columns([3, 2])
+
     with g1:
         status_counts = df['STATUS'].value_counts()
         labels = [s for s in STATUS_ORDER if s in status_counts.index]
@@ -505,27 +537,32 @@ if uploaded_file:
         fig1 = go.Figure(go.Bar(
             x=values, y=labels, orientation='h', marker_color=colors,
             text=[f"  {v} ({p:.0f}%)" for v, p in zip(values, pcts)],
-            textposition='outside', textfont=dict(size=11, family='Arial', color='#374151'),
+            textposition='outside',
+            textfont=dict(size=12, family='Arial', color='#1A2540'),
         ))
         fig1.update_layout(
             margin=dict(l=0, r=90, t=10, b=10),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-            yaxis=dict(tickfont=dict(size=11, family='Arial', color='#374151'), autorange='reversed'),
+            yaxis=dict(tickfont=dict(size=12, family='Arial', color='#1A2540'), autorange='reversed'),
             height=260, showlegend=False,
         )
         st.markdown('<div class="chart-wrap"><div class="chart-lbl">DISTRIBUICAO POR STATUS</div>', unsafe_allow_html=True)
         st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
+
     with g2:
         curva_counts = df['CURVA'].value_counts()
         cv_labels = ['A', 'B', 'C']
         cv_values = [curva_counts.get(c, 0) for c in cv_labels]
-        cv_colors = ['#001845', '#0056b3', '#7EB8F7']
+        cv_colors = ['#001845', '#0056b3', '#4A90C4']
+        # Texto: branco para A e B (escuros), escuro para C (medio)
+        cv_text_colors = ['#FFFFFF', '#FFFFFF', '#1A2540']
         fig2 = go.Figure(go.Pie(
             labels=cv_labels, values=cv_values, hole=0.58,
             marker=dict(colors=cv_colors, line=dict(color='#FFFFFF', width=2)),
-            textinfo='label+percent', textfont=dict(size=13, family='Arial', color='#FFFFFF'),
+            textinfo='label+percent',
+            textfont=dict(size=13, family='Arial', color=cv_text_colors),
             insidetextorientation='radial',
         ))
         fig2.update_layout(
@@ -543,14 +580,14 @@ if uploaded_file:
         for v in sorted(df[vend_col].dropna().astype(str).unique()):
             dv = df[df[vend_col].astype(str) == v]
             rows_v.append({
-                'VENDEDOR':          v,
-                'CLIENTES':          str(len(dv)),
-                'CURVA A':           str(len(dv[dv['CURVA'] == 'A'])),
-                'RECEITA TOTAL':     f"R$ {fmt_br(dv['TOTAL LP'].sum())}",
-                'QUEDA ACENTUADA':   str(len(dv[dv['STATUS'] == 'QUEDA ACENTUADA'])),
-                'QUEDA':             str(len(dv[dv['STATUS'] == 'QUEDA'])),
-                'CRESCIMENTO':       str(len(dv[dv['STATUS'].isin(['CRESCIMENTO', 'CRESCIMENTO ACENTUADO'])])),
-                'INATIVOS':          str(len(dv[dv['STATUS'] == 'INATIVO'])),
+                'VENDEDOR':        v,
+                'CLIENTES':        str(len(dv)),
+                'CURVA A':         str(len(dv[dv['CURVA'] == 'A'])),
+                'RECEITA TOTAL':   f"R$ {fmt_br(dv['TOTAL LP'].sum())}",
+                'QUEDA ACENTUADA': str(len(dv[dv['STATUS'] == 'QUEDA ACENTUADA'])),
+                'QUEDA':           str(len(dv[dv['STATUS'] == 'QUEDA'])),
+                'CRESCIMENTO':     str(len(dv[dv['STATUS'].isin(['CRESCIMENTO', 'CRESCIMENTO ACENTUADO'])])),
+                'INATIVOS':        str(len(dv[dv['STATUS'] == 'INATIVO'])),
             })
         cols_vend = ['VENDEDOR', 'CLIENTES', 'CURVA A', 'RECEITA TOTAL', 'QUEDA ACENTUADA', 'QUEDA', 'CRESCIMENTO', 'INATIVOS']
         header_html = "".join([f"<th>{c}</th>" for c in cols_vend])
