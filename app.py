@@ -232,17 +232,15 @@ if uploaded_file:
 
     # ── DETECAO INTELIGENTE DE CURVA ──────────────────────────────────────────
     curva_detectada = False
+    import re
 
-    # Caso 1: coluna chamada CURVA com valores A, B, C
     if 'CURVA' in cols:
         vals = df_raw['CURVA'].astype(str).str.upper().str.strip()
         if vals.isin(['A','B','C']).sum() > 0:
             df_raw['CURVA'] = vals.where(vals.isin(['A','B','C']), other=pd.NA).ffill().fillna('C')
             curva_detectada = True
 
-    # Caso 2: marcadores "CURVA A", "CURVA B", "CURVA C" em qualquer coluna
     if not curva_detectada:
-        import re
         for col in cols:
             col_vals = df_raw[col].astype(str).str.upper().str.strip()
             if col_vals.str.match(r'^CURVA\s*[ABC]$').any():
@@ -253,7 +251,6 @@ if uploaded_file:
                 curva_detectada = True
                 break
 
-    # Caso 3: sem curva no arquivo, calcula do zero
     if not curva_detectada:
         df_raw = df_raw.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
         cp2 = df_raw['TOTAL LP'].cumsum() / df_raw['TOTAL LP'].sum()
@@ -270,10 +267,23 @@ if uploaded_file:
         return len(meses_col)
     df_raw['MESES_SEM_COMPRA'] = df_raw.apply(calc_rec, axis=1)
 
+    # ── DEBUG TEMPORARIO ──────────────────────────────────────────────────────
+    with st.expander("DEBUG — ver calculos internos (remover depois)", expanded=True):
+        st.write("**COLUNAS DETECTADAS:**", cols)
+        st.write("**MESES DETECTADOS:**", meses_col)
+        st.write("**COLUNA CLIENTE:**", clie_col)
+        st.write("**COLUNA VENDEDOR:**", vend_col)
+        st.write("**CURVA LIDA DO ARQUIVO:**", curva_detectada)
+        st.write("**DISTRIBUICAO DE CURVA:**", df_raw['CURVA'].value_counts().to_dict())
+        st.write("**STATUS DOS CLIENTES CURVA A (primeiros 20):**")
+        debug_a = df_raw[df_raw['CURVA']=='A'][[clie_col,'MEDIA LP','MEDIA CP','STATUS']].head(20)
+        st.dataframe(debug_a, use_container_width=True)
+        st.write("**DISTRIBUICAO DE STATUS NA CURVA A:**", df_raw[df_raw['CURVA']=='A']['STATUS'].value_counts().to_dict())
+    # ── FIM DO DEBUG ──────────────────────────────────────────────────────────
+
     extra = [cida_col] if cida_col else []
     fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META','ACAO']
 
-    # ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
     fc = st.columns([2,2,2])
     with fc[0]:
@@ -318,7 +328,6 @@ if uploaded_file:
     fat_trend=all(df_a[last3[i]].sum()<=df_a[last3[i-1]].sum() for i in range(1,len(last3))) if len(last3)>=2 else False
     contexto=sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
 
-    # ── DIAGNOSTICO COMERCIAL ─────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO COMERCIAL</div>', unsafe_allow_html=True)
     score=0
     if n_qa_a>0: score+=3
@@ -390,7 +399,6 @@ if uploaded_file:
             st.text_input("Proximo passo:", placeholder="Descreva a acao...", key=f"ps_{missao['key']}_{idx}", label_visibility="collapsed")
             st.date_input("Data:", value=date.today(), key=f"dt_{missao['key']}_{idx}", format="DD/MM/YYYY", label_visibility="collapsed")
 
-    # ── CARDS KPI ─────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
     k1,k2,k3,k4=st.columns(4)
     with k1: st.markdown(f"""<div class="kpi-wrap blue"><div class="kpi-lbl">COMPOSICAO DA CARTEIRA</div><div class="kpi-val">{fmt_br(total)}</div><div class="kpi-breakdown"><span>A: {n_a}</span> | <span>B: {n_b}</span> | <span>C: {n_c}</span></div></div>""", unsafe_allow_html=True)
@@ -398,13 +406,11 @@ if uploaded_file:
     with k3: st.markdown(f"""<div class="kpi-wrap dark"><div class="kpi-lbl">META DO MES</div><div class="kpi-val">R$ {fmt_br(meta_total)}</div><div class="kpi-breakdown"><span>A: R$ {fmt_br(meta_a)}</span><br><span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span></div></div>""", unsafe_allow_html=True)
     with k4: st.markdown(f"""<div class="kpi-wrap red"><div class="kpi-lbl">RECEITA EM RISCO &mdash; CURVA A</div><div class="kpi-val red">R$ {fmt_br(risco_a)}</div><div class="kpi-sub">{n_risco_a} clientes A em queda ou inativos</div></div>""", unsafe_allow_html=True)
 
-    # ── INDICADORES CURVA A ───────────────────────────────────────────────────
     st.markdown('<div class="section-title">INDICADORES CURVA A</div>', unsafe_allow_html=True)
     i1,i2=st.columns(2)
     with i1: st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">TICKET MEDIO CURVA A &mdash; {ultimo_mes}</div><div class="ind-val">R$ {fmt_br(ticket_ult)}</div><div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div></div>""", unsafe_allow_html=True)
     with i2: st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">INDICE DE SAUDE &mdash; CURVA A</div><div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div><div class="ind-sub">{n_saudaveis} de {n_a} clientes A em crescimento ou estaveis</div></div>""", unsafe_allow_html=True)
 
-    # ── ANALISE DETALHADA CURVA A ─────────────────────────────────────────────
     st.markdown('<div class="section-title">ANALISE DETALHADA CURVA A</div>', unsafe_allow_html=True)
     cf,ct=st.columns(2)
     with cf:
@@ -433,7 +439,6 @@ if uploaded_file:
         rr+=f"<tr><td>{badge}</td><td style='text-align:left'>{crit}</td><td>{cnt}</td><td>{pct:.0f}%</td></tr>"
     st.markdown(f"""<div class="ana-wrap"><div class="ana-title">RECENCIA DE COMPRA &mdash; CURVA A</div><table class="ana-table"><thead><tr><th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th></tr></thead><tbody>{rr}</tbody></table></div>""", unsafe_allow_html=True)
 
-    # ── GRAFICOS ──────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1,g2=st.columns([3,2])
     with g1:
@@ -452,7 +457,6 @@ if uploaded_file:
         st.plotly_chart(fig2,use_container_width=True,config={'displayModeBar':False})
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # ── PERFORMANCE POR VENDEDOR ──────────────────────────────────────────────
     if sel_vend=="Todos":
         st.markdown('<div class="section-title">PERFORMANCE POR VENDEDOR</div>', unsafe_allow_html=True)
         rv=[]
@@ -466,7 +470,6 @@ if uploaded_file:
         for r in rv: rh+="<tr>"+"".join([f"<td>{r[c]}</td>" for c in cv2])+"</tr>"
         st.markdown(f"""<div class="vend-wrap"><table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>""", unsafe_allow_html=True)
 
-    # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
     st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
     cd=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
     dd=df[cd].copy().reset_index(drop=True)
