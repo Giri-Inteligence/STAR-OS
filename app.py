@@ -73,15 +73,64 @@ st.markdown("""
 .cart-table tr:last-child td { border-bottom:none; }
 .cart-table tr:hover td { background:#F5F7FB; }
 .cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
-.stDownloadButton > button { background:linear-gradient(135deg,#1A5C2A 0%,#2E8B47 100%) !important; color:#FFFFFF !important; border:none !important; border-radius:12px !important; padding:15px 28px !important; font-size:0.88rem !important; font-weight:800 !important; letter-spacing:1px !important; width:100% !important; box-shadow:0 6px 24px rgba(26,92,42,0.40) !important; }
-.stDownloadButton > button:hover { opacity:0.88 !important; }
+
+/* ── BOTOES DE DOWNLOAD ────────────────────────────────────────────────── */
+.dl-green .stDownloadButton > button {
+    background: linear-gradient(135deg,#1A5C2A 0%,#2E8B47 100%) !important;
+    color:#FFFFFF !important; border:none !important; border-radius:12px !important;
+    height:46px !important; font-size:0.83rem !important; font-weight:800 !important;
+    letter-spacing:0.8px !important; width:100% !important; white-space:nowrap !important;
+    box-shadow:0 4px 18px rgba(26,92,42,0.38) !important;
+    transition: filter 0.15s ease, box-shadow 0.15s ease !important;
+}
+.dl-green .stDownloadButton > button:hover {
+    filter: brightness(0.88) !important;
+    box-shadow: 0 6px 22px rgba(26,92,42,0.50) !important;
+    opacity: 1 !important;
+}
+
+.dl-blue .stDownloadButton > button {
+    background: linear-gradient(135deg,#001845 0%,#003087 50%,#0056b3 100%) !important;
+    color:#FFFFFF !important; border:none !important; border-radius:12px !important;
+    height:46px !important; font-size:0.83rem !important; font-weight:800 !important;
+    letter-spacing:0.8px !important; width:100% !important; white-space:nowrap !important;
+    box-shadow:0 4px 18px rgba(0,18,51,0.38) !important;
+    transition: filter 0.15s ease, box-shadow 0.15s ease !important;
+}
+.dl-blue .stDownloadButton > button:hover {
+    filter: brightness(0.88) !important;
+    box-shadow: 0 6px 22px rgba(0,18,51,0.50) !important;
+    opacity: 1 !important;
+}
+
+/* ── BOTOES DE STATUS (base) ──────────────────────────────────────────── */
+.sbtn .stButton button {
+    height: 32px !important;
+    width: 100% !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    border-radius: 6px !important;
+    padding: 0 6px !important;
+    white-space: nowrap !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.14) !important;
+    transition: transform 0.10s ease, box-shadow 0.10s ease !important;
+}
+.sbtn .stButton button:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.22) !important;
+    opacity: 1 !important;
+}
+.sbtn .stButton button:active {
+    transform: translateY(0px) !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
 STATUS_ORDER   = ['CRESCIMENTO ACENTUADO','CRESCIMENTO','ESTAVEL','QUEDA','QUEDA ACENTUADA','INATIVO']
 STATUS_COLORS  = {'CRESCIMENTO ACENTUADO':'#1A6B2A','CRESCIMENTO':'#52C471','ESTAVEL':'#0070C0','QUEDA':'#FF6B6B','QUEDA ACENTUADA':'#C00000','INATIVO':'#9CA3AF'}
 STATUS_BTN_COR = {'CRESCIMENTO ACENTUADO':'#1A6B2A','CRESCIMENTO':'#2E8B57','ESTAVEL':'#0056b3','QUEDA':'#D44000','QUEDA ACENTUADA':'#C00000','INATIVO':'#6B7280'}
-STATUS_ABBREV  = {'CRESCIMENTO ACENTUADO':'CRESC. ACENTUADO','CRESCIMENTO':'CRESCIMENTO','ESTAVEL':'ESTAVEL','QUEDA':'QUEDA','QUEDA ACENTUADA':'QUEDA ACENTUADA','INATIVO':'INATIVO'}
 STATUS_CSS     = {'QUEDA ACENTUADA':'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 8px;','QUEDA':'color:#C00000;font-weight:700;','CRESCIMENTO ACENTUADO':'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 8px;','CRESCIMENTO':'color:#375623;font-weight:700;','ESTAVEL':'color:#0070C0;font-weight:700;','INATIVO':'color:#6B7280;font-weight:700;'}
 
 if 'status_filtro' not in st.session_state:
@@ -114,7 +163,7 @@ def engine_star(lp, cp):
     txt_ina  = "OBJETIVO: Diagnostico de causa\nPRE-CONTATO: Revisar ultimo pedido.\nCONTATO: Contato de diagnostico sem pressao.\nORIENTACAO: Nao ofertar produto na primeira interacao."
     txt_q_ac = "OBJETIVO: Recuperacao emergencial\nPRE-CONTATO: Revisar historico completo.\nCONTATO: Priorizar visita ou ligacao direta.\nORIENTACAO: Objetivo e entender, nao vender."
     txt_q    = "OBJETIVO: Estabilizacao\nPRE-CONTATO: Revisar historico de mix.\nCONTATO: Diagnosticar contexto atual.\nORIENTACAO: Registrar causa e propor recomposicao de mix."
-    txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix e mapear categorias nao compradas.\nCONTATO: Manter frequencia e explorar expansao.\nORIENTACAO: Cliente estavel nao e cliente seguro."
+    txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix. Mapear categorias nao compradas.\nCONTATO: Manter frequencia. Explorar expansao.\nORIENTACAO: Cliente estavel nao e cliente seguro."
     txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar driver do crescimento.\nCONTATO: Reforcar relacionamento.\nORIENTACAO: Proteger o cliente."
     txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar produtos que puxaram crescimento.\nCONTATO: Reforcar presenca.\nORIENTACAO: Crescimento acentuado atrai concorrencia."
     if cp_v <= 0:         return "INATIVO", 0, txt_ina
@@ -182,200 +231,83 @@ def gerar_excel(df_raw,fo,cc,vc,mc):
     return buf.getvalue()
 
 
-# ── PDF GENERATOR ─────────────────────────────────────────────────────────────
 def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
-    if not REPORTLAB_OK:
-        return None
-
+    if not REPORTLAB_OK: return None
     buf = BytesIO()
-    clie_col  = col_config['clie']
-    vend_col  = col_config['vend']
-    meses_col = col_config['meses']
-    last3     = col_config['last3']
-    ultimo    = col_config['ultimo']
-    penultimo = col_config['penultimo']
-    extra     = col_config['extra']
-    clabel    = filters['clabel']
-    cshort    = filters['cshort']
-    contexto  = filters['contexto']
-    sel_vend  = filters['vend']
-    total     = metrics['total']
-    n_a       = metrics['n_a']
-    n_b       = metrics['n_b']
-    n_c       = metrics['n_c']
-    rec_ult   = metrics['rec_ult']
-    var_rec   = metrics['var_rec']
-    meta_total= metrics['meta_total']
-    risco_val = metrics['risco_val']
-    n_risco   = metrics['n_risco']
-    ticket_ult= metrics['ticket_ult']
-    buyers_ult= metrics['buyers_ult']
-    idx_saude = metrics['idx_saude']
-    n_saud    = metrics['n_saudaveis']
-
-    today_str = date.today().strftime('%d/%m/%Y')
-    PAGE_W, PAGE_H = A4
-    MARGIN = 2.0 * cm
-    CW = PAGE_W - 2 * MARGIN
-
-    # Colors
-    NAVY   = rlc.Color(0/255, 18/255, 51/255)
-    BLUE   = rlc.Color(0/255, 86/255, 179/255)
-    RED    = rlc.Color(192/255, 0/255, 0/255)
-    GRN    = rlc.Color(26/255, 107/255, 42/255)
-    GRN2   = rlc.Color(46/255, 139/255, 87/255)
-    ORG    = rlc.Color(212/255, 64/255, 0/255)
-    GRAY   = rlc.Color(75/255, 85/255, 104/255)
-    LGRAY  = rlc.Color(237/255, 241/255, 247/255)
-    LGRAY2 = rlc.Color(248/255, 249/255, 252/255)
-    W      = rlc.white
-
-    SC_MAP = {'QUEDA ACENTUADA':RED,'QUEDA':ORG,'CRESCIMENTO ACENTUADO':GRN,'CRESCIMENTO':GRN2,'ESTAVEL':BLUE,'INATIVO':GRAY}
-
-    def ps(name, **kw):
-        defaults = dict(fontName='Helvetica', fontSize=9, textColor=rlc.Color(26/255,37/255,64/255), leading=13, spaceAfter=0)
-        defaults.update(kw)
-        return ParagraphStyle(name, **defaults)
-
-    S = {
-        'ct':   ps('ct', fontName='Helvetica-Bold', fontSize=22, textColor=W, alignment=TA_CENTER, leading=28),
-        'cs':   ps('cs', fontSize=11, textColor=rlc.Color(0.72,0.80,0.95), alignment=TA_CENTER, leading=16),
-        'cf':   ps('cf', fontName='Helvetica-Bold', fontSize=10, textColor=rlc.Color(0.80,0.86,0.96), alignment=TA_CENTER, leading=14),
-        'cd':   ps('cd', fontSize=8, textColor=rlc.Color(0.60,0.70,0.85), alignment=TA_CENTER),
-        'h2':   ps('h2', fontName='Helvetica-Bold', fontSize=13, textColor=NAVY, spaceBefore=14, spaceAfter=6),
-        'kl':   ps('kl', fontName='Helvetica-Bold', fontSize=7, textColor=GRAY, alignment=TA_CENTER, leading=10),
-        'kv':   ps('kv', fontName='Helvetica-Bold', fontSize=15, textColor=NAVY, alignment=TA_CENTER, leading=20),
-        'ks':   ps('ks', fontSize=7, textColor=GRAY, alignment=TA_CENTER, leading=10),
-        'th':   ps('th', fontName='Helvetica-Bold', fontSize=8, textColor=W, alignment=TA_CENTER, leading=10),
-        'td':   ps('td', fontSize=8, alignment=TA_CENTER, leading=10),
-        'tdl':  ps('tdl', fontSize=8, alignment=TA_LEFT, leading=10),
-        'tdls': ps('tdls', fontSize=7, alignment=TA_LEFT, leading=9),
-        'tds':  ps('tds', fontSize=7, alignment=TA_CENTER, leading=9),
-    }
-
+    clie_col=col_config['clie']; vend_col=col_config['vend']; meses_col=col_config['meses']
+    last3=col_config['last3']; ultimo=col_config['ultimo']; penultimo=col_config['penultimo']; extra=col_config['extra']
+    clabel=filters['clabel']; cshort=filters['cshort']; contexto=filters['contexto']; sel_vend=filters['vend']
+    total=metrics['total']; n_a=metrics['n_a']; n_b=metrics['n_b']; n_c=metrics['n_c']
+    rec_ult=metrics['rec_ult']; var_rec=metrics['var_rec']; meta_total=metrics['meta_total']
+    risco_val=metrics['risco_val']; n_risco=metrics['n_risco']; ticket_ult=metrics['ticket_ult']
+    buyers_ult=metrics['buyers_ult']; idx_saude=metrics['idx_saude']; n_saud=metrics['n_saudaveis']
+    today_str=date.today().strftime('%d/%m/%Y')
+    PAGE_W,PAGE_H=A4; MARGIN=2.0*cm; CW=PAGE_W-2*MARGIN
+    NAVY=rlc.Color(0/255,18/255,51/255); BLUE=rlc.Color(0/255,86/255,179/255)
+    RED=rlc.Color(192/255,0/255,0/255); GRN=rlc.Color(26/255,107/255,42/255)
+    GRN2=rlc.Color(46/255,139/255,87/255); ORG=rlc.Color(212/255,64/255,0/255)
+    GRAY=rlc.Color(75/255,85/255,104/255); LGRAY=rlc.Color(237/255,241/255,247/255)
+    LGRAY2=rlc.Color(248/255,249/255,252/255); W=rlc.white
+    SC_MAP={'QUEDA ACENTUADA':RED,'QUEDA':ORG,'CRESCIMENTO ACENTUADO':GRN,'CRESCIMENTO':GRN2,'ESTAVEL':BLUE,'INATIVO':GRAY}
+    def ps(name,**kw):
+        d=dict(fontName='Helvetica',fontSize=9,textColor=rlc.Color(26/255,37/255,64/255),leading=13,spaceAfter=0); d.update(kw)
+        return ParagraphStyle(name,**d)
+    S={'ct':ps('ct',fontName='Helvetica-Bold',fontSize=22,textColor=W,alignment=TA_CENTER,leading=28),
+       'cs':ps('cs',fontSize=11,textColor=rlc.Color(0.72,0.80,0.95),alignment=TA_CENTER,leading=16),
+       'cf':ps('cf',fontName='Helvetica-Bold',fontSize=10,textColor=rlc.Color(0.80,0.86,0.96),alignment=TA_CENTER,leading=14),
+       'cd':ps('cd',fontSize=8,textColor=rlc.Color(0.60,0.70,0.85),alignment=TA_CENTER),
+       'h2':ps('h2',fontName='Helvetica-Bold',fontSize=13,textColor=NAVY,spaceBefore=14,spaceAfter=6),
+       'kl':ps('kl',fontName='Helvetica-Bold',fontSize=7,textColor=GRAY,alignment=TA_CENTER,leading=10),
+       'kv':ps('kv',fontName='Helvetica-Bold',fontSize=15,textColor=NAVY,alignment=TA_CENTER,leading=20),
+       'ks':ps('ks',fontSize=7,textColor=GRAY,alignment=TA_CENTER,leading=10),
+       'th':ps('th',fontName='Helvetica-Bold',fontSize=8,textColor=W,alignment=TA_CENTER,leading=10),
+       'td':ps('td',fontSize=8,alignment=TA_CENTER,leading=10),
+       'tdl':ps('tdl',fontSize=8,alignment=TA_LEFT,leading=10),
+       'tdls':ps('tdls',fontSize=7,alignment=TA_LEFT,leading=9),
+       'tds':ps('tds',fontSize=7,alignment=TA_CENTER,leading=9)}
     def hr_line():
-        return Table([['']], colWidths=[CW], rowHeights=[2],
-            style=TableStyle([('BACKGROUND',(0,0),(-1,-1),NAVY),('TOPPADDING',(0,0),(-1,-1),0),('BOTTOMPADDING',(0,0),(-1,-1),0)]))
-
-    def kpi_box(lbl, val, sub=''):
-        data = [[Paragraph(lbl, S['kl'])],[Paragraph(val, S['kv'])],[Paragraph(sub, S['ks']) if sub else Spacer(1,0)]]
-        return Table(data, colWidths=[CW/4 - 0.15*cm], rowHeights=[0.6*cm, 1.0*cm, 0.5*cm],
-            style=TableStyle([('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),4),('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6)]))
-
-    story = []
-
-    # ── CAPA ──────────────────────────────────────────────────────────────────
-    capa = Table([
-        [Paragraph('GIRI', S['ct'])],
-        [Spacer(1, 0.3*cm)],
-        [Paragraph('SISTEMA DE GOVERNANCA STAR', S['cs'])],
-        [Spacer(1, 0.5*cm)],
-        [Paragraph('RELATORIO DE CARTEIRA COMERCIAL', S['cs'])],
-        [Spacer(1, 1.5*cm)],
-        [Paragraph(f'Contexto: {contexto}', S['cf'])],
-        [Paragraph(f'Selecao: {clabel}', S['cf'])],
-        [Spacer(1, 0.6*cm)],
-        [Paragraph(f'Gerado em {today_str}', S['cd'])],
-    ], colWidths=[CW])
-    capa.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,-1),NAVY),
-        ('TOPPADDING',(0,0),(0,0),3.5*cm),
-        ('BOTTOMPADDING',(0,-1),(-1,-1),3.5*cm),
-        ('LEFTPADDING',(0,0),(-1,-1),1.5*cm),
-        ('RIGHTPADDING',(0,0),(-1,-1),1.5*cm),
-    ]))
-    story.append(capa)
-    story.append(PageBreak())
-
-    # ── VISAO EXECUTIVA ────────────────────────────────────────────────────────
-    story.append(Paragraph('VISAO EXECUTIVA', S['h2']))
-    story.append(hr_line())
-    story.append(Spacer(1, 0.3*cm))
-
-    var_txt = f"+{var_rec:.1f}%" if var_rec>=0 else f"{var_rec:.1f}%"
-    kpi_row = [[
-        kpi_box('CLIENTES NA SELECAO', str(total), f'A:{n_a}  B:{n_b}  C:{n_c}'),
-        kpi_box(f'RECEITA {clabel[:12]}', f'R$ {fmt_br(rec_ult)}', f'vs {penultimo}: {var_txt}'),
-        kpi_box('META DO MES', f'R$ {fmt_br(meta_total)}', ''),
-        kpi_box('RECEITA EM RISCO', f'R$ {fmt_br(risco_val)}', f'{n_risco} clientes em queda'),
-    ]]
-    kpi_t = Table(kpi_row, colWidths=[CW/4]*4, rowHeights=[2.4*cm])
-    kpi_t.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,-1),LGRAY2),
-        ('LINEABOVE',(0,0),(0,0),3,BLUE),('LINEABOVE',(1,0),(1,0),3,BLUE),
-        ('LINEABOVE',(2,0),(2,0),3,NAVY),('LINEABOVE',(3,0),(3,0),3,RED),
-        ('BOX',(0,0),(0,0),0.5,BLUE),('BOX',(1,0),(1,0),0.5,BLUE),
-        ('BOX',(2,0),(2,0),0.5,NAVY),('BOX',(3,0),(3,0),0.5,RED),
-        ('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),0),
-        ('TOPPADDING',(0,0),(-1,-1),0),('BOTTOMPADDING',(0,0),(-1,-1),0),
-    ]))
-    story.append(kpi_t)
-    story.append(Spacer(1, 0.3*cm))
-
-    saude_col = GRN if idx_saude>=70 else (rlc.Color(0.69,0.49,0) if idx_saude>=50 else RED)
-    ind_row = [[
-        Table([[Paragraph('TICKET MEDIO — COMPRADORES ATIVOS', S['kl'])],
-               [Paragraph(f'R$ {fmt_br(ticket_ult)}', S['kv'])],
-               [Paragraph(f'{buyers_ult} clientes compraram em {ultimo}', S['ks'])]],
-              colWidths=[CW/2 - 0.1*cm],
-              style=TableStyle([('BACKGROUND',(0,0),(-1,-1),LGRAY2),('LINEABOVE',(0,0),(-1,0),3,BLUE),('BOX',(0,0),(-1,-1),0.5,BLUE),('TOPPADDING',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),8),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8)])),
-        Table([[Paragraph(f'INDICE DE SAUDE — {clabel[:14]}', S['kl'])],
-               [Paragraph(f'{idx_saude:.0f}%', ps('sv', fontName='Helvetica-Bold', fontSize=15, textColor=saude_col, alignment=TA_CENTER, leading=20))],
-               [Paragraph(f'{n_saud} de {total} clientes em situacao saudavel', S['ks'])]],
-              colWidths=[CW/2 - 0.1*cm],
-              style=TableStyle([('BACKGROUND',(0,0),(-1,-1),LGRAY2),('LINEABOVE',(0,0),(-1,0),3,BLUE),('BOX',(0,0),(-1,-1),0.5,BLUE),('TOPPADDING',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),8),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8)])),
-    ]]
-    ind_t = Table(ind_row, colWidths=[CW/2, CW/2], rowHeights=[2.0*cm])
+        return Table([['']],colWidths=[CW],rowHeights=[2],style=TableStyle([('BACKGROUND',(0,0),(-1,-1),NAVY),('TOPPADDING',(0,0),(-1,-1),0),('BOTTOMPADDING',(0,0),(-1,-1),0)]))
+    def kpi_box(lbl,val,sub=''):
+        data=[[Paragraph(lbl,S['kl'])],[Paragraph(val,S['kv'])],[Paragraph(sub,S['ks']) if sub else Spacer(1,0)]]
+        return Table(data,colWidths=[CW/4-0.15*cm],rowHeights=[0.6*cm,1.0*cm,0.5*cm],style=TableStyle([('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),4),('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6)]))
+    story=[]
+    capa=Table([[Paragraph('GIRI',S['ct'])],[Spacer(1,0.3*cm)],[Paragraph('SISTEMA DE GOVERNANCA STAR',S['cs'])],[Spacer(1,0.5*cm)],[Paragraph('RELATORIO DE CARTEIRA COMERCIAL',S['cs'])],[Spacer(1,1.5*cm)],[Paragraph(f'Contexto: {contexto}',S['cf'])],[Paragraph(f'Selecao: {clabel}',S['cf'])],[Spacer(1,0.6*cm)],[Paragraph(f'Gerado em {today_str}',S['cd'])]],colWidths=[CW])
+    capa.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),NAVY),('TOPPADDING',(0,0),(0,0),3.5*cm),('BOTTOMPADDING',(0,-1),(-1,-1),3.5*cm),('LEFTPADDING',(0,0),(-1,-1),1.5*cm),('RIGHTPADDING',(0,0),(-1,-1),1.5*cm)]))
+    story.append(capa); story.append(PageBreak())
+    story.append(Paragraph('VISAO EXECUTIVA',S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.3*cm))
+    var_txt=f"+{var_rec:.1f}%" if var_rec>=0 else f"{var_rec:.1f}%"
+    kpi_row=[[kpi_box('CLIENTES NA SELECAO',str(total),f'A:{n_a}  B:{n_b}  C:{n_c}'),kpi_box(f'RECEITA {clabel[:12]}',f'R$ {fmt_br(rec_ult)}',f'vs {penultimo}: {var_txt}'),kpi_box('META DO MES',f'R$ {fmt_br(meta_total)}',''),kpi_box('RECEITA EM RISCO',f'R$ {fmt_br(risco_val)}',f'{n_risco} clientes em queda')]]
+    kpi_t=Table(kpi_row,colWidths=[CW/4]*4,rowHeights=[2.4*cm])
+    kpi_t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),LGRAY2),('LINEABOVE',(0,0),(0,0),3,BLUE),('LINEABOVE',(1,0),(1,0),3,BLUE),('LINEABOVE',(2,0),(2,0),3,NAVY),('LINEABOVE',(3,0),(3,0),3,RED),('BOX',(0,0),(0,0),0.5,BLUE),('BOX',(1,0),(1,0),0.5,BLUE),('BOX',(2,0),(2,0),0.5,NAVY),('BOX',(3,0),(3,0),0.5,RED),('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),0),('TOPPADDING',(0,0),(-1,-1),0),('BOTTOMPADDING',(0,0),(-1,-1),0)]))
+    story.append(kpi_t); story.append(Spacer(1,0.3*cm))
+    saude_col=GRN if idx_saude>=70 else (rlc.Color(0.69,0.49,0) if idx_saude>=50 else RED)
+    ind_row=[[Table([[Paragraph('TICKET MEDIO — COMPRADORES ATIVOS',S['kl'])],[Paragraph(f'R$ {fmt_br(ticket_ult)}',S['kv'])],[Paragraph(f'{buyers_ult} clientes compraram em {ultimo}',S['ks'])]],colWidths=[CW/2-0.1*cm],style=TableStyle([('BACKGROUND',(0,0),(-1,-1),LGRAY2),('LINEABOVE',(0,0),(-1,0),3,BLUE),('BOX',(0,0),(-1,-1),0.5,BLUE),('TOPPADDING',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),8),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8)])),Table([[Paragraph(f'INDICE DE SAUDE — {clabel[:14]}',S['kl'])],[Paragraph(f'{idx_saude:.0f}%',ps('sv',fontName='Helvetica-Bold',fontSize=15,textColor=saude_col,alignment=TA_CENTER,leading=20))],[Paragraph(f'{n_saud} de {total} clientes saudaveis',S['ks'])]],colWidths=[CW/2-0.1*cm],style=TableStyle([('BACKGROUND',(0,0),(-1,-1),LGRAY2),('LINEABOVE',(0,0),(-1,0),3,BLUE),('BOX',(0,0),(-1,-1),0.5,BLUE),('TOPPADDING',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),8),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8)]))]]
+    ind_t=Table(ind_row,colWidths=[CW/2,CW/2],rowHeights=[2.0*cm])
     ind_t.setStyle(TableStyle([('TOPPADDING',(0,0),(-1,-1),0),('BOTTOMPADDING',(0,0),(-1,-1),0),('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),4)]))
-    story.append(ind_t)
-    story.append(Spacer(1, 0.5*cm))
-
-    # ── DISTRIBUICAO POR STATUS ────────────────────────────────────────────────
-    story.append(Paragraph('DISTRIBUICAO POR STATUS', S['h2']))
-    story.append(hr_line())
-    story.append(Spacer(1, 0.2*cm))
-    sc_pdf = df_sel['STATUS'].value_counts()
-    st_data = [[Paragraph('STATUS', S['th']), Paragraph('CLIENTES', S['th']), Paragraph('%', S['th']), Paragraph('VOLUME MEDIO (R$)', S['th'])]]
+    story.append(ind_t); story.append(Spacer(1,0.5*cm))
+    story.append(Paragraph('DISTRIBUICAO POR STATUS',S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
+    sc_pdf=df_sel['STATUS'].value_counts()
+    st_data=[[Paragraph('STATUS',S['th']),Paragraph('CLIENTES',S['th']),Paragraph('%',S['th']),Paragraph('VOLUME MEDIO (R$)',S['th'])]]
     for stat in STATUS_ORDER:
         if stat in sc_pdf.index:
-            cnt = sc_pdf[stat]; pct = cnt/total*100 if total>0 else 0
-            vol = df_sel[df_sel['STATUS']==stat]['MEDIA LP'].sum()
-            sc = SC_MAP.get(stat, GRAY)
-            st_data.append([
-                Paragraph(stat, ps(f'sp{stat}', fontName='Helvetica-Bold', fontSize=8, textColor=sc, alignment=TA_LEFT, leading=10)),
-                Paragraph(str(cnt), S['td']), Paragraph(f'{pct:.0f}%', S['td']),
-                Paragraph(f'R$ {fmt_br(vol)}', S['td']),
-            ])
-    st_t = Table(st_data, colWidths=[CW*0.45, CW*0.15, CW*0.15, CW*0.25])
+            cnt=sc_pdf[stat]; pct=cnt/total*100 if total>0 else 0; vol=df_sel[df_sel['STATUS']==stat]['MEDIA LP'].sum(); sc2=SC_MAP.get(stat,GRAY)
+            st_data.append([Paragraph(stat,ps(f'sp{stat}',fontName='Helvetica-Bold',fontSize=8,textColor=sc2,alignment=TA_LEFT,leading=10)),Paragraph(str(cnt),S['td']),Paragraph(f'{pct:.0f}%',S['td']),Paragraph(f'R$ {fmt_br(vol)}',S['td'])])
+    st_t=Table(st_data,colWidths=[CW*0.45,CW*0.15,CW*0.15,CW*0.25])
     st_t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-1),[W,LGRAY2]),('GRID',(0,0),(-1,-1),0.3,rlc.Color(0.85,0.87,0.90)),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8)]))
-    story.append(st_t)
-    story.append(Spacer(1, 0.4*cm))
-
-    # ── RECENCIA ──────────────────────────────────────────────────────────────
-    story.append(Paragraph('RECENCIA DE COMPRA', S['h2']))
-    story.append(hr_line())
-    story.append(Spacer(1, 0.2*cm))
+    story.append(st_t); story.append(Spacer(1,0.4*cm))
+    story.append(Paragraph('RECENCIA DE COMPRA',S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
     l0=f"Comprou em {meses_col[-1]}"; l1=f"Ultimo pedido em {meses_col[-2]}" if len(meses_col)>1 else "Ha 1 mes"
     l2=f"Ultimo pedido em {meses_col[-3]}" if len(meses_col)>2 else "Ha 2 meses"
     l3p=f"Sem compra desde {meses_col[-4]} ou antes" if len(meses_col)>3 else "Ha 3+ meses"
-    rec_data = [[Paragraph('CLASSIFICACAO', S['th']), Paragraph('CRITERIO', S['th']), Paragraph('CLIENTES', S['th']), Paragraph('%', S['th'])]]
-    for crit, badge, cor, mr in [(l0,'Ativo recente',GRN2,0),(l1,'Atencao',rlc.Color(0.7,0.5,0),1),(l2,'Risco alto',ORG,2),(l3p,'Inativo critico',RED,99)]:
-        cnt = int((df_sel['MESES_SEM_COMPRA']>=3).sum()) if mr==99 else int((df_sel['MESES_SEM_COMPRA']==mr).sum())
-        pct = cnt/total*100 if total>0 else 0
-        rec_data.append([Paragraph(badge, ps(f'rp{mr}', fontName='Helvetica-Bold', fontSize=8, textColor=cor, alignment=TA_CENTER, leading=10)),
-            Paragraph(crit, S['tdl']), Paragraph(str(cnt), S['td']), Paragraph(f'{pct:.0f}%', S['td'])])
-    rec_t = Table(rec_data, colWidths=[CW*0.20, CW*0.50, CW*0.15, CW*0.15])
+    rec_data=[[Paragraph('CLASSIFICACAO',S['th']),Paragraph('CRITERIO',S['th']),Paragraph('CLIENTES',S['th']),Paragraph('%',S['th'])]]
+    for crit,badge,cor,mr in [(l0,'Ativo recente',GRN2,0),(l1,'Atencao',rlc.Color(0.7,0.5,0),1),(l2,'Risco alto',ORG,2),(l3p,'Inativo critico',RED,99)]:
+        cnt=int((df_sel['MESES_SEM_COMPRA']>=3).sum()) if mr==99 else int((df_sel['MESES_SEM_COMPRA']==mr).sum()); pct=cnt/total*100 if total>0 else 0
+        rec_data.append([Paragraph(badge,ps(f'rp{mr}',fontName='Helvetica-Bold',fontSize=8,textColor=cor,alignment=TA_CENTER,leading=10)),Paragraph(crit,S['tdl']),Paragraph(str(cnt),S['td']),Paragraph(f'{pct:.0f}%',S['td'])])
+    rec_t=Table(rec_data,colWidths=[CW*0.20,CW*0.50,CW*0.15,CW*0.15])
     rec_t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-1),[W,LGRAY2]),('GRID',(0,0),(-1,-1),0.3,rlc.Color(0.85,0.87,0.90)),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8)]))
-    story.append(rec_t)
-    story.append(Spacer(1, 0.4*cm))
-
-    # ── ANALISE 3 MESES ────────────────────────────────────────────────────────
-    story.append(Paragraph('ANALISE DETALHADA — ULTIMOS 3 MESES', S['h2']))
-    story.append(hr_line())
-    story.append(Spacer(1, 0.2*cm))
-    ana_data = [[Paragraph('MES', S['th']), Paragraph('CLIENTES TOTAIS', S['th']), Paragraph('COMPRARAM', S['th']),
-                 Paragraph('FATURAMENTO (R$)', S['th']), Paragraph('VAR. FAT.', S['th']),
-                 Paragraph('TICKET MEDIO (R$)', S['th']), Paragraph('VAR. TICKET', S['th'])]]
+    story.append(rec_t); story.append(Spacer(1,0.4*cm))
+    story.append(Paragraph('ANALISE DETALHADA — ULTIMOS 3 MESES',S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
+    ana_data=[[Paragraph('MES',S['th']),Paragraph('CLIENTES TOTAIS',S['th']),Paragraph('COMPRARAM',S['th']),Paragraph('FATURAMENTO (R$)',S['th']),Paragraph('VAR. FAT.',S['th']),Paragraph('TICKET MEDIO (R$)',S['th']),Paragraph('VAR. TICKET',S['th'])]]
     pf2=None; pt2=None
     for i,mes in enumerate(last3):
         comp=int((df_sel[mes]>0).sum()); fat=df_sel[mes].sum(); tk=fat/comp if comp>0 else 0
@@ -383,94 +315,47 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
         vt=None if i==0 else ((tk-pt2)/pt2*100 if pt2 and pt2>0 else None)
         def vs(v): return '--' if v is None else (f'+{v:.1f}%' if v>=0 else f'{v:.1f}%')
         def vc2(v): return GRAY if v is None else (GRN if v>=0 else RED)
-        ana_data.append([Paragraph(f'<b>{mes}</b>',S['td']), Paragraph(str(total),S['td']), Paragraph(str(comp),S['td']),
-            Paragraph(f'R$ {fmt_br(fat)}',S['td']),
-            Paragraph(vs(vf), ps(f'vf{i}', fontName='Helvetica-Bold', fontSize=8, textColor=vc2(vf), alignment=TA_CENTER, leading=10)),
-            Paragraph(f'R$ {fmt_br(tk)}',S['td']),
-            Paragraph(vs(vt), ps(f'vt{i}', fontName='Helvetica-Bold', fontSize=8, textColor=vc2(vt), alignment=TA_CENTER, leading=10))])
+        ana_data.append([Paragraph(f'<b>{mes}</b>',S['td']),Paragraph(str(total),S['td']),Paragraph(str(comp),S['td']),Paragraph(f'R$ {fmt_br(fat)}',S['td']),Paragraph(vs(vf),ps(f'vf{i}',fontName='Helvetica-Bold',fontSize=8,textColor=vc2(vf),alignment=TA_CENTER,leading=10)),Paragraph(f'R$ {fmt_br(tk)}',S['td']),Paragraph(vs(vt),ps(f'vt{i}',fontName='Helvetica-Bold',fontSize=8,textColor=vc2(vt),alignment=TA_CENTER,leading=10))])
         pf2=fat; pt2=tk
-    ana_t = Table(ana_data, colWidths=[CW*0.10,CW*0.14,CW*0.11,CW*0.18,CW*0.12,CW*0.18,CW*0.17])
+    ana_t=Table(ana_data,colWidths=[CW*0.10,CW*0.14,CW*0.11,CW*0.18,CW*0.12,CW*0.18,CW*0.17])
     ana_t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-1),[W,LGRAY2]),('GRID',(0,0),(-1,-1),0.3,rlc.Color(0.85,0.87,0.90)),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6)]))
-    story.append(ana_t)
-    story.append(PageBreak())
-
-    # ── CARTEIRA DE CLIENTES ───────────────────────────────────────────────────
-    story.append(Paragraph(f'CARTEIRA DE CLIENTES — {clabel}', S['h2']))
-    story.append(hr_line())
-    story.append(Spacer(1, 0.2*cm))
-    cd_pdf = ['CURVA', clie_col, vend_col] + extra + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'META']
-    hdrs = ['CRV','CLIENTE','VENDEDOR'] + [c[:6] for c in extra] + ['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
-    cart_data = [[Paragraph(h, S['th']) for h in hdrs]]
-    for _, row in df_sel[cd_pdf].iterrows():
-        row_data = []
+    story.append(ana_t); story.append(PageBreak())
+    story.append(Paragraph(f'CARTEIRA DE CLIENTES — {clabel}',S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
+    cd_pdf=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
+    hdrs=['CRV','CLIENTE','VENDEDOR']+[c[:6] for c in extra]+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
+    cart_data=[[Paragraph(h,S['th']) for h in hdrs]]
+    for _,row in df_sel[cd_pdf].iterrows():
+        row_data=[]
         for cn in cd_pdf:
-            v = row[cn]
-            if cn=='STATUS':
-                sc = SC_MAP.get(str(v), GRAY)
-                row_data.append(Paragraph(str(v), ps(f'sp2{v}', fontName='Helvetica-Bold', fontSize=7, textColor=sc, alignment=TA_CENTER, leading=9)))
-            elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'):
-                row_data.append(Paragraph(fmt_br(v), S['tds']))
-            elif cn==clie_col:
-                row_data.append(Paragraph(str(v)[:32], S['tdls']))
-            else:
-                row_data.append(Paragraph(str(v)[:14], S['tds']))
+            v=row[cn]
+            if cn=='STATUS': sc3=SC_MAP.get(str(v),GRAY); row_data.append(Paragraph(str(v),ps(f'sp2{v}',fontName='Helvetica-Bold',fontSize=7,textColor=sc3,alignment=TA_CENTER,leading=9)))
+            elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'): row_data.append(Paragraph(fmt_br(v),S['tds']))
+            elif cn==clie_col: row_data.append(Paragraph(str(v)[:32],S['tdls']))
+            else: row_data.append(Paragraph(str(v)[:14],S['tds']))
         cart_data.append(row_data)
-    n_e = len(extra)
-    if n_e==0:
-        cw2 = [CW*0.04, CW*0.24, CW*0.12, CW*0.10, CW*0.09, CW*0.09, CW*0.18, CW*0.08]
-    else:
-        cw2 = [CW*0.04, CW*0.20, CW*0.11, CW*0.08, CW*0.10, CW*0.09, CW*0.09, CW*0.18, CW*0.07]
-    tw = sum(cw2); cw2 = [w*CW/tw for w in cw2]
-    cart_t = Table(cart_data, colWidths=cw2, repeatRows=1)
+    n_e=len(extra)
+    cw2=[CW*0.04,CW*0.24,CW*0.12,CW*0.10,CW*0.09,CW*0.09,CW*0.18,CW*0.08] if n_e==0 else [CW*0.04,CW*0.20,CW*0.11,CW*0.08,CW*0.10,CW*0.09,CW*0.09,CW*0.18,CW*0.07]
+    tw=sum(cw2); cw2=[w*CW/tw for w in cw2]
+    cart_t=Table(cart_data,colWidths=cw2,repeatRows=1)
     cart_t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-1),[W,LGRAY2]),('GRID',(0,0),(-1,-1),0.3,rlc.Color(0.85,0.87,0.90)),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4),('LEFTPADDING',(0,0),(-1,-1),4),('RIGHTPADDING',(0,0),(-1,-1),4)]))
     story.append(cart_t)
-
-    # ── PERFORMANCE POR VENDEDOR ───────────────────────────────────────────────
-    if sel_vend == "Todos":
-        story.append(PageBreak())
-        story.append(Paragraph('PERFORMANCE POR VENDEDOR', S['h2']))
-        story.append(hr_line())
-        story.append(Spacer(1, 0.2*cm))
-        vh = ['VENDEDOR','TOTAL','SEL.','RECEITA','QDA. ACENT.','QUEDA','CRESC.','INATIVOS']
-        vd = [[Paragraph(h, S['th']) for h in vh]]
+    if sel_vend=="Todos":
+        story.append(PageBreak()); story.append(Paragraph('PERFORMANCE POR VENDEDOR',S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
+        vh=['VENDEDOR','TOTAL','SEL.','RECEITA','QDA. ACENT.','QUEDA','CRESC.','INATIVOS']
+        vd=[[Paragraph(h,S['th']) for h in vh]]
         for v in sorted(df_sel[vend_col].dropna().astype(str).unique()):
-            dt = df_full[df_full[vend_col].astype(str)==v]; ds = df_sel[df_sel[vend_col].astype(str)==v]
-            vd.append([
-                Paragraph(str(v)[:22], S['tdl']),
-                Paragraph(str(len(dt)), S['td']),
-                Paragraph(str(len(ds)), S['td']),
-                Paragraph(f"R$ {fmt_br(ds['TOTAL LP'].sum())}", S['td']),
-                Paragraph(str(len(ds[ds['STATUS']=='QUEDA ACENTUADA'])), ps('qa3', fontName='Helvetica-Bold', fontSize=8, textColor=RED, alignment=TA_CENTER, leading=10)),
-                Paragraph(str(len(ds[ds['STATUS']=='QUEDA'])), ps('q3', fontName='Helvetica-Bold', fontSize=8, textColor=ORG, alignment=TA_CENTER, leading=10)),
-                Paragraph(str(len(ds[ds['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])])), ps('c3', fontName='Helvetica-Bold', fontSize=8, textColor=GRN, alignment=TA_CENTER, leading=10)),
-                Paragraph(str(len(ds[ds['STATUS']=='INATIVO'])), ps('i3', fontName='Helvetica-Bold', fontSize=8, textColor=GRAY, alignment=TA_CENTER, leading=10)),
-            ])
-        vd.append([
-            Paragraph('TOTAL GERAL', ps('tg', fontName='Helvetica-Bold', fontSize=8, textColor=NAVY, alignment=TA_LEFT, leading=10)),
-            Paragraph(str(len(df_full)), S['td']),
-            Paragraph(str(total), S['td']),
-            Paragraph(f"R$ {fmt_br(df_sel['TOTAL LP'].sum())}", S['td']),
-            Paragraph(str(len(df_sel[df_sel['STATUS']=='QUEDA ACENTUADA'])), ps('qa4', fontName='Helvetica-Bold', fontSize=8, textColor=RED, alignment=TA_CENTER, leading=10)),
-            Paragraph(str(len(df_sel[df_sel['STATUS']=='QUEDA'])), ps('q4', fontName='Helvetica-Bold', fontSize=8, textColor=ORG, alignment=TA_CENTER, leading=10)),
-            Paragraph(str(len(df_sel[df_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])])), ps('c4', fontName='Helvetica-Bold', fontSize=8, textColor=GRN, alignment=TA_CENTER, leading=10)),
-            Paragraph(str(len(df_sel[df_sel['STATUS']=='INATIVO'])), ps('i4', fontName='Helvetica-Bold', fontSize=8, textColor=GRAY, alignment=TA_CENTER, leading=10)),
-        ])
-        vw = [CW*0.22, CW*0.07, CW*0.07, CW*0.20, CW*0.11, CW*0.09, CW*0.09, CW*0.10]
-        vt2 = Table(vd, colWidths=vw, repeatRows=1)
+            dt=df_full[df_full[vend_col].astype(str)==v]; ds=df_sel[df_sel[vend_col].astype(str)==v]
+            vd.append([Paragraph(str(v)[:22],S['tdl']),Paragraph(str(len(dt)),S['td']),Paragraph(str(len(ds)),S['td']),Paragraph(f"R$ {fmt_br(ds['TOTAL LP'].sum())}",S['td']),Paragraph(str(len(ds[ds['STATUS']=='QUEDA ACENTUADA'])),ps('qa3',fontName='Helvetica-Bold',fontSize=8,textColor=RED,alignment=TA_CENTER,leading=10)),Paragraph(str(len(ds[ds['STATUS']=='QUEDA'])),ps('q3',fontName='Helvetica-Bold',fontSize=8,textColor=ORG,alignment=TA_CENTER,leading=10)),Paragraph(str(len(ds[ds['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])])),ps('c3',fontName='Helvetica-Bold',fontSize=8,textColor=GRN,alignment=TA_CENTER,leading=10)),Paragraph(str(len(ds[ds['STATUS']=='INATIVO'])),ps('i3',fontName='Helvetica-Bold',fontSize=8,textColor=GRAY,alignment=TA_CENTER,leading=10))])
+        vd.append([Paragraph('TOTAL GERAL',ps('tg',fontName='Helvetica-Bold',fontSize=8,textColor=NAVY,alignment=TA_LEFT,leading=10)),Paragraph(str(len(df_full)),S['td']),Paragraph(str(total),S['td']),Paragraph(f"R$ {fmt_br(df_sel['TOTAL LP'].sum())}",S['td']),Paragraph(str(len(df_sel[df_sel['STATUS']=='QUEDA ACENTUADA'])),ps('qa4',fontName='Helvetica-Bold',fontSize=8,textColor=RED,alignment=TA_CENTER,leading=10)),Paragraph(str(len(df_sel[df_sel['STATUS']=='QUEDA'])),ps('q4',fontName='Helvetica-Bold',fontSize=8,textColor=ORG,alignment=TA_CENTER,leading=10)),Paragraph(str(len(df_sel[df_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])])),ps('c4',fontName='Helvetica-Bold',fontSize=8,textColor=GRN,alignment=TA_CENTER,leading=10)),Paragraph(str(len(df_sel[df_sel['STATUS']=='INATIVO'])),ps('i4',fontName='Helvetica-Bold',fontSize=8,textColor=GRAY,alignment=TA_CENTER,leading=10))])
+        vw=[CW*0.22,CW*0.07,CW*0.07,CW*0.20,CW*0.11,CW*0.09,CW*0.09,CW*0.10]
+        vt2=Table(vd,colWidths=vw,repeatRows=1)
         vt2.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-2),[W,LGRAY2]),('BACKGROUND',(0,-1),(-1,-1),LGRAY),('LINEABOVE',(0,-1),(-1,-1),1.5,NAVY),('GRID',(0,0),(-1,-1),0.3,rlc.Color(0.85,0.87,0.90)),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),('LEFTPADDING',(0,0),(-1,-1),5),('RIGHTPADDING',(0,0),(-1,-1),5)]))
         story.append(vt2)
-
-    # ── BUILD ──────────────────────────────────────────────────────────────────
-    def footer(canvas, doc):
-        canvas.saveState()
-        canvas.setFont('Helvetica', 7)
-        canvas.setFillColor(GRAY)
-        canvas.drawString(MARGIN, 1.2*cm, f'GIRI | Sistema de Governanca STAR  |  {clabel}  |  {today_str}')
-        canvas.drawRightString(PAGE_W-MARGIN, 1.2*cm, f'Pagina {doc.page}')
-        canvas.restoreState()
-
-    SimpleDocTemplate(buf, pagesize=A4, topMargin=2*cm, bottomMargin=2*cm,
-        leftMargin=MARGIN, rightMargin=MARGIN).build(story, onFirstPage=footer, onLaterPages=footer)
+    def footer(canvas,doc):
+        canvas.saveState(); canvas.setFont('Helvetica',7); canvas.setFillColor(GRAY)
+        canvas.drawString(MARGIN,1.2*cm,f'GIRI | Sistema de Governanca STAR  |  {clabel}  |  {today_str}')
+        canvas.drawRightString(PAGE_W-MARGIN,1.2*cm,f'Pagina {doc.page}'); canvas.restoreState()
+    SimpleDocTemplate(buf,pagesize=A4,topMargin=2*cm,bottomMargin=2*cm,leftMargin=MARGIN,rightMargin=MARGIN).build(story,onFirstPage=footer,onLaterPages=footer)
     return buf.getvalue()
 
 
@@ -511,7 +396,6 @@ if uploaded_file:
 
     for c in meses_col:
         df_raw[c] = pd.to_numeric(df_raw[c], errors='coerce').fillna(0)
-
     df_raw = df_raw.dropna(subset=meses_col, how='all').reset_index(drop=True)
     df_raw = df_raw[df_raw[clie_col].notna()].reset_index(drop=True)
     df_raw = df_raw[df_raw[clie_col].astype(str).str.strip()!=''].reset_index(drop=True)
@@ -522,22 +406,19 @@ if uploaded_file:
 
     curva_detectada = False
     import re
-
     if 'CURVA' in cols:
         vals = df_raw['CURVA'].astype(str).str.upper().str.strip()
         if vals.isin(['A','B','C']).sum() > 0:
             df_raw['CURVA'] = vals.where(vals.isin(['A','B','C']), other=pd.NA).ffill().fillna('C')
             curva_detectada = True
-
     if not curva_detectada:
         for col in cols:
             col_vals = df_raw[col].astype(str).str.upper().str.strip()
             if col_vals.str.match(r'^CURVA\s*[ABC]$').any():
-                curva_series = col_vals.where(col_vals.str.match(r'^CURVA\s*[ABC]$'), other=pd.NA).ffill()
-                df_raw['CURVA'] = curva_series.str.replace(r'^CURVA\s*', '', regex=True).str.strip()
+                cs = col_vals.where(col_vals.str.match(r'^CURVA\s*[ABC]$'), other=pd.NA).ffill()
+                df_raw['CURVA'] = cs.str.replace(r'^CURVA\s*', '', regex=True).str.strip()
                 df_raw['CURVA'] = df_raw['CURVA'].where(df_raw['CURVA'].isin(['A','B','C']), 'C')
                 curva_detectada = True; break
-
     if not curva_detectada:
         df_raw = df_raw.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
         cp2 = df_raw['TOTAL LP'].cumsum() / df_raw['TOTAL LP'].sum()
@@ -582,89 +463,76 @@ if uploaded_file:
     with fc[3]:
         st.markdown(LBL.format("&nbsp;"), unsafe_allow_html=True)
         eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
-        st.download_button(label="BAIXAR PLANILHA STAR", data=eb,
+        st.markdown('<div class="dl-green">', unsafe_allow_html=True)
+        st.download_button(label="BAIXAR STAR", data=eb,
             file_name="Matriz_STAR_Giri.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        st.markdown('</div>', unsafe_allow_html=True)
     with fc[4]:
         st.markdown(LBL.format("&nbsp;"), unsafe_allow_html=True)
-        # PDF button placeholder — built after metrics are computed below
-        pdf_placeholder = st.empty()
+        pdf_container = st.container()
 
     # ── FILTROS APLICADOS ─────────────────────────────────────────────────────
     df = df_raw.copy()
     if sel_vend != "Todos": df = df[df[vend_col].astype(str)==sel_vend]
     if cida_col and sel_cida != "Todas": df = df[df[cida_col].astype(str)==sel_cida]
 
-    n_a_total = len(df[df['CURVA']=='A'])
-    n_b_total = len(df[df['CURVA']=='B'])
-    n_c_total = len(df[df['CURVA']=='C'])
-
-    df_sel = df[df['CURVA'].isin(sel_curvas)]
-    clabel = curva_label_fmt(sel_curvas)
-    cshort = curva_short(sel_curvas)
+    n_a_total = len(df[df['CURVA']=='A']); n_b_total = len(df[df['CURVA']=='B']); n_c_total = len(df[df['CURVA']=='C'])
+    df_sel  = df[df['CURVA'].isin(sel_curvas)]
+    clabel  = curva_label_fmt(sel_curvas)
+    cshort  = curva_short(sel_curvas)
 
     ultimo_mes = meses_col[-1]; penultimo = meses_col[-2] if len(meses_col)>1 else meses_col[-1]
     last3 = meses_col[-3:] if len(meses_col)>=3 else meses_col
 
     total       = len(df_sel)
-    rec_ult     = df_sel[ultimo_mes].sum()
-    rec_pen     = df_sel[penultimo].sum()
+    rec_ult     = df_sel[ultimo_mes].sum(); rec_pen = df_sel[penultimo].sum()
     var_rec     = (rec_ult-rec_pen)/rec_pen*100 if rec_pen>0 else 0
     meta_total  = df_sel['META'].sum()
-    meta_a      = df[df['CURVA']=='A']['META'].sum()
-    meta_b      = df[df['CURVA']=='B']['META'].sum()
-    meta_c      = df[df['CURVA']=='C']['META'].sum()
+    meta_a      = df[df['CURVA']=='A']['META'].sum(); meta_b = df[df['CURVA']=='B']['META'].sum(); meta_c = df[df['CURVA']=='C']['META'].sum()
     risco_mask  = df_sel['STATUS'].isin(['QUEDA','QUEDA ACENTUADA','INATIVO'])
-    risco_val   = df_sel.loc[risco_mask,'MEDIA LP'].sum()
-    n_risco     = risco_mask.sum()
+    risco_val   = df_sel.loc[risco_mask,'MEDIA LP'].sum(); n_risco = risco_mask.sum()
     saude_mask  = df_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO','ESTAVEL'])
-    n_saudaveis = saude_mask.sum()
-    idx_saude   = n_saudaveis/total*100 if total>0 else 0
+    n_saudaveis = saude_mask.sum(); idx_saude = n_saudaveis/total*100 if total>0 else 0
     saude_color = "#1A6B2A" if idx_saude>=70 else("#B07D00" if idx_saude>=50 else "#C00000")
-    buyers_ult  = (df_sel[ultimo_mes] > 0).sum()
-    ticket_ult  = df_sel[ultimo_mes].sum() / buyers_ult if buyers_ult > 0 else 0
-    buyers_pen  = (df_sel[penultimo] > 0).sum()
-    ticket_pen  = df_sel[penultimo].sum() / buyers_pen if buyers_pen > 0 else 0
+    buyers_ult  = (df_sel[ultimo_mes]>0).sum()
+    ticket_ult  = df_sel[ultimo_mes].sum()/buyers_ult if buyers_ult>0 else 0
+    buyers_pen  = (df_sel[penultimo]>0).sum()
+    ticket_pen  = df_sel[penultimo].sum()/buyers_pen if buyers_pen>0 else 0
     var_ticket  = (ticket_ult-ticket_pen)/ticket_pen*100 if ticket_pen>0 else 0
     contexto    = sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
 
-    # ── PDF DOWNLOAD (agora com dados) ────────────────────────────────────────
+    # ── PDF DOWNLOAD ──────────────────────────────────────────────────────────
     if REPORTLAB_OK:
         col_config = {'clie':clie_col,'vend':vend_col,'cida':cida_col,'meses':meses_col,'last3':last3,'ultimo':ultimo_mes,'penultimo':penultimo,'extra':extra}
         filters_pdf = {'clabel':clabel,'cshort':cshort,'contexto':contexto,'vend':sel_vend,'curvas':sel_curvas}
         metrics_pdf = {'total':total,'n_a':n_a_total,'n_b':n_b_total,'n_c':n_c_total,'rec_ult':rec_ult,'var_rec':var_rec,'meta_total':meta_total,'risco_val':risco_val,'n_risco':n_risco,'ticket_ult':ticket_ult,'buyers_ult':buyers_ult,'idx_saude':idx_saude,'n_saudaveis':n_saudaveis}
         pdf_bytes = gerar_pdf(df_sel, df, col_config, filters_pdf, metrics_pdf)
         nome_pdf = f"STAR_{contexto.replace(' ','_')}_{clabel.replace(' ','_').replace('+','')}.pdf"
-        with pdf_placeholder:
+        with pdf_container:
+            st.markdown('<div class="dl-blue">', unsafe_allow_html=True)
             st.download_button(label="BAIXAR RELATORIO PDF", data=pdf_bytes,
-                file_name=nome_pdf, mime="application/pdf",
-                help="PDF executivo com os dados do filtro atual")
+                file_name=nome_pdf, mime="application/pdf")
+            st.markdown('</div>', unsafe_allow_html=True)
     else:
-        with pdf_placeholder:
+        with pdf_container:
             st.caption("Instale reportlab para PDF")
 
     # ── CARDS KPI ─────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
     k1,k2,k3,k4=st.columns(4)
-    with k1:
-        st.markdown(f"""<div class="kpi-wrap blue"><div class="kpi-lbl">COMPOSICAO DA CARTEIRA</div><div class="kpi-val">{fmt_br(total)}</div>
-            <div class="kpi-breakdown"><span style="color:{'#0056b3' if 'A' in sel_curvas else '#B0BAC9'}">A: {n_a_total}</span> | <span style="color:{'#0056b3' if 'B' in sel_curvas else '#B0BAC9'}">B: {n_b_total}</span> | <span style="color:{'#0056b3' if 'C' in sel_curvas else '#B0BAC9'}">C: {n_c_total}</span></div></div>""", unsafe_allow_html=True)
-    with k2:
-        st.markdown(f"""<div class="kpi-wrap blue"><div class="kpi-lbl">RECEITA {htmllib.escape(clabel)} &mdash; {ultimo_mes}</div><div class="kpi-val">R$ {fmt_br(rec_ult)}</div><div class="kpi-sub">vs {penultimo}: {var_html(var_rec)}</div></div>""", unsafe_allow_html=True)
-    with k3:
-        st.markdown(f"""<div class="kpi-wrap dark"><div class="kpi-lbl">META DO MES</div><div class="kpi-val">R$ {fmt_br(meta_total)}</div><div class="kpi-breakdown"><span>A: R$ {fmt_br(meta_a)}</span><br><span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span></div></div>""", unsafe_allow_html=True)
-    with k4:
-        st.markdown(f"""<div class="kpi-wrap red"><div class="kpi-lbl">RECEITA EM RISCO &mdash; {htmllib.escape(clabel)}</div><div class="kpi-val red">R$ {fmt_br(risco_val)}</div><div class="kpi-sub">{n_risco} clientes em queda ou inativos</div></div>""", unsafe_allow_html=True)
+    with k1: st.markdown(f"""<div class="kpi-wrap blue"><div class="kpi-lbl">COMPOSICAO DA CARTEIRA</div><div class="kpi-val">{fmt_br(total)}</div><div class="kpi-breakdown"><span style="color:{'#0056b3' if 'A' in sel_curvas else '#B0BAC9'}">A: {n_a_total}</span> | <span style="color:{'#0056b3' if 'B' in sel_curvas else '#B0BAC9'}">B: {n_b_total}</span> | <span style="color:{'#0056b3' if 'C' in sel_curvas else '#B0BAC9'}">C: {n_c_total}</span></div></div>""", unsafe_allow_html=True)
+    with k2: st.markdown(f"""<div class="kpi-wrap blue"><div class="kpi-lbl">RECEITA {htmllib.escape(clabel)} &mdash; {ultimo_mes}</div><div class="kpi-val">R$ {fmt_br(rec_ult)}</div><div class="kpi-sub">vs {penultimo}: {var_html(var_rec)}</div></div>""", unsafe_allow_html=True)
+    with k3: st.markdown(f"""<div class="kpi-wrap dark"><div class="kpi-lbl">META DO MES</div><div class="kpi-val">R$ {fmt_br(meta_total)}</div><div class="kpi-breakdown"><span>A: R$ {fmt_br(meta_a)}</span><br><span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span></div></div>""", unsafe_allow_html=True)
+    with k4: st.markdown(f"""<div class="kpi-wrap red"><div class="kpi-lbl">RECEITA EM RISCO &mdash; {htmllib.escape(clabel)}</div><div class="kpi-val red">R$ {fmt_br(risco_val)}</div><div class="kpi-sub">{n_risco} clientes em queda ou inativos</div></div>""", unsafe_allow_html=True)
 
     # ── INDICADORES ────────────────────────────────────────────────────────────
     st.markdown(f'<div class="section-title">INDICADORES — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
     i1,i2=st.columns(2)
-    with i1:
-        st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">TICKET MEDIO — {ultimo_mes} (COMPRADORES ATIVOS)</div><div class="ind-val">R$ {fmt_br(ticket_ult)}</div><div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div></div>""", unsafe_allow_html=True)
-    with i2:
-        st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">INDICE DE SAUDE &mdash; {htmllib.escape(clabel)}</div><div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div><div class="ind-sub">{n_saudaveis} de {total} clientes em crescimento ou estaveis</div></div>""", unsafe_allow_html=True)
+    with i1: st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">TICKET MEDIO — {ultimo_mes} (COMPRADORES ATIVOS)</div><div class="ind-val">R$ {fmt_br(ticket_ult)}</div><div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div></div>""", unsafe_allow_html=True)
+    with i2: st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">INDICE DE SAUDE &mdash; {htmllib.escape(clabel)}</div><div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div><div class="ind-sub">{n_saudaveis} de {total} clientes em crescimento ou estaveis</div></div>""", unsafe_allow_html=True)
 
-    # ── ANALISE DETALHADA UNIFICADA ───────────────────────────────────────────
+    # ── ANALISE DETALHADA ─────────────────────────────────────────────────────
     st.markdown(f'<div class="section-title">ANALISE DETALHADA — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
     prev_fat=None; prev_ticket=None; rows_unified=""
     for i,mes in enumerate(last3):
@@ -692,95 +560,81 @@ if uploaded_file:
         <table class="ana-table"><thead><tr><th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th></tr></thead>
         <tbody>{rr}</tbody></table></div>""", unsafe_allow_html=True)
 
-    # ── GRAFICOS + BOTOES ─────────────────────────────────────────────────────
+    # ── GRAFICOS ──────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1,g2=st.columns([3,2])
 
     with g1:
         sc=df_sel['STATUS'].value_counts()
-        lb=[s for s in STATUS_ORDER if s in sc.index]
-        vl=[sc[s] for s in lb]; co=[STATUS_COLORS[s] for s in lb]; pc=[v/total*100 if total>0 else 0 for v in vl]
-        fig1=go.Figure(go.Bar(x=vl,y=lb,orientation='h',marker_color=co,
-            text=[f"  {v} ({p:.0f}%)" for v,p in zip(vl,pc)],
-            textposition='outside',textfont=dict(size=12,family='Arial',color='#1A2540'),cliponaxis=False))
-        fig1.update_layout(margin=dict(l=0,r=160,t=10,b=10),paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showgrid=False,showticklabels=False,zeroline=False),
-            yaxis=dict(tickfont=dict(size=12,family='Arial',color='#1A2540'),autorange='reversed'),height=260,showlegend=False)
+        lb=[s for s in STATUS_ORDER if s in sc.index]; vl=[sc[s] for s in lb]; co=[STATUS_COLORS[s] for s in lb]; pc=[v/total*100 if total>0 else 0 for v in vl]
+        fig1=go.Figure(go.Bar(x=vl,y=lb,orientation='h',marker_color=co,text=[f"  {v} ({p:.0f}%)" for v,p in zip(vl,pc)],textposition='outside',textfont=dict(size=12,family='Arial',color='#1A2540'),cliponaxis=False))
+        fig1.update_layout(margin=dict(l=0,r=160,t=10,b=10),paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',xaxis=dict(showgrid=False,showticklabels=False,zeroline=False),yaxis=dict(tickfont=dict(size=12,family='Arial',color='#1A2540'),autorange='reversed'),height=260,showlegend=False)
         titulo_grafico=f"DISTRIBUICAO POR STATUS &mdash; {htmllib.escape(clabel)}"
         st.markdown(f'<div class="chart-wrap"><div class="chart-lbl">{titulo_grafico}</div>', unsafe_allow_html=True)
         st.plotly_chart(fig1,use_container_width=True,config={'displayModeBar':False})
 
-        # ── BOTOES DE STATUS — CORRIGIDOS ─────────────────────────────────────
+        # ── BOTOES DE STATUS — LAYOUT VERTICAL ───────────────────────────────
         status_presentes=[s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
-        n_btns=len(status_presentes)+1
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6B7A99;margin:12px 0 6px 0;">Filtrar carteira por status:</p>', unsafe_allow_html=True)
 
-        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6B7A99;margin:8px 0 6px 0;">Filtrar carteira por status:</p>', unsafe_allow_html=True)
+        all_rows = status_presentes + [None]  # None = TODOS
 
-        # CSS dinamico com seletor :has() para cor individual por botao
-        css=""
-        # Estilo base para todos os botoes do bloco
-        css += f"""
-        [data-testid="stMarkdownContainer"]:has(#sa) ~ [data-testid="stHorizontalBlock"] button {{
-            height: 40px !important;
-            font-size: 9px !important;
-            font-weight: 800 !important;
-            letter-spacing: 0.8px !important;
-            text-transform: uppercase !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            width: 100% !important;
-            min-width: 0 !important;
-            border-radius: 8px !important;
-            padding: 0 6px !important;
-            transition: opacity 0.15s !important;
-            cursor: pointer !important;
-        }}
-        [data-testid="stMarkdownContainer"]:has(#sa) ~ [data-testid="stHorizontalBlock"] button:hover {{
-            opacity: 0.80 !important;
-        }}"""
+        for i, status in enumerate(all_rows):
+            is_todos = status is None
+            cor = '#4B5568' if is_todos else STATUS_BTN_COR.get(status, '#555')
+            count = total if is_todos else sc.get(status, 0)
+            label_txt = 'TODOS OS STATUS' if is_todos else status
+            is_active = (st.session_state.status_filtro is None and is_todos) or (st.session_state.status_filtro == status and not is_todos)
 
-        # Cor individual por posicao
-        for i,status in enumerate(status_presentes):
-            cor=STATUS_BTN_COR.get(status,'#555')
-            is_active=st.session_state.status_filtro==status
-            bg=cor if is_active else 'transparent'
-            txt='#FFFFFF' if is_active else cor
-            css+=f"""
-        [data-testid="stMarkdownContainer"]:has(#sa) ~ [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-child({i+1}) button {{
-            background: {bg} !important;
-            border: 2px solid {cor} !important;
-            color: {txt} !important;
-        }}"""
+            bg_btn = cor if is_active else 'transparent'
+            txt_btn = '#FFFFFF' if is_active else cor
+            row_bg  = f'{cor}14' if is_active else 'transparent'
+            border_l = f'3px solid {cor}' if is_active else '3px solid transparent'
+            shadow_btn = f'0 3px 10px {cor}55' if is_active else '0 2px 6px rgba(0,0,0,0.12)'
 
-        # Botao TODOS
-        is_todos=st.session_state.status_filtro is None
-        bg_t='#4B5568' if is_todos else 'transparent'
-        txt_t='#FFFFFF' if is_todos else '#4B5568'
-        css+=f"""
-        [data-testid="stMarkdownContainer"]:has(#sa) ~ [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-child({n_btns}) button {{
-            background: {bg_t} !important;
-            border: 2px solid #4B5568 !important;
-            color: {txt_t} !important;
-        }}"""
+            # CSS por linha (usando id unico)
+            st.markdown(f"""<style>
+            [data-testid="stMarkdownContainer"]:has(#sr{i}) ~ [data-testid="stHorizontalBlock"] .sbtn .stButton button {{
+                background: {bg_btn} !important;
+                border: 2px solid {cor} !important;
+                color: {txt_btn} !important;
+                box-shadow: {shadow_btn} !important;
+            }}
+            [data-testid="stMarkdownContainer"]:has(#sr{i}) ~ [data-testid="stHorizontalBlock"] .sbtn .stButton button:hover {{
+                box-shadow: 0 4px 14px {cor}66 !important;
+                transform: translateY(-1px) !important;
+                opacity: 1 !important;
+            }}
+            </style><div id="sr{i}"></div>""", unsafe_allow_html=True)
 
-        st.markdown(f'<style>{css}</style><div id="sa"></div>', unsafe_allow_html=True)
-
-        btn_cols=st.columns(n_btns)
-        for i,status in enumerate(status_presentes):
-            with btn_cols[i]:
-                cor=STATUS_BTN_COR.get(status,'#555')
-                abbrev=STATUS_ABBREV.get(status,status)
-                count=sc.get(status,0)
-                st.markdown(f'<p style="text-align:center;font-size:10px;font-weight:800;color:{cor};margin:0 0 3px 0;">{count}</p>', unsafe_allow_html=True)
-                if st.button(abbrev, key=f"sbtn_{status}"):
-                    st.session_state.status_filtro=status if st.session_state.status_filtro!=status else None
+            row_c = st.columns([5, 1])
+            with row_c[0]:
+                st.markdown(f"""<div style="
+                    background:{row_bg};
+                    border-left:{border_l};
+                    border-radius:6px;
+                    padding:7px 12px;
+                    display:flex;
+                    align-items:center;
+                    gap:10px;
+                    min-height:34px;
+                    box-sizing:border-box;
+                    transition:background 0.15s;
+                ">
+                    <div style="width:8px;height:8px;border-radius:50%;background:{cor};flex-shrink:0;"></div>
+                    <span style="font-size:10px;font-weight:700;color:#1A2540;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;">{label_txt}</span>
+                    <span style="font-size:10px;font-weight:800;color:{cor};margin-left:auto;">{count}</span>
+                </div>""", unsafe_allow_html=True)
+            with row_c[1]:
+                st.markdown('<div class="sbtn">', unsafe_allow_html=True)
+                btn_label = "LIMPAR" if is_active else "VER"
+                if st.button(btn_label, key=f"sbtn_{i}"):
+                    if is_todos:
+                        st.session_state.status_filtro = None
+                    else:
+                        st.session_state.status_filtro = None if is_active else status
                     st.rerun()
-        with btn_cols[-1]:
-            st.markdown('<p style="text-align:center;font-size:10px;color:#4B5568;margin:0 0 3px 0;">&nbsp;</p>', unsafe_allow_html=True)
-            if st.button("TODOS", key="sbtn_todos"):
-                st.session_state.status_filtro=None
-                st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -798,12 +652,7 @@ if uploaded_file:
         rv=[]
         for v in sorted(df_sel[vend_col].dropna().astype(str).unique()):
             dv_todos=df[df[vend_col].astype(str)==v]; dv_sel=df_sel[df_sel[vend_col].astype(str)==v]
-            rv.append({'VENDEDOR':v,'CLIENTES TOTAL':len(dv_todos),f'CLIENTES {cshort}':len(dv_sel),
-                f'RECEITA {cshort}':dv_sel['TOTAL LP'].sum(),
-                f'QDA. ACENTUADA {cshort}':len(dv_sel[dv_sel['STATUS']=='QUEDA ACENTUADA']),
-                f'QUEDA {cshort}':len(dv_sel[dv_sel['STATUS']=='QUEDA']),
-                f'CRESCIMENTO {cshort}':len(dv_sel[dv_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])]),
-                f'INATIVOS {cshort}':len(dv_sel[dv_sel['STATUS']=='INATIVO'])})
+            rv.append({'VENDEDOR':v,'CLIENTES TOTAL':len(dv_todos),f'CLIENTES {cshort}':len(dv_sel),f'RECEITA {cshort}':dv_sel['TOTAL LP'].sum(),f'QDA. ACENTUADA {cshort}':len(dv_sel[dv_sel['STATUS']=='QUEDA ACENTUADA']),f'QUEDA {cshort}':len(dv_sel[dv_sel['STATUS']=='QUEDA']),f'CRESCIMENTO {cshort}':len(dv_sel[dv_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])]),f'INATIVOS {cshort}':len(dv_sel[dv_sel['STATUS']=='INATIVO'])})
         cv2=list(rv[0].keys()); receita_col=f'RECEITA {cshort}'
         total_row={'VENDEDOR':'TOTAL GERAL'}
         for k in cv2:
