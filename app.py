@@ -537,14 +537,9 @@ if uploaded_file:
     with k4: st.markdown(f"""<div class="kpi-wrap red"><div class="kpi-lbl">RECEITA EM RISCO &mdash; {htmllib.escape(clabel)}</div><div class="kpi-val red">R$ {fmt_br(risco_val)}</div><div class="kpi-sub">{n_risco} clientes em queda ou inativos</div></div>""", unsafe_allow_html=True)
 
     # ── INDICADORES ────────────────────────────────────────────────────────────
-    st.markdown(f'<div class="section-title">INDICADORES — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
-    i1,i2=st.columns(2)
-    with i1: st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">TICKET MEDIO — {ultimo_mes} (COMPRADORES ATIVOS)</div><div class="ind-val">R$ {fmt_br(ticket_ult)}</div><div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div></div>""", unsafe_allow_html=True)
-    with i2: st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">INDICE DE SAUDE &mdash; {htmllib.escape(clabel)}</div><div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div><div class="ind-sub">{n_saudaveis} de {total} clientes em crescimento ou estaveis</div></div>""", unsafe_allow_html=True)
-
-    # ── ANALISE DETALHADA ─────────────────────────────────────────────────────
+# ── ANALISE DETALHADA ─────────────────────────────────────────────────────
     st.markdown(f'<div class="section-title">ANALISE DETALHADA — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
-  prev_fat=None; prev_ticket=None; rows_unified=""
+    prev_fat=None; prev_ticket=None; rows_unified=""
     for i,mes in enumerate(last3):
         compraram = int((df_sel[mes]>0).sum())
         fat = df_sel[mes].sum()
