@@ -101,17 +101,20 @@ st.markdown("""
     box-shadow:0 6px 20px rgba(0,18,51,0.48) !important;
 }
 
-/* ── STATUS FILTER HTML ──────────────────────────────────────────────── */
-.sf-wrap { background:#FFFFFF; border-radius:12px; padding:10px; box-shadow:0 2px 14px rgba(0,0,0,0.07); margin-top:10px; }
-.sf-title { font-size:9px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; color:#6B7A99; margin:0 0 8px 4px; }
-.sf-row { display:flex; align-items:center; gap:10px; padding:5px 8px; border-radius:6px; cursor:pointer; border-left:3px solid transparent; transition:background 0.12s, border-color 0.12s; margin-bottom:2px; user-select:none; }
-.sf-row:hover { background:rgba(0,0,0,0.04); }
-.sf-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-.sf-name { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.7px; color:#1A2540; flex:1; }
-.sf-count { font-size:10px; font-weight:800; }
-.sf-btn { font-size:8px; font-weight:800; letter-spacing:0.5px; text-transform:uppercase; padding:3px 10px; border-radius:5px; border:2px solid; cursor:pointer; transition:transform 0.10s, box-shadow 0.10s; box-shadow:0 2px 5px rgba(0,0,0,0.10); white-space:nowrap; line-height:1.4; }
-.sf-btn:hover { transform:translateY(-1px); box-shadow:0 3px 9px rgba(0,0,0,0.18); }
-.sf-btn:active { transform:translateY(0); }
+/* ── HTML BAR CHART ──────────────────────────────────────────────────── */
+.hbc { background:#FFFFFF; border-radius:14px; padding:20px 22px; box-shadow:0 2px 18px rgba(0,0,0,0.07); }
+.hbc-title { font-size:0.85rem; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; color:#1A2540; text-align:center; margin-bottom:18px; }
+.hbc-row { display:flex; align-items:center; gap:10px; padding:5px 6px; border-radius:6px; cursor:pointer; transition:background 0.12s; border-left:3px solid transparent; margin-bottom:3px; user-select:none; }
+.hbc-row:hover { background:rgba(0,0,0,0.035); }
+.hbc-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:#1A2540; width:155px; flex-shrink:0; text-align:right; padding-right:6px; }
+.hbc-track { flex:1; height:18px; background:#EDF1F7; border-radius:4px; overflow:hidden; min-width:50px; }
+.hbc-fill { height:100%; border-radius:4px; }
+.hbc-cnt { font-size:10px; font-weight:700; color:#4B5568; width:72px; flex-shrink:0; text-align:left; padding-left:6px; white-space:nowrap; }
+.hbc-btn { font-size:8px; font-weight:800; letter-spacing:0.6px; text-transform:uppercase; padding:3px 10px; border-radius:5px; border:2px solid; cursor:pointer; transition:transform 0.10s, box-shadow 0.10s; box-shadow:0 2px 5px rgba(0,0,0,0.10); white-space:nowrap; flex-shrink:0; width:54px; text-align:center; }
+.hbc-btn:hover { transform:translateY(-1px); box-shadow:0 3px 9px rgba(0,0,0,0.18); }
+.hbc-sep { border:none; border-top:1px solid #E5EAF2; margin:6px 0; }
+.hbc-row-todos .hbc-lbl { color:#4B5568; }
+.hbc-row-todos .hbc-track { background:transparent; }
 
 /* ── OCULTAR SF INPUT ────────────────────────────────────────────────── */
 :has(> div > input[aria-label="SF_HIDDEN"]) {
@@ -555,7 +558,7 @@ if uploaded_file:
     for crit,badge,mr in faixas_rec:
         cnt=int((df_sel['MESES_SEM_COMPRA']>=3).sum()) if mr==99 else int((df_sel['MESES_SEM_COMPRA']==mr).sum())
         pct=cnt/total*100 if total>0 else 0
-        rr+=f"<tr><td>{badge}</td><td style='text-align:left'>{crit}</td><td>{cnt}</td><td>{pct:.0f}%</td></tr>"
+        rr+=f"<tr><td style='text-align:center'>{badge}</td><td style='text-align:left'>{crit}</td><td>{cnt}</td><td>{pct:.0f}%</td></tr>"
     st.markdown(f"""<div class="ana-wrap"><div class="ana-title">RECENCIA DE COMPRA &mdash; {htmllib.escape(clabel)}</div>
         <table class="ana-table"><thead><tr><th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th></tr></thead>
         <tbody>{rr}</tbody></table></div>""", unsafe_allow_html=True)
@@ -565,62 +568,71 @@ if uploaded_file:
     g1,g2=st.columns([3,2])
 
     with g1:
-        sc=df_sel['STATUS'].value_counts()
-        lb=[s for s in STATUS_ORDER if s in sc.index]; vl=[sc[s] for s in lb]; co=[STATUS_COLORS[s] for s in lb]; pc=[v/total*100 if total>0 else 0 for v in vl]
-        fig1=go.Figure(go.Bar(x=vl,y=lb,orientation='h',marker_color=co,text=[f"  {v} ({p:.0f}%)" for v,p in zip(vl,pc)],textposition='outside',textfont=dict(size=12,family='Arial',color='#1A2540'),cliponaxis=False))
-        fig1.update_layout(margin=dict(l=0,r=160,t=10,b=10),paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',xaxis=dict(showgrid=False,showticklabels=False,zeroline=False),yaxis=dict(tickfont=dict(size=12,family='Arial',color='#1A2540'),autorange='reversed'),height=260,showlegend=False)
-        titulo_grafico=f"DISTRIBUICAO POR STATUS &mdash; {htmllib.escape(clabel)}"
-        st.markdown(f'<div class="chart-wrap"><div class="chart-lbl">{titulo_grafico}</div>', unsafe_allow_html=True)
-        st.plotly_chart(fig1,use_container_width=True,config={'displayModeBar':False})
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # ── STATUS FILTER — HTML PURO + JS ────────────────────────────────────
         status_presentes = [s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
         cur_filter = st.session_state.status_filtro or ''
+        sc = df_sel['STATUS'].value_counts()
+        max_count = max([sc.get(s, 0) for s in status_presentes]) if status_presentes else 1
+        titulo_grafico = f"DISTRIBUICAO POR STATUS — {clabel}"
 
-        sf_html = """
+        bar_html = f"""
 <script>
-function setSF(val) {
-    try {
+function setSF(val) {{
+    try {{
         var inputs = document.querySelectorAll('input[type="text"]');
-        for (var i = 0; i < inputs.length; i++) {
-            if (inputs[i].getAttribute('aria-label') === 'SF_HIDDEN') {
+        for (var i = 0; i < inputs.length; i++) {{
+            if (inputs[i].getAttribute('aria-label') === 'SF_HIDDEN') {{
                 var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
                 setter.call(inputs[i], val);
-                inputs[i].dispatchEvent(new Event('input', { bubbles: true }));
+                inputs[i].dispatchEvent(new Event('input', {{ bubbles: true }}));
                 return;
-            }
-        }
-    } catch(e) {}
-}
+            }}
+        }}
+    }} catch(e) {{}}
+}}
 </script>
-<div class="sf-wrap">
-<p class="sf-title">Filtrar carteira por status</p>
+<div class="hbc">
+<p class="hbc-title">{htmllib.escape(titulo_grafico)}</p>
 """
-        all_sf = status_presentes + [None]
-        for status in all_sf:
-            is_todos = status is None
-            cor = '#4B5568' if is_todos else STATUS_BTN_COR.get(status, '#555')
-            count = total if is_todos else sc.get(status, 0)
-            name = 'TODOS OS STATUS' if is_todos else status
-            is_active = (cur_filter == '' and is_todos) or (cur_filter == status and not is_todos)
-            toggle_val = '' if is_active else ('' if is_todos else status)
-            row_bg = f'{cor}14' if is_active else 'transparent'
-            border_cor = cor if is_active else 'transparent'
-            btn_bg = cor if is_active else 'transparent'
-            btn_txt = '#FFFFFF' if is_active else cor
-            btn_lbl = 'LIMPAR' if is_active else 'VER'
+        for status in status_presentes:
+            cor      = STATUS_BTN_COR.get(status, '#555')
+            count    = sc.get(status, 0)
+            pct      = count/total*100 if total>0 else 0
+            bar_w    = count/max_count*100
+            is_active= cur_filter == status
+            toggle_v = '' if is_active else status
+            row_bg   = f'{cor}12' if is_active else 'transparent'
+            border_c = cor if is_active else 'transparent'
+            btn_bg   = cor if is_active else 'transparent'
+            btn_txt  = '#FFFFFF' if is_active else cor
+            btn_lbl  = 'LIMPAR' if is_active else 'VER'
 
-            sf_html += f"""
-<div class="sf-row" style="background:{row_bg};border-left-color:{border_cor};" onclick="setSF('{toggle_val}')">
-    <div class="sf-dot" style="background:{cor};"></div>
-    <span class="sf-name">{name}</span>
-    <span class="sf-count" style="color:{cor};">{count}</span>
-    <button class="sf-btn" style="background:{btn_bg};color:{btn_txt};border-color:{cor};">{btn_lbl}</button>
+            bar_html += f"""
+<div class="hbc-row" style="background:{row_bg};border-left-color:{border_c};" onclick="setSF('{toggle_v}')">
+    <div class="hbc-lbl">{htmllib.escape(status)}</div>
+    <div class="hbc-track"><div class="hbc-fill" style="width:{bar_w:.1f}%;background:{cor};"></div></div>
+    <span class="hbc-cnt">{count} ({pct:.0f}%)</span>
+    <button class="hbc-btn" style="background:{btn_bg};color:{btn_txt};border-color:{cor};">{btn_lbl}</button>
 </div>"""
 
-        sf_html += '</div>'
-        st.markdown(sf_html, unsafe_allow_html=True)
+        # Linha TODOS
+        is_todos  = cur_filter == ''
+        bg_todos  = '#4B556812' if is_todos else 'transparent'
+        bc_todos  = '#4B5568' if is_todos else 'transparent'
+        bbg_todos = '#4B5568' if is_todos else 'transparent'
+        btx_todos = '#FFFFFF' if is_todos else '#4B5568'
+        blbl_todos= 'LIMPAR' if is_todos else 'VER'
+
+        bar_html += f"""
+<hr class="hbc-sep">
+<div class="hbc-row hbc-row-todos" style="background:{bg_todos};border-left-color:{bc_todos};" onclick="setSF('')">
+    <div class="hbc-lbl" style="color:#4B5568;">TODA A CARTEIRA</div>
+    <div class="hbc-track" style="background:transparent;"></div>
+    <span class="hbc-cnt" style="color:#4B5568;">{total}</span>
+    <button class="hbc-btn" style="background:{bbg_todos};color:{btx_todos};border-color:#4B5568;">{blbl_todos}</button>
+</div>
+</div>"""
+
+        st.markdown(bar_html, unsafe_allow_html=True)
 
     with g2:
         cc2=df_sel['CURVA'].value_counts(); cvl=['A','B','C']; cvv=[cc2.get(c,0) for c in cvl]
@@ -643,9 +655,9 @@ function setSF(val) {
             if k!='VENDEDOR': total_row[k]=sum(r[k] for r in rv)
         hh="".join([f"<th>{c}</th>" for c in cv2]); rh=""
         for r in rv:
-            rh+="<tr>"+"".join([f"<td class='left'>{htmllib.escape(str(r[k]))}</td>" if k=='VENDEDOR' else (f"<td>R$ {fmt_br(r[k])}</td>" if k==receita_col else f"<td>{r[k]}</td>") for k in cv2])+"</tr>"
+            rh+="<td>"+"".join([f"<td class='left'>{htmllib.escape(str(r[k]))}</td>" if k=='VENDEDOR' else (f"<td>R$ {fmt_br(r[k])}</td>" if k==receita_col else f"<td>{r[k]}</td>") for k in cv2])+"</tr>"
         rh+="<tr class='total-row'>"+"".join([f"<td class='left'>{total_row[k]}</td>" if k=='VENDEDOR' else (f"<td>R$ {fmt_br(total_row[k])}</td>" if k==receita_col else f"<td>{total_row[k]}</td>") for k in cv2])+"</tr>"
-        st.markdown(f"""<div class="vend-wrap"><table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="vend-wrap"><table class="vend-table"><thead><tr>{hh}<tr></thead><tbody>{rh}</tbody></table></div>""", unsafe_allow_html=True)
 
     # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
     filtro_ativo=st.session_state.status_filtro
@@ -663,7 +675,7 @@ function setSF(val) {
         cells=""
         for cn in cd:
             v=row[cn]; ac=' class="left"' if cn==clie_col else ''
-            if cn=='STATUS': s=str(v); css5=STATUS_CSS.get(s,''); cells+=f'<td><span style="{css5}">{s}</span></td>'
+            if cn=='STATUS': s=str(v); css5=STATUS_CSS.get(s,''); cells+=f'<td style="text-align:center"><span style="{css5}">{s}</span></td>'
             elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'): cells+=f'<td{ac}>{fmt_br(v)}</td>'
             else: cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
         rc+=f"<tr>{cells}</tr>"
