@@ -267,19 +267,7 @@ if uploaded_file:
         return len(meses_col)
     df_raw['MESES_SEM_COMPRA'] = df_raw.apply(calc_rec, axis=1)
 
-    # ── DEBUG TEMPORARIO ──────────────────────────────────────────────────────
-    with st.expander("DEBUG — ver calculos internos (remover depois)", expanded=True):
-        st.write("**COLUNAS DETECTADAS:**", cols)
-        st.write("**MESES DETECTADOS:**", meses_col)
-        st.write("**COLUNA CLIENTE:**", clie_col)
-        st.write("**COLUNA VENDEDOR:**", vend_col)
-        st.write("**CURVA LIDA DO ARQUIVO:**", curva_detectada)
-        st.write("**DISTRIBUICAO DE CURVA:**", df_raw['CURVA'].value_counts().to_dict())
-        st.write("**STATUS DOS CLIENTES CURVA A (primeiros 20):**")
-        debug_a = df_raw[df_raw['CURVA']=='A'][[clie_col,'MEDIA LP','MEDIA CP','STATUS']].head(20)
-        st.dataframe(debug_a, use_container_width=True)
-        st.write("**DISTRIBUICAO DE STATUS NA CURVA A:**", df_raw[df_raw['CURVA']=='A']['STATUS'].value_counts().to_dict())
-    # ── FIM DO DEBUG ──────────────────────────────────────────────────────────
+
 
     extra = [cida_col] if cida_col else []
     fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META','ACAO']
