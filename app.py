@@ -93,13 +93,7 @@ st.markdown("""
 .cart-table tr:last-child td { border-bottom:none; }
 .cart-table tr:hover td { background:#F5F7FB; }
 .cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
-.stDownloadButton > button {
-    background: linear-gradient(135deg, #1A5C2A 0%, #2E8B47 100%) !important;
-    color:#FFFFFF !important; border:none !important; border-radius:12px !important;
-    padding:15px 28px !important; font-size:0.88rem !important; font-weight:800 !important;
-    letter-spacing:1px !important; width:100% !important;
-    box-shadow:0 6px 24px rgba(26,92,42,0.40) !important;
-}
+.stDownloadButton > button { background:linear-gradient(135deg,#1A5C2A 0%,#2E8B47 100%) !important; color:#FFFFFF !important; border:none !important; border-radius:12px !important; padding:15px 28px !important; font-size:0.88rem !important; font-weight:800 !important; letter-spacing:1px !important; width:100% !important; box-shadow:0 6px 24px rgba(26,92,42,0.40) !important; }
 .stDownloadButton > button:hover { opacity:0.88 !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -129,12 +123,12 @@ def engine_star(lp, cp):
     txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix atual. Mapear categorias que o cliente nao compra mas que sao compativeis com seu perfil.\nCONTATO: Manter frequencia de relacionamento. Explorar oportunidade de expansao de mix.\nORIENTACAO: Cliente estavel nao e cliente seguro. Monitorar frequencia de pedidos e introduzir novos itens gradualmente."
     txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar o driver do crescimento. Avaliar se e sazonalidade ou mudanca estrutural no cliente.\nCONTATO: Reforcar relacionamento. Garantir abastecimento e antecipar demanda dos proximos periodos.\nORIENTACAO: Proteger o cliente. Momento de crescimento e o de maior risco de abordagem pelo concorrente."
     txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar quais produtos puxaram o crescimento. Avaliar se o cliente tem capacidade de sustentar esse volume ou se e pontual. Verificar se ha mix ainda nao explorado.\nCONTATO: Reforcar presenca. Garantir que o abastecimento esta adequado ao novo patamar de compra. Antecipar pedidos futuros.\nORIENTACAO: Crescimento acentuado atrai concorrencia. Este e o momento de maior risco de abordagem externa. Aumentar frequencia de contato e solidificar o relacionamento antes que o concorrente perceba a oportunidade."
-    if cp_v <= 0:          return "INATIVO", 0, txt_ina
-    if lp_v <= 0:          return "ESTAVEL", int(cp_v*1.05), txt_est
-    if cp_v < lp_v*0.90:  return "QUEDA ACENTUADA", int(lp_v), txt_q_ac
-    if cp_v < lp_v*0.98:  return "QUEDA", int(lp_v), txt_q
-    if cp_v > lp_v*1.10:  return "CRESCIMENTO ACENTUADO", int(cp_v*1.05), txt_ca
-    if cp_v > lp_v*1.02:  return "CRESCIMENTO", int(cp_v*1.05), txt_cre
+    if cp_v <= 0:         return "INATIVO", 0, txt_ina
+    if lp_v <= 0:         return "ESTAVEL", int(cp_v*1.05), txt_est
+    if cp_v < lp_v*0.90: return "QUEDA ACENTUADA", int(lp_v), txt_q_ac
+    if cp_v < lp_v*0.98: return "QUEDA", int(lp_v), txt_q
+    if cp_v > lp_v*1.10: return "CRESCIMENTO ACENTUADO", int(cp_v*1.05), txt_ca
+    if cp_v > lp_v*1.02: return "CRESCIMENTO", int(cp_v*1.05), txt_cre
     return "ESTAVEL", int(lp_v*1.05), txt_est
 
 def get_tab_names(vendors):
@@ -283,7 +277,7 @@ if uploaded_file:
 
     # ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
-    fc = st.columns([2, 2, 2, 2])
+    fc = st.columns([2,2,2,2])
 
     with fc[0]:
         vendedores = ["Todos"]+sorted(df_raw[vend_col].dropna().astype(str).unique().tolist())
@@ -294,55 +288,44 @@ if uploaded_file:
             cidades = ["Todas"]+sorted(df_raw[cida_col].dropna().astype(str).unique().tolist())
             sel_cida = st.selectbox("Cidade", cidades)
         else:
-            sel_cida = "Todas"
-            st.caption("Coluna de cidade nao encontrada.")
+            sel_cida = "Todas"; st.caption("Coluna de cidade nao encontrada.")
 
     with fc[2]:
         curvas_disponiveis = sorted(df_raw['CURVA'].unique().tolist())
-        sel_curvas = st.multiselect(
-            "Curva",
-            options=curvas_disponiveis,
-            default=curvas_disponiveis,
-            placeholder="Selecione as curvas..."
-        )
-        if not sel_curvas:
-            sel_curvas = curvas_disponiveis
+        sel_curvas = st.multiselect("Curva", options=curvas_disponiveis,
+            default=curvas_disponiveis, placeholder="Selecione as curvas...")
+        if not sel_curvas: sel_curvas = curvas_disponiveis
 
     with fc[3]:
         st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
         eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
-        st.download_button(
-            label="BAIXAR PLANILHA STAR",
-            data=eb,
+        st.download_button(label="BAIXAR PLANILHA STAR", data=eb,
             file_name="Matriz_STAR_Giri.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     # ── APLICAR FILTROS ───────────────────────────────────────────────────────
     df = df_raw.copy()
     if sel_vend != "Todos": df = df[df[vend_col].astype(str)==sel_vend]
     if cida_col and sel_cida != "Todas": df = df[df[cida_col].astype(str)==sel_cida]
 
-    # Carteira completa para composicao
     n_a_total = len(df[df['CURVA']=='A'])
     n_b_total = len(df[df['CURVA']=='B'])
     n_c_total = len(df[df['CURVA']=='C'])
 
-    # Subset das curvas selecionadas
-    df_sel = df[df['CURVA'].isin(sel_curvas)]
+    df_sel  = df[df['CURVA'].isin(sel_curvas)]
     clabel  = curva_label_fmt(sel_curvas)
 
     ultimo_mes = meses_col[-1]; penultimo = meses_col[-2] if len(meses_col)>1 else meses_col[-1]
     last3 = meses_col[-3:] if len(meses_col)>=3 else meses_col
 
-    total    = len(df_sel)
-    rec_ult  = df_sel[ultimo_mes].sum()
-    rec_pen  = df_sel[penultimo].sum()
-    var_rec  = (rec_ult - rec_pen)/rec_pen*100 if rec_pen>0 else 0
-    meta_total = df_sel['META'].sum()
-    meta_a   = df[df['CURVA']=='A']['META'].sum()
-    meta_b   = df[df['CURVA']=='B']['META'].sum()
-    meta_c   = df[df['CURVA']=='C']['META'].sum()
+    total       = len(df_sel)
+    rec_ult     = df_sel[ultimo_mes].sum()
+    rec_pen     = df_sel[penultimo].sum()
+    var_rec     = (rec_ult-rec_pen)/rec_pen*100 if rec_pen>0 else 0
+    meta_total  = df_sel['META'].sum()
+    meta_a      = df[df['CURVA']=='A']['META'].sum()
+    meta_b      = df[df['CURVA']=='B']['META'].sum()
+    meta_c      = df[df['CURVA']=='C']['META'].sum()
     risco_mask  = df_sel['STATUS'].isin(['QUEDA','QUEDA ACENTUADA','INATIVO'])
     risco_val   = df_sel.loc[risco_mask,'MEDIA LP'].sum()
     n_risco     = risco_mask.sum()
@@ -357,9 +340,9 @@ if uploaded_file:
     n_q   = len(df_sel[df_sel['STATUS']=='QUEDA'])
     n_in  = len(df_sel[df_sel['MESES_SEM_COMPRA']>=3])
     fat_trend = all(df_sel[last3[i]].sum()<=df_sel[last3[i-1]].sum() for i in range(1,len(last3))) if len(last3)>=2 else False
-    contexto = sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
+    contexto  = sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
 
-    # ── DIAGNOSTICO COMERCIAL ─────────────────────────────────────────────────
+    # ── DIAGNOSTICO ───────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO COMERCIAL</div>', unsafe_allow_html=True)
     score=0
     if n_qa>0: score+=3
@@ -387,7 +370,7 @@ if uploaded_file:
     if n_qa>0: prios.append(f"Contatar imediatamente os {n_qa} cliente(s) em queda acentuada. Diagnostico antes de qualquer oferta.")
     if n_in>0: prios.append(f"Recuperar os {n_in} cliente(s) inativos ha mais de 90 dias. Risco de perda definitiva.")
     if n_q>0:  prios.append(f"Investigar queda nos {n_q} cliente(s). Entender mix e historico.")
-    if not prios: prios.append(f"Manter frequencia de contato. Blindar os clientes em crescimento.")
+    if not prios: prios.append("Manter frequencia de contato. Blindar os clientes em crescimento.")
     prios=prios[:3]
     prios_html="".join([f'<div class="prioridade-item"><div class="prioridade-num">{i+1}</div><div class="prioridade-texto">{p}</div></div>' for i,p in enumerate(prios)])
 
@@ -410,9 +393,9 @@ if uploaded_file:
         val_risco=df_sel[df_sel['STATUS']=='QUEDA ACENTUADA']['MEDIA LP'].sum()
         missoes.append({'tipo':'critica','titulo':f'{n_qa} Cliente(s) em Queda Acentuada ({clabel})','contexto':f'Esses clientes tinham media mensal de R$ {fmt_br(val_risco)} e estao comprando mais de 10% abaixo do historico.','passos':[('Prepare-se antes de ligar','Abra o historico de cada cliente. Veja o que ele comprava e quanto valia por mes.'),('Entre em contato sem ofertar produto','O objetivo e entender, nao vender. O que mudou? O que parou de precisar?'),('Registre e agende o proximo passo','Anote o motivo e defina proxima acao com data.')],'key':'missao_qa'})
     if n_in>0:
-        missoes.append({'tipo':'critica','titulo':f'{n_in} Cliente(s) Inativo(s) — Mais de 90 Dias','contexto':f'Clientes que representavam receita relevante e nao compram ha mais de 3 meses.','passos':[('Revise o ultimo pedido','Qual foi o ultimo produto? Quando foi? Qual era o valor?'),('Faca contato de diagnostico sem pressao','Nao ligue para vender. Ligue para entender. Escute mais do que fala.'),('Defina o potencial de reconquista','Recuperavel, perdido ou a monitorar. Registre e agende.')],'key':'missao_in'})
+        missoes.append({'tipo':'critica','titulo':f'{n_in} Cliente(s) Inativo(s) — Mais de 90 Dias','contexto':'Clientes que representavam receita relevante e nao compram ha mais de 3 meses.','passos':[('Revise o ultimo pedido','Qual foi o ultimo produto? Quando foi? Qual era o valor?'),('Faca contato de diagnostico sem pressao','Nao ligue para vender. Ligue para entender.'),('Defina o potencial de reconquista','Recuperavel, perdido ou a monitorar. Registre e agende.')],'key':'missao_in'})
     if n_q>0 and len(missoes)<3:
-        missoes.append({'tipo':'urgente','titulo':f'{n_q} Cliente(s) em Queda','contexto':f'Compras abaixo da media historica. Janela de intervencao aberta.','passos':[('Compare o mix atual com o historico','Quais produtos reduziram?'),('Contato de manutencao','Ha produto que ele compra de outro fornecedor que voce poderia atender?'),('Monitore o proximo mes','Se cair mais de 10%, escale para protocolo de queda acentuada.')],'key':'missao_q'})
+        missoes.append({'tipo':'urgente','titulo':f'{n_q} Cliente(s) em Queda','contexto':'Compras abaixo da media historica. Janela de intervencao aberta.','passos':[('Compare o mix atual com o historico','Quais produtos reduziram?'),('Contato de manutencao','Ha produto que ele compra de outro fornecedor?'),('Monitore o proximo mes','Se cair mais de 10%, escale para protocolo de queda acentuada.')],'key':'missao_q'})
     if not missoes:
         missoes.append({'tipo':'atencao','titulo':f'Manter e Expandir — {clabel}','contexto':f'Carteira em situacao saudavel com {idx_saude:.0f}% dos clientes em crescimento ou estaveis.','passos':[('Mantenha frequencia de contato','Clientes em crescimento sao os mais visados pela concorrencia.'),('Explore expansao de mix','Identifique categorias que o cliente nao compra.'),('Monitore mensalmente','Qualquer queda acima de 10% deve virar acao imediata.')],'key':'missao_ok'})
 
@@ -480,26 +463,51 @@ if uploaded_file:
             <div class="ind-sub">{n_saudaveis} de {total} clientes em crescimento ou estaveis</div>
         </div>""", unsafe_allow_html=True)
 
-    # ── ANALISE DETALHADA ─────────────────────────────────────────────────────
+    # ── ANALISE DETALHADA UNIFICADA ───────────────────────────────────────────
     st.markdown(f'<div class="section-title">ANALISE DETALHADA — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
-    cf,ct=st.columns(2)
-    with cf:
-        fr=""
-        for i,mes in enumerate(last3):
-            fat=df_sel[mes].sum()
-            vp=None if i==0 else((fat-df_sel[last3[i-1]].sum())/df_sel[last3[i-1]].sum()*100 if df_sel[last3[i-1]].sum()>0 else None)
-            fr+=f"<tr><td>{mes}</td><td>R$ {fmt_br(fat)}</td><td>{var_html(vp)}</td></tr>"
-        st.markdown(f"""<div class="ana-wrap"><div class="ana-title">FATURAMENTO {htmllib.escape(clabel)} &mdash; ULTIMOS 3 MESES</div>
-            <table class="ana-table"><thead><tr><th>MES</th><th>FATURAMENTO</th><th>VARIACAO</th></tr></thead>
-            <tbody>{fr}</tbody></table></div>""", unsafe_allow_html=True)
-    with ct:
-        tr=""
-        for mes in last3:
-            at=int((df_sel[mes]>0).sum()); fat=df_sel[mes].sum(); tk=fat/at if at>0 else 0
-            tr+=f"<tr><td>{mes}</td><td>{at}</td><td>R$ {fmt_br(fat)}</td><td>R$ {fmt_br(tk)}</td></tr>"
-        st.markdown(f"""<div class="ana-wrap"><div class="ana-title">TICKET MEDIO {htmllib.escape(clabel)} &mdash; ULTIMOS 3 MESES</div>
-            <table class="ana-table"><thead><tr><th>MES</th><th>CLIENTES ATIVOS</th><th>FATURAMENTO</th><th>TICKET MEDIO</th></tr></thead>
-            <tbody>{tr}</tbody></table></div>""", unsafe_allow_html=True)
+
+    prev_fat    = None
+    prev_ticket = None
+    rows_unified = ""
+    for i, mes in enumerate(last3):
+        at  = int((df_sel[mes] > 0).sum())
+        fat = df_sel[mes].sum()
+        tk  = fat / at if at > 0 else 0
+
+        if i == 0:
+            vf_html = var_html(None)
+            vt_html = var_html(None)
+        else:
+            vf = (fat - prev_fat) / prev_fat * 100 if prev_fat and prev_fat > 0 else None
+            vt = (tk - prev_ticket) / prev_ticket * 100 if prev_ticket and prev_ticket > 0 else None
+            vf_html = var_html(vf)
+            vt_html = var_html(vt)
+
+        rows_unified += f"""<tr>
+            <td><strong>{mes}</strong></td>
+            <td>{at}</td>
+            <td>R$ {fmt_br(fat)}</td>
+            <td>{vf_html}</td>
+            <td>R$ {fmt_br(tk)}</td>
+            <td>{vt_html}</td>
+        </tr>"""
+        prev_fat    = fat
+        prev_ticket = tk
+
+    st.markdown(f"""<div class="ana-wrap">
+        <div class="ana-title">FATURAMENTO E TICKET MEDIO — {htmllib.escape(clabel)} — ULTIMOS 3 MESES</div>
+        <table class="ana-table">
+            <thead><tr>
+                <th>MES</th>
+                <th>CLIENTES ATIVOS</th>
+                <th>FATURAMENTO</th>
+                <th>VAR. FAT.</th>
+                <th>TICKET MEDIO</th>
+                <th>VAR. TICKET</th>
+            </tr></thead>
+            <tbody>{rows_unified}</tbody>
+        </table>
+    </div>""", unsafe_allow_html=True)
 
     # ── RECENCIA ──────────────────────────────────────────────────────────────
     st.markdown("<div style='margin-top:16px'></div>", unsafe_allow_html=True)
