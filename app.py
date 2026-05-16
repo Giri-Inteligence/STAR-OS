@@ -117,12 +117,12 @@ def engine_star(lp, cp):
     txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix atual. Mapear categorias que o cliente nao compra mas que sao compativeis com seu perfil.\nCONTATO: Manter frequencia de relacionamento. Explorar oportunidade de expansao de mix.\nORIENTACAO: Cliente estavel nao e cliente seguro. Monitorar frequencia de pedidos e introduzir novos itens gradualmente."
     txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar o driver do crescimento. Avaliar se e sazonalidade ou mudanca estrutural no cliente.\nCONTATO: Reforcar relacionamento. Garantir abastecimento e antecipar demanda dos proximos periodos.\nORIENTACAO: Proteger o cliente. Momento de crescimento e o de maior risco de abordagem pelo concorrente."
     txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar quais produtos puxaram o crescimento. Avaliar se o cliente tem capacidade de sustentar esse volume ou se e pontual. Verificar se ha mix ainda nao explorado.\nCONTATO: Reforcar presenca. Garantir que o abastecimento esta adequado ao novo patamar de compra. Antecipar pedidos futuros.\nORIENTACAO: Crescimento acentuado atrai concorrencia. Este e o momento de maior risco de abordagem externa. Aumentar frequencia de contato e solidificar o relacionamento antes que o concorrente perceba a oportunidade."
-    if cp_v <= 0: return "INATIVO", 0, txt_ina
-    if lp_v <= 0: return "ESTAVEL", int(cp_v*1.05), txt_est
-    if cp_v < lp_v*0.85: return "QUEDA ACENTUADA", int(lp_v), txt_q_ac
-    if cp_v < lp_v*0.98: return "QUEDA", int(lp_v), txt_q
-    if cp_v > lp_v*1.20: return "CRESCIMENTO ACENTUADO", int(cp_v*1.05), txt_ca
-    if cp_v > lp_v*1.05: return "CRESCIMENTO", int(cp_v*1.05), txt_cre
+    if cp_v <= 0:           return "INATIVO", 0, txt_ina
+    if lp_v <= 0:           return "ESTAVEL", int(cp_v*1.05), txt_est
+    if cp_v < lp_v*0.90:   return "QUEDA ACENTUADA", int(lp_v), txt_q_ac   # THRESHOLD: 10%
+    if cp_v < lp_v*0.98:   return "QUEDA", int(lp_v), txt_q
+    if cp_v > lp_v*1.10:   return "CRESCIMENTO ACENTUADO", int(cp_v*1.05), txt_ca  # THRESHOLD: 10%
+    if cp_v > lp_v*1.02:   return "CRESCIMENTO", int(cp_v*1.05), txt_cre
     return "ESTAVEL", int(lp_v*1.05), txt_est
 
 def get_tab_names(vendors):
@@ -230,7 +230,6 @@ if uploaded_file:
     df_raw['MEDIA LP'] = df_raw[meses_col].mean(axis=1).astype(int)
     df_raw['MEDIA CP'] = df_raw[meses_col[-3:]].mean(axis=1).astype(int)
 
-    # ── DETECAO INTELIGENTE DE CURVA ──────────────────────────────────────────
     curva_detectada = False
     import re
 
@@ -266,8 +265,6 @@ if uploaded_file:
             if row[meses_col[i]]>0: return len(meses_col)-1-i
         return len(meses_col)
     df_raw['MESES_SEM_COMPRA'] = df_raw.apply(calc_rec, axis=1)
-
-
 
     extra = [cida_col] if cida_col else []
     fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META','ACAO']
@@ -364,13 +361,13 @@ if uploaded_file:
     missoes=[]
     if n_qa_a>0:
         val_risco=df_a[df_a['STATUS']=='QUEDA ACENTUADA']['MEDIA LP'].sum()
-        missoes.append({'tipo':'critica','titulo':f'{n_qa_a} Cliente(s) Curva A em Queda Acentuada','contexto':f'Esses clientes tinham media mensal de R$ {fmt_br(val_risco)} e estao comprando significativamente abaixo do historico. Risco real de perda.','passos':[('Prepare-se antes de ligar','Abra o historico de cada cliente. Veja o que ele comprava, quando parou e quanto valia por mes.'),('Entre em contato sem ofertar produto','O objetivo e entender, nao vender. Perguntas: O que mudou? O que parou de precisar? Houve problema de entrega ou atendimento?'),('Registre e agende o proximo passo','Anote o motivo identificado e defina a proxima acao com data. Traga para a reuniao com o gestor.')],'key':'missao_qa'})
+        missoes.append({'tipo':'critica','titulo':f'{n_qa_a} Cliente(s) Curva A em Queda Acentuada','contexto':f'Esses clientes tinham media mensal de R$ {fmt_br(val_risco)} e estao comprando mais de 10% abaixo do historico. Risco real de perda.','passos':[('Prepare-se antes de ligar','Abra o historico de cada cliente. Veja o que ele comprava, quando parou e quanto valia por mes.'),('Entre em contato sem ofertar produto','O objetivo e entender, nao vender. O que mudou? O que parou de precisar? Houve problema de entrega ou atendimento?'),('Registre e agende o proximo passo','Anote o motivo identificado e defina a proxima acao com data.')],'key':'missao_qa'})
     if n_in_a>0:
-        missoes.append({'tipo':'critica','titulo':f'{n_in_a} Cliente(s) Curva A Inativo(s) — Mais de 90 Dias','contexto':f'Clientes que representavam receita relevante e nao compram ha mais de 3 meses. Cada mes sem contato reduz a chance de reconquista.','passos':[('Revise o ultimo pedido de cada cliente','Qual foi o ultimo produto? Quando foi? Qual era o valor? Esse contexto e essencial para a abordagem.'),('Faca contato de diagnostico sem pressao','Nao ligue para vender. Ligue para entender. Escute mais do que fala.'),('Defina o potencial de reconquista','Classifique: recuperavel, perdido ou a monitorar. Registre e agende proximo passo com data.')],'key':'missao_in'})
+        missoes.append({'tipo':'critica','titulo':f'{n_in_a} Cliente(s) Curva A Inativo(s) — Mais de 90 Dias','contexto':f'Clientes que representavam receita relevante e nao compram ha mais de 3 meses. Cada mes sem contato reduz a chance de reconquista.','passos':[('Revise o ultimo pedido de cada cliente','Qual foi o ultimo produto? Quando foi? Qual era o valor?'),('Faca contato de diagnostico sem pressao','Nao ligue para vender. Ligue para entender. Escute mais do que fala.'),('Defina o potencial de reconquista','Classifique: recuperavel, perdido ou a monitorar. Registre e agende proximo passo com data.')],'key':'missao_in'})
     if n_q_a>0 and len(missoes)<3:
-        missoes.append({'tipo':'urgente','titulo':f'{n_q_a} Cliente(s) Curva A em Queda','contexto':f'Compras abaixo da media historica mas ainda ativas. Janela de intervencao aberta — agir agora evita queda acentuada.','passos':[('Compare o mix atual com o historico','Quais produtos reduziram? O cliente parou de comprar alguma categoria?'),('Contato de manutencao com pergunta de expansao','Explore uma necessidade nova: ha produto que ele compra de outro fornecedor que voce poderia atender?'),('Monitore o proximo mes','Se cair mais, escale para protocolo de queda acentuada.')],'key':'missao_q'})
+        missoes.append({'tipo':'urgente','titulo':f'{n_q_a} Cliente(s) Curva A em Queda','contexto':f'Compras abaixo da media historica mas ainda ativas. Janela de intervencao aberta.','passos':[('Compare o mix atual com o historico','Quais produtos reduziram? O cliente parou de comprar alguma categoria?'),('Contato de manutencao','Explore uma necessidade nova: ha produto que ele compra de outro fornecedor?'),('Monitore o proximo mes','Se cair mais de 10%, escale para protocolo de queda acentuada.')],'key':'missao_q'})
     if not missoes:
-        missoes.append({'tipo':'atencao','titulo':'Manter e Expandir a Curva A','contexto':f'Carteira Curva A em situacao saudavel com {idx_saude:.0f}% dos clientes em crescimento ou estaveis.','passos':[('Mantenha frequencia de contato','Clientes em crescimento sao os mais visados pela concorrencia.'),('Explore expansao de mix nos clientes estaveis','Identifique categorias que o cliente nao compra.'),('Monitore os indicadores mensalmente','Qualquer sinal de queda deve virar acao imediata.')],'key':'missao_ok'})
+        missoes.append({'tipo':'atencao','titulo':'Manter e Expandir a Curva A','contexto':f'Carteira Curva A em situacao saudavel com {idx_saude:.0f}% dos clientes em crescimento ou estaveis.','passos':[('Mantenha frequencia de contato','Clientes em crescimento sao os mais visados pela concorrencia.'),('Explore expansao de mix nos clientes estaveis','Identifique categorias que o cliente nao compra.'),('Monitore os indicadores mensalmente','Qualquer queda acima de 10% deve virar acao imediata.')],'key':'missao_ok'})
 
     card_cols = st.columns(len(missoes)) if len(missoes)>1 else [st.container()]
     for idx,(missao,col) in enumerate(zip(missoes,card_cols)):
