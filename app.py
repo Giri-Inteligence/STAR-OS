@@ -283,30 +283,40 @@ if uploaded_file:
     extra = [cida_col] if cida_col else []
     fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META','ACAO']
 
-    # ── FILTROS ───────────────────────────────────────────────────────────────
+# ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
     fc = st.columns([2,2,2,2])
+
+    LBL = '<p style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#4B5568;margin:0 0 4px 0;">{}</p>'
+
     with fc[0]:
+        st.markdown(LBL.format("VENDEDOR"), unsafe_allow_html=True)
         vendedores = ["Todos"]+sorted(df_raw[vend_col].dropna().astype(str).unique().tolist())
-        sel_vend = st.selectbox("Vendedor", vendedores)
+        sel_vend = st.selectbox("Vendedor", vendedores, label_visibility="collapsed")
+
     with fc[1]:
+        st.markdown(LBL.format("CIDADE"), unsafe_allow_html=True)
         if cida_col:
             cidades = ["Todas"]+sorted(df_raw[cida_col].dropna().astype(str).unique().tolist())
-            sel_cida = st.selectbox("Cidade", cidades)
+            sel_cida = st.selectbox("Cidade", cidades, label_visibility="collapsed")
         else:
-            sel_cida = "Todas"; st.caption("Coluna de cidade nao encontrada.")
+            sel_cida = "Todas"
+            st.caption("Coluna de cidade nao encontrada.")
+
     with fc[2]:
+        st.markdown(LBL.format("CURVA"), unsafe_allow_html=True)
         curvas_disponiveis = sorted(df_raw['CURVA'].unique().tolist())
         sel_curvas = st.multiselect("Curva", options=curvas_disponiveis,
-            default=curvas_disponiveis, placeholder="Selecione as curvas...")
+            default=curvas_disponiveis, placeholder="Selecione...",
+            label_visibility="collapsed")
         if not sel_curvas: sel_curvas = curvas_disponiveis
+
     with fc[3]:
-        st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+        st.markdown(LBL.format("&nbsp;"), unsafe_allow_html=True)
         eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
         st.download_button(label="BAIXAR PLANILHA STAR", data=eb,
             file_name="Matriz_STAR_Giri.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
     # ── APLICAR FILTROS ───────────────────────────────────────────────────────
     df = df_raw.copy()
     if sel_vend != "Todos": df = df[df[vend_col].astype(str)==sel_vend]
