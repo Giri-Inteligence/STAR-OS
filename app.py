@@ -38,11 +38,12 @@ st.markdown("""
 .ana-wrap { background:#FFFFFF; border-radius:14px; padding:20px 24px; box-shadow:0 2px 18px rgba(0,0,0,0.07); }
 .ana-title { font-size:0.80rem; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; color:#1A2540; margin-bottom:14px; text-align:center; }
 .ana-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.85rem; }
-.ana-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:10px 14px; text-align:center; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; }
-.ana-table td { padding:10px 14px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; font-size:0.85rem; }
+.ana-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:10px 10px; text-align:center; font-size:0.70rem; text-transform:uppercase; letter-spacing:0.6px; white-space:normal; line-height:1.4; vertical-align:middle; }
+.ana-table td { padding:10px 10px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; font-size:0.85rem; vertical-align:middle; }
 .ana-table td.left { text-align:left; }
 .ana-table tr:last-child td { border-bottom:none; }
 .ana-table tr:hover td { background:#F5F7FB; }
+.ana-table tr.total-row td { background:#EEF2FF; font-weight:800; color:#001845; border-top:2px solid #1A2540; }
 .rec-ativo   { background:#C6EFCE; color:#375623; font-weight:700; border-radius:6px; padding:3px 10px; font-size:0.82rem; }
 .rec-atencao { background:#FFEB9C; color:#7A4F00; font-weight:700; border-radius:6px; padding:3px 10px; font-size:0.82rem; }
 .rec-risco   { background:#FFC7CE; color:#7A0000; font-weight:700; border-radius:6px; padding:3px 10px; font-size:0.82rem; }
@@ -80,12 +81,14 @@ st.markdown("""
 .step-desc { font-size:0.82rem; color:#4B5568; line-height:1.5; }
 .missao-footer { border-top:2px solid #E5EAF2; padding-top:14px; }
 .missao-footer-titulo { font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:#6B7A99; margin-bottom:10px; }
-.vend-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.88rem; }
-.vend-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:12px 16px; text-align:center; letter-spacing:0.8px; font-size:0.75rem; text-transform:uppercase; }
-.vend-table td { padding:12px 16px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; }
+.vend-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.85rem; }
+.vend-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:10px 10px; text-align:center; letter-spacing:0.6px; font-size:0.70rem; text-transform:uppercase; white-space:normal; line-height:1.4; vertical-align:middle; }
+.vend-table td { padding:10px 12px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; vertical-align:middle; }
+.vend-table td.left { text-align:left; font-weight:600; }
 .vend-table tr:last-child td { border-bottom:none; }
 .vend-table tr:hover td { background:#F5F7FB; }
-.vend-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:hidden; }
+.vend-table tr.total-row td { background:#EEF2FF; font-weight:800; color:#001845; border-top:2px solid #1A2540; }
+.vend-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; }
 .cart-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.85rem; }
 .cart-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:11px 14px; text-align:center; letter-spacing:0.8px; font-size:0.72rem; text-transform:uppercase; }
 .cart-table td { padding:10px 14px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; }
@@ -113,6 +116,11 @@ def curva_label_fmt(sel):
     if set(sel) == {'A','B','C'}: return "TODA A CARTEIRA"
     if len(sel) == 1: return f"CURVA {sel[0]}"
     return "CURVAS " + " + ".join(sorted(sel))
+
+def curva_short(sel):
+    if not sel: return ""
+    if set(sel) == {'A','B','C'}: return "TOTAL"
+    return "+".join(sorted(sel))
 
 def engine_star(lp, cp):
     try: lp_v, cp_v = float(lp), float(cp)
@@ -278,24 +286,20 @@ if uploaded_file:
     # ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
     fc = st.columns([2,2,2,2])
-
     with fc[0]:
         vendedores = ["Todos"]+sorted(df_raw[vend_col].dropna().astype(str).unique().tolist())
         sel_vend = st.selectbox("Vendedor", vendedores)
-
     with fc[1]:
         if cida_col:
             cidades = ["Todas"]+sorted(df_raw[cida_col].dropna().astype(str).unique().tolist())
             sel_cida = st.selectbox("Cidade", cidades)
         else:
             sel_cida = "Todas"; st.caption("Coluna de cidade nao encontrada.")
-
     with fc[2]:
         curvas_disponiveis = sorted(df_raw['CURVA'].unique().tolist())
         sel_curvas = st.multiselect("Curva", options=curvas_disponiveis,
             default=curvas_disponiveis, placeholder="Selecione as curvas...")
         if not sel_curvas: sel_curvas = curvas_disponiveis
-
     with fc[3]:
         st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
         eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
@@ -314,6 +318,7 @@ if uploaded_file:
 
     df_sel  = df[df['CURVA'].isin(sel_curvas)]
     clabel  = curva_label_fmt(sel_curvas)
+    cshort  = curva_short(sel_curvas)
 
     ultimo_mes = meses_col[-1]; penultimo = meses_col[-2] if len(meses_col)>1 else meses_col[-1]
     last3 = meses_col[-3:] if len(meses_col)>=3 else meses_col
@@ -464,42 +469,38 @@ if uploaded_file:
         </div>""", unsafe_allow_html=True)
 
     # ── ANALISE DETALHADA UNIFICADA ───────────────────────────────────────────
+    # CORRECAO 1: tabela unificada com CLIENTES TOTAIS + COMPRARAM NO MES
     st.markdown(f'<div class="section-title">ANALISE DETALHADA — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
 
     prev_fat    = None
     prev_ticket = None
     rows_unified = ""
     for i, mes in enumerate(last3):
-        at  = int((df_sel[mes] > 0).sum())
+        compraram = int((df_sel[mes] > 0).sum())
         fat = df_sel[mes].sum()
-        tk  = fat / at if at > 0 else 0
+        tk  = fat / compraram if compraram > 0 else 0
 
-        if i == 0:
-            vf_html = var_html(None)
-            vt_html = var_html(None)
-        else:
-            vf = (fat - prev_fat) / prev_fat * 100 if prev_fat and prev_fat > 0 else None
-            vt = (tk - prev_ticket) / prev_ticket * 100 if prev_ticket and prev_ticket > 0 else None
-            vf_html = var_html(vf)
-            vt_html = var_html(vt)
+        vf_html = var_html(None) if i==0 else var_html((fat-prev_fat)/prev_fat*100 if prev_fat and prev_fat>0 else None)
+        vt_html = var_html(None) if i==0 else var_html((tk-prev_ticket)/prev_ticket*100 if prev_ticket and prev_ticket>0 else None)
 
         rows_unified += f"""<tr>
             <td><strong>{mes}</strong></td>
-            <td>{at}</td>
+            <td>{total}</td>
+            <td>{compraram}</td>
             <td>R$ {fmt_br(fat)}</td>
             <td>{vf_html}</td>
             <td>R$ {fmt_br(tk)}</td>
             <td>{vt_html}</td>
         </tr>"""
-        prev_fat    = fat
-        prev_ticket = tk
+        prev_fat = fat; prev_ticket = tk
 
     st.markdown(f"""<div class="ana-wrap">
         <div class="ana-title">FATURAMENTO E TICKET MEDIO — {htmllib.escape(clabel)} — ULTIMOS 3 MESES</div>
         <table class="ana-table">
             <thead><tr>
                 <th>MES</th>
-                <th>CLIENTES ATIVOS</th>
+                <th>CLIENTES TOTAIS</th>
+                <th>COMPRARAM NO MES</th>
                 <th>FATURAMENTO</th>
                 <th>VAR. FAT.</th>
                 <th>TICKET MEDIO</th>
@@ -525,15 +526,29 @@ if uploaded_file:
         <tbody>{rr}</tbody></table></div>""", unsafe_allow_html=True)
 
     # ── GRAFICOS ──────────────────────────────────────────────────────────────
+    # CORRECAO 3: titulo dinamico + texto nao cortado
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1,g2=st.columns([3,2])
     with g1:
         sc=df_sel['STATUS'].value_counts(); lb=[s for s in STATUS_ORDER if s in sc.index]
         vl=[sc[s] for s in lb]; co=[STATUS_COLORS[s] for s in lb]; pc=[v/total*100 if total>0 else 0 for v in vl]
-        fig1=go.Figure(go.Bar(x=vl,y=lb,orientation='h',marker_color=co,text=[f"  {v} ({p:.0f}%)" for v,p in zip(vl,pc)],textposition='outside',textfont=dict(size=12,family='Arial',color='#1A2540')))
-        fig1.update_layout(margin=dict(l=0,r=90,t=10,b=10),paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',xaxis=dict(showgrid=False,showticklabels=False,zeroline=False),yaxis=dict(tickfont=dict(size=12,family='Arial',color='#1A2540'),autorange='reversed'),height=260,showlegend=False)
-        st.markdown('<div class="chart-wrap"><div class="chart-lbl">DISTRIBUICAO POR STATUS</div>', unsafe_allow_html=True)
-        st.plotly_chart(fig1,use_container_width=True,config={'displayModeBar':False})
+        fig1=go.Figure(go.Bar(
+            x=vl, y=lb, orientation='h', marker_color=co,
+            text=[f"  {v} ({p:.0f}%)" for v,p in zip(vl,pc)],
+            textposition='outside',
+            textfont=dict(size=12, family='Arial', color='#1A2540'),
+            cliponaxis=False
+        ))
+        fig1.update_layout(
+            margin=dict(l=0,r=160,t=10,b=10),
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+            xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+            yaxis=dict(tickfont=dict(size=12,family='Arial',color='#1A2540'), autorange='reversed'),
+            height=260, showlegend=False
+        )
+        titulo_grafico = f"DISTRIBUICAO POR STATUS &mdash; {htmllib.escape(clabel)}"
+        st.markdown(f'<div class="chart-wrap"><div class="chart-lbl">{titulo_grafico}</div>', unsafe_allow_html=True)
+        st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar':False})
         st.markdown('</div>', unsafe_allow_html=True)
     with g2:
         cc2=df_sel['CURVA'].value_counts(); cvl=['A','B','C']; cvv=[cc2.get(c,0) for c in cvl]
@@ -544,18 +559,66 @@ if uploaded_file:
         st.markdown('</div>', unsafe_allow_html=True)
 
     # ── PERFORMANCE POR VENDEDOR ──────────────────────────────────────────────
+    # CORRECAO 2: nova estrutura + labels dinamicos + linha TOTAL GERAL
     if sel_vend=="Todos":
         st.markdown('<div class="section-title">PERFORMANCE POR VENDEDOR</div>', unsafe_allow_html=True)
-        rv=[]
+
+        rv = []
         for v in sorted(df_sel[vend_col].dropna().astype(str).unique()):
-            dv=df_sel[df_sel[vend_col].astype(str)==v]
-            rv.append({'VENDEDOR':v,'CLIENTES':str(len(dv)),'CURVA A':str(len(dv[dv['CURVA']=='A'])),'RECEITA TOTAL':f"R$ {fmt_br(dv['TOTAL LP'].sum())}",
-                'QUEDA ACENTUADA':str(len(dv[dv['STATUS']=='QUEDA ACENTUADA'])),'QUEDA':str(len(dv[dv['STATUS']=='QUEDA'])),
-                'CRESCIMENTO':str(len(dv[dv['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])])),'INATIVOS':str(len(dv[dv['STATUS']=='INATIVO']))})
-        cv2=['VENDEDOR','CLIENTES','CURVA A','RECEITA TOTAL','QUEDA ACENTUADA','QUEDA','CRESCIMENTO','INATIVOS']
-        hh="".join([f"<th>{c}</th>" for c in cv2]); rh=""
-        for r in rv: rh+="<tr>"+"".join([f"<td>{r[c]}</td>" for c in cv2])+"</tr>"
-        st.markdown(f"""<div class="vend-wrap"><table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>""", unsafe_allow_html=True)
+            dv_todos = df[df[vend_col].astype(str)==v]
+            dv_sel   = df_sel[df_sel[vend_col].astype(str)==v]
+            rv.append({
+                'VENDEDOR':          v,
+                'CLIENTES TOTAL':    len(dv_todos),
+                f'CLIENTES {cshort}': len(dv_sel),
+                f'RECEITA {cshort}':  dv_sel['TOTAL LP'].sum(),
+                f'QDA. ACENTUADA {cshort}': len(dv_sel[dv_sel['STATUS']=='QUEDA ACENTUADA']),
+                f'QUEDA {cshort}':    len(dv_sel[dv_sel['STATUS']=='QUEDA']),
+                f'CRESCIMENTO {cshort}': len(dv_sel[dv_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])]),
+                f'INATIVOS {cshort}': len(dv_sel[dv_sel['STATUS']=='INATIVO']),
+            })
+
+        cv2 = list(rv[0].keys())
+        receita_col = f'RECEITA {cshort}'
+
+        # Linha de total geral
+        total_row = {'VENDEDOR': 'TOTAL GERAL'}
+        for k in cv2:
+            if k != 'VENDEDOR':
+                total_row[k] = sum(r[k] for r in rv)
+
+        # Render header
+        hh = "".join([f"<th>{c}</th>" for c in cv2])
+
+        # Render linhas de vendedor
+        rh = ""
+        for r in rv:
+            rh += "<tr>"
+            for k in cv2:
+                v_val = r[k]
+                if k == 'VENDEDOR':
+                    rh += f"<td class='left'>{htmllib.escape(str(v_val))}</td>"
+                elif k == receita_col:
+                    rh += f"<td>R$ {fmt_br(v_val)}</td>"
+                else:
+                    rh += f"<td>{v_val}</td>"
+            rh += "</tr>"
+
+        # Render linha TOTAL GERAL
+        rh += "<tr class='total-row'>"
+        for k in cv2:
+            v_val = total_row[k]
+            if k == 'VENDEDOR':
+                rh += f"<td class='left'>{v_val}</td>"
+            elif k == receita_col:
+                rh += f"<td>R$ {fmt_br(v_val)}</td>"
+            else:
+                rh += f"<td>{v_val}</td>"
+        rh += "</tr>"
+
+        st.markdown(f"""<div class="vend-wrap">
+            <table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table>
+        </div>""", unsafe_allow_html=True)
 
     # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
     st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
