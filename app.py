@@ -74,56 +74,49 @@ st.markdown("""
 .cart-table tr:hover td { background:#F5F7FB; }
 .cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
 
-/* ── BOTOES DE DOWNLOAD ────────────────────────────────────────────────── */
-.dl-green .stDownloadButton > button {
+/* ── BOTOES DOWNLOAD — ANCORA + SIBLING ──────────────────────────────── */
+[data-testid="stMarkdownContainer"]:has(.dlg) ~ [data-testid="stDownloadButton"] button {
     background: linear-gradient(135deg,#1A5C2A 0%,#2E8B47 100%) !important;
     color:#FFFFFF !important; border:none !important; border-radius:12px !important;
-    height:46px !important; font-size:0.83rem !important; font-weight:800 !important;
+    height:46px !important; font-size:0.82rem !important; font-weight:800 !important;
     letter-spacing:0.8px !important; width:100% !important; white-space:nowrap !important;
-    box-shadow:0 4px 18px rgba(26,92,42,0.38) !important;
-    transition: filter 0.15s ease, box-shadow 0.15s ease !important;
+    box-shadow:0 4px 16px rgba(26,92,42,0.35) !important;
+    transition: filter 0.15s !important; opacity:1 !important;
 }
-.dl-green .stDownloadButton > button:hover {
-    filter: brightness(0.88) !important;
-    box-shadow: 0 6px 22px rgba(26,92,42,0.50) !important;
-    opacity: 1 !important;
+[data-testid="stMarkdownContainer"]:has(.dlg) ~ [data-testid="stDownloadButton"] button:hover {
+    filter: brightness(0.86) !important; opacity:1 !important;
+    box-shadow:0 6px 20px rgba(26,92,42,0.48) !important;
 }
 
-.dl-blue .stDownloadButton > button {
+[data-testid="stMarkdownContainer"]:has(.dlb) ~ [data-testid="stDownloadButton"] button {
     background: linear-gradient(135deg,#001845 0%,#003087 50%,#0056b3 100%) !important;
     color:#FFFFFF !important; border:none !important; border-radius:12px !important;
-    height:46px !important; font-size:0.83rem !important; font-weight:800 !important;
+    height:46px !important; font-size:0.82rem !important; font-weight:800 !important;
     letter-spacing:0.8px !important; width:100% !important; white-space:nowrap !important;
-    box-shadow:0 4px 18px rgba(0,18,51,0.38) !important;
-    transition: filter 0.15s ease, box-shadow 0.15s ease !important;
+    box-shadow:0 4px 16px rgba(0,18,51,0.35) !important;
+    transition: filter 0.15s !important; opacity:1 !important;
 }
-.dl-blue .stDownloadButton > button:hover {
-    filter: brightness(0.88) !important;
-    box-shadow: 0 6px 22px rgba(0,18,51,0.50) !important;
-    opacity: 1 !important;
+[data-testid="stMarkdownContainer"]:has(.dlb) ~ [data-testid="stDownloadButton"] button:hover {
+    filter: brightness(0.86) !important; opacity:1 !important;
+    box-shadow:0 6px 20px rgba(0,18,51,0.48) !important;
 }
 
-/* ── BOTOES DE STATUS (base) ──────────────────────────────────────────── */
-.sbtn .stButton button {
-    height: 32px !important;
-    width: 100% !important;
-    font-size: 10px !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.5px !important;
-    border-radius: 6px !important;
-    padding: 0 6px !important;
-    white-space: nowrap !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.14) !important;
-    transition: transform 0.10s ease, box-shadow 0.10s ease !important;
-}
-.sbtn .stButton button:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.22) !important;
-    opacity: 1 !important;
-}
-.sbtn .stButton button:active {
-    transform: translateY(0px) !important;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.10) !important;
+/* ── STATUS FILTER HTML ──────────────────────────────────────────────── */
+.sf-wrap { background:#FFFFFF; border-radius:12px; padding:10px; box-shadow:0 2px 14px rgba(0,0,0,0.07); margin-top:10px; }
+.sf-title { font-size:9px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; color:#6B7A99; margin:0 0 8px 4px; }
+.sf-row { display:flex; align-items:center; gap:10px; padding:5px 8px; border-radius:6px; cursor:pointer; border-left:3px solid transparent; transition:background 0.12s, border-color 0.12s; margin-bottom:2px; user-select:none; }
+.sf-row:hover { background:rgba(0,0,0,0.04); }
+.sf-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.sf-name { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.7px; color:#1A2540; flex:1; }
+.sf-count { font-size:10px; font-weight:800; }
+.sf-btn { font-size:8px; font-weight:800; letter-spacing:0.5px; text-transform:uppercase; padding:3px 10px; border-radius:5px; border:2px solid; cursor:pointer; transition:transform 0.10s, box-shadow 0.10s; box-shadow:0 2px 5px rgba(0,0,0,0.10); white-space:nowrap; line-height:1.4; }
+.sf-btn:hover { transform:translateY(-1px); box-shadow:0 3px 9px rgba(0,0,0,0.18); }
+.sf-btn:active { transform:translateY(0); }
+
+/* ── OCULTAR SF INPUT ────────────────────────────────────────────────── */
+:has(> div > input[aria-label="SF_HIDDEN"]) {
+    position:absolute !important; left:-9999px !important;
+    width:1px !important; height:1px !important; overflow:hidden !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -206,14 +199,14 @@ def get_excel_formats(wb):
 def write_sheet(ws, df, fo, cc, vc, mc, fmts):
     larg = {'CURVA':7,cc:30,vc:22,'TOTAL LP':13,'MEDIA LP':13,'MEDIA CP':13,'STATUS':24,'META':12,'ACAO':88}
     ws.set_default_row(125); ws.set_row(0,40)
-    sf = {'QUEDA ACENTUADA':fmts['qa'],'QUEDA':fmts['q'],'CRESCIMENTO ACENTUADO':fmts['ca'],'CRESCIMENTO':fmts['c'],'ESTAVEL':fmts['e'],'INATIVO':fmts['i']}
+    sf2 = {'QUEDA ACENTUADA':fmts['qa'],'QUEDA':fmts['q'],'CRESCIMENTO ACENTUADO':fmts['ca'],'CRESCIMENTO':fmts['c'],'ESTAVEL':fmts['e'],'INATIVO':fmts['i']}
     for i,col in enumerate(fo):
         ws.write(0,i,col,fmts['hdr']); ws.set_column(i,i,larg.get(col,8))
     for ri,row in df.iterrows():
         xl=ri+1
         for ci,cn in enumerate(fo):
             v=row[cn]
-            if cn=='STATUS': ws.write_string(xl,ci,str(v),sf.get(str(v),fmts['txt']))
+            if cn=='STATUS': ws.write_string(xl,ci,str(v),sf2.get(str(v),fmts['txt']))
             elif cn=='TOTAL LP': ws.write_number(xl,ci,int(v),fmts['total'])
             elif cn in('MEDIA LP','MEDIA CP','META') or cn in mc: ws.write_number(xl,ci,int(v),fmts['num'])
             else: ws.write_string(xl,ci,str(v),fmts['txt'])
@@ -231,9 +224,9 @@ def gerar_excel(df_raw,fo,cc,vc,mc):
     return buf.getvalue()
 
 
-def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
+def gerar_pdf(df_sel,df_full,col_config,filters,metrics):
     if not REPORTLAB_OK: return None
-    buf = BytesIO()
+    buf=BytesIO()
     clie_col=col_config['clie']; vend_col=col_config['vend']; meses_col=col_config['meses']
     last3=col_config['last3']; ultimo=col_config['ultimo']; penultimo=col_config['penultimo']; extra=col_config['extra']
     clabel=filters['clabel']; cshort=filters['cshort']; contexto=filters['contexto']; sel_vend=filters['vend']
@@ -290,8 +283,8 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
     st_data=[[Paragraph('STATUS',S['th']),Paragraph('CLIENTES',S['th']),Paragraph('%',S['th']),Paragraph('VOLUME MEDIO (R$)',S['th'])]]
     for stat in STATUS_ORDER:
         if stat in sc_pdf.index:
-            cnt=sc_pdf[stat]; pct=cnt/total*100 if total>0 else 0; vol=df_sel[df_sel['STATUS']==stat]['MEDIA LP'].sum(); sc2=SC_MAP.get(stat,GRAY)
-            st_data.append([Paragraph(stat,ps(f'sp{stat}',fontName='Helvetica-Bold',fontSize=8,textColor=sc2,alignment=TA_LEFT,leading=10)),Paragraph(str(cnt),S['td']),Paragraph(f'{pct:.0f}%',S['td']),Paragraph(f'R$ {fmt_br(vol)}',S['td'])])
+            cnt=sc_pdf[stat]; pct=cnt/total*100 if total>0 else 0; vol=df_sel[df_sel['STATUS']==stat]['MEDIA LP'].sum(); sc3=SC_MAP.get(stat,GRAY)
+            st_data.append([Paragraph(stat,ps(f'sp{stat}',fontName='Helvetica-Bold',fontSize=8,textColor=sc3,alignment=TA_LEFT,leading=10)),Paragraph(str(cnt),S['td']),Paragraph(f'{pct:.0f}%',S['td']),Paragraph(f'R$ {fmt_br(vol)}',S['td'])])
     st_t=Table(st_data,colWidths=[CW*0.45,CW*0.15,CW*0.15,CW*0.25])
     st_t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-1),[W,LGRAY2]),('GRID',(0,0),(-1,-1),0.3,rlc.Color(0.85,0.87,0.90)),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8)]))
     story.append(st_t); story.append(Spacer(1,0.4*cm))
@@ -328,7 +321,7 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
         row_data=[]
         for cn in cd_pdf:
             v=row[cn]
-            if cn=='STATUS': sc3=SC_MAP.get(str(v),GRAY); row_data.append(Paragraph(str(v),ps(f'sp2{v}',fontName='Helvetica-Bold',fontSize=7,textColor=sc3,alignment=TA_CENTER,leading=9)))
+            if cn=='STATUS': sc4=SC_MAP.get(str(v),GRAY); row_data.append(Paragraph(str(v),ps(f'sp2{v}',fontName='Helvetica-Bold',fontSize=7,textColor=sc4,alignment=TA_CENTER,leading=9)))
             elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'): row_data.append(Paragraph(fmt_br(v),S['tds']))
             elif cn==clie_col: row_data.append(Paragraph(str(v)[:32],S['tdls']))
             else: row_data.append(Paragraph(str(v)[:14],S['tds']))
@@ -370,6 +363,14 @@ st.markdown("""
 uploaded_file = st.file_uploader("Faca upload da base (XLSX ou CSV)", type=['xlsx','csv'])
 
 if uploaded_file:
+    # ── HIDDEN INPUT PARA STATUS FILTER ──────────────────────────────────────
+    # Deve ficar aqui para estar sempre no DOM antes do HTML filter
+    sf_current = st.session_state.status_filtro or ''
+    sf_raw = st.text_input("SF_HIDDEN", value=sf_current, key="sf_inp", label_visibility="collapsed")
+    if sf_raw != sf_current:
+        st.session_state.status_filtro = sf_raw if sf_raw else None
+        st.rerun()
+
     def detectar_header(file):
         kw = ("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")
         for h in range(6):
@@ -415,8 +416,8 @@ if uploaded_file:
         for col in cols:
             col_vals = df_raw[col].astype(str).str.upper().str.strip()
             if col_vals.str.match(r'^CURVA\s*[ABC]$').any():
-                cs = col_vals.where(col_vals.str.match(r'^CURVA\s*[ABC]$'), other=pd.NA).ffill()
-                df_raw['CURVA'] = cs.str.replace(r'^CURVA\s*', '', regex=True).str.strip()
+                cs2 = col_vals.where(col_vals.str.match(r'^CURVA\s*[ABC]$'), other=pd.NA).ffill()
+                df_raw['CURVA'] = cs2.str.replace(r'^CURVA\s*', '', regex=True).str.strip()
                 df_raw['CURVA'] = df_raw['CURVA'].where(df_raw['CURVA'].isin(['A','B','C']), 'C')
                 curva_detectada = True; break
     if not curva_detectada:
@@ -463,11 +464,11 @@ if uploaded_file:
     with fc[3]:
         st.markdown(LBL.format("&nbsp;"), unsafe_allow_html=True)
         eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
-        st.markdown('<div class="dl-green">', unsafe_allow_html=True)
+        # Ancora CSS para botao verde
+        st.markdown('<span class="dlg"></span>', unsafe_allow_html=True)
         st.download_button(label="BAIXAR STAR", data=eb,
             file_name="Matriz_STAR_Giri.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        st.markdown('</div>', unsafe_allow_html=True)
     with fc[4]:
         st.markdown(LBL.format("&nbsp;"), unsafe_allow_html=True)
         pdf_container = st.container()
@@ -489,7 +490,7 @@ if uploaded_file:
     rec_ult     = df_sel[ultimo_mes].sum(); rec_pen = df_sel[penultimo].sum()
     var_rec     = (rec_ult-rec_pen)/rec_pen*100 if rec_pen>0 else 0
     meta_total  = df_sel['META'].sum()
-    meta_a      = df[df['CURVA']=='A']['META'].sum(); meta_b = df[df['CURVA']=='B']['META'].sum(); meta_c = df[df['CURVA']=='C']['META'].sum()
+    meta_a=df[df['CURVA']=='A']['META'].sum(); meta_b=df[df['CURVA']=='B']['META'].sum(); meta_c=df[df['CURVA']=='C']['META'].sum()
     risco_mask  = df_sel['STATUS'].isin(['QUEDA','QUEDA ACENTUADA','INATIVO'])
     risco_val   = df_sel.loc[risco_mask,'MEDIA LP'].sum(); n_risco = risco_mask.sum()
     saude_mask  = df_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO','ESTAVEL'])
@@ -502,18 +503,17 @@ if uploaded_file:
     var_ticket  = (ticket_ult-ticket_pen)/ticket_pen*100 if ticket_pen>0 else 0
     contexto    = sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
 
-    # ── PDF DOWNLOAD ──────────────────────────────────────────────────────────
+    # ── PDF ───────────────────────────────────────────────────────────────────
     if REPORTLAB_OK:
-        col_config = {'clie':clie_col,'vend':vend_col,'cida':cida_col,'meses':meses_col,'last3':last3,'ultimo':ultimo_mes,'penultimo':penultimo,'extra':extra}
-        filters_pdf = {'clabel':clabel,'cshort':cshort,'contexto':contexto,'vend':sel_vend,'curvas':sel_curvas}
-        metrics_pdf = {'total':total,'n_a':n_a_total,'n_b':n_b_total,'n_c':n_c_total,'rec_ult':rec_ult,'var_rec':var_rec,'meta_total':meta_total,'risco_val':risco_val,'n_risco':n_risco,'ticket_ult':ticket_ult,'buyers_ult':buyers_ult,'idx_saude':idx_saude,'n_saudaveis':n_saudaveis}
+        col_config={'clie':clie_col,'vend':vend_col,'cida':cida_col,'meses':meses_col,'last3':last3,'ultimo':ultimo_mes,'penultimo':penultimo,'extra':extra}
+        filters_pdf={'clabel':clabel,'cshort':cshort,'contexto':contexto,'vend':sel_vend,'curvas':sel_curvas}
+        metrics_pdf={'total':total,'n_a':n_a_total,'n_b':n_b_total,'n_c':n_c_total,'rec_ult':rec_ult,'var_rec':var_rec,'meta_total':meta_total,'risco_val':risco_val,'n_risco':n_risco,'ticket_ult':ticket_ult,'buyers_ult':buyers_ult,'idx_saude':idx_saude,'n_saudaveis':n_saudaveis}
         pdf_bytes = gerar_pdf(df_sel, df, col_config, filters_pdf, metrics_pdf)
         nome_pdf = f"STAR_{contexto.replace(' ','_')}_{clabel.replace(' ','_').replace('+','')}.pdf"
         with pdf_container:
-            st.markdown('<div class="dl-blue">', unsafe_allow_html=True)
+            st.markdown('<span class="dlb"></span>', unsafe_allow_html=True)
             st.download_button(label="BAIXAR RELATORIO PDF", data=pdf_bytes,
                 file_name=nome_pdf, mime="application/pdf")
-            st.markdown('</div>', unsafe_allow_html=True)
     else:
         with pdf_container:
             st.caption("Instale reportlab para PDF")
@@ -560,7 +560,7 @@ if uploaded_file:
         <table class="ana-table"><thead><tr><th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th></tr></thead>
         <tbody>{rr}</tbody></table></div>""", unsafe_allow_html=True)
 
-    # ── GRAFICOS ──────────────────────────────────────────────────────────────
+    # ── GRAFICOS + STATUS FILTER ──────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1,g2=st.columns([3,2])
 
@@ -572,71 +572,55 @@ if uploaded_file:
         titulo_grafico=f"DISTRIBUICAO POR STATUS &mdash; {htmllib.escape(clabel)}"
         st.markdown(f'<div class="chart-wrap"><div class="chart-lbl">{titulo_grafico}</div>', unsafe_allow_html=True)
         st.plotly_chart(fig1,use_container_width=True,config={'displayModeBar':False})
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        # ── BOTOES DE STATUS — LAYOUT VERTICAL ───────────────────────────────
-        status_presentes=[s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
-        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6B7A99;margin:12px 0 6px 0;">Filtrar carteira por status:</p>', unsafe_allow_html=True)
+        # ── STATUS FILTER — HTML PURO + JS ────────────────────────────────────
+        status_presentes = [s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
+        cur_filter = st.session_state.status_filtro or ''
 
-        all_rows = status_presentes + [None]  # None = TODOS
-
-        for i, status in enumerate(all_rows):
+        sf_html = """
+<script>
+function setSF(val) {
+    try {
+        var inputs = document.querySelectorAll('input[type="text"]');
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].getAttribute('aria-label') === 'SF_HIDDEN') {
+                var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+                setter.call(inputs[i], val);
+                inputs[i].dispatchEvent(new Event('input', { bubbles: true }));
+                return;
+            }
+        }
+    } catch(e) {}
+}
+</script>
+<div class="sf-wrap">
+<p class="sf-title">Filtrar carteira por status</p>
+"""
+        all_sf = status_presentes + [None]
+        for status in all_sf:
             is_todos = status is None
             cor = '#4B5568' if is_todos else STATUS_BTN_COR.get(status, '#555')
             count = total if is_todos else sc.get(status, 0)
-            label_txt = 'TODOS OS STATUS' if is_todos else status
-            is_active = (st.session_state.status_filtro is None and is_todos) or (st.session_state.status_filtro == status and not is_todos)
+            name = 'TODOS OS STATUS' if is_todos else status
+            is_active = (cur_filter == '' and is_todos) or (cur_filter == status and not is_todos)
+            toggle_val = '' if is_active else ('' if is_todos else status)
+            row_bg = f'{cor}14' if is_active else 'transparent'
+            border_cor = cor if is_active else 'transparent'
+            btn_bg = cor if is_active else 'transparent'
+            btn_txt = '#FFFFFF' if is_active else cor
+            btn_lbl = 'LIMPAR' if is_active else 'VER'
 
-            bg_btn = cor if is_active else 'transparent'
-            txt_btn = '#FFFFFF' if is_active else cor
-            row_bg  = f'{cor}14' if is_active else 'transparent'
-            border_l = f'3px solid {cor}' if is_active else '3px solid transparent'
-            shadow_btn = f'0 3px 10px {cor}55' if is_active else '0 2px 6px rgba(0,0,0,0.12)'
+            sf_html += f"""
+<div class="sf-row" style="background:{row_bg};border-left-color:{border_cor};" onclick="setSF('{toggle_val}')">
+    <div class="sf-dot" style="background:{cor};"></div>
+    <span class="sf-name">{name}</span>
+    <span class="sf-count" style="color:{cor};">{count}</span>
+    <button class="sf-btn" style="background:{btn_bg};color:{btn_txt};border-color:{cor};">{btn_lbl}</button>
+</div>"""
 
-            # CSS por linha (usando id unico)
-            st.markdown(f"""<style>
-            [data-testid="stMarkdownContainer"]:has(#sr{i}) ~ [data-testid="stHorizontalBlock"] .sbtn .stButton button {{
-                background: {bg_btn} !important;
-                border: 2px solid {cor} !important;
-                color: {txt_btn} !important;
-                box-shadow: {shadow_btn} !important;
-            }}
-            [data-testid="stMarkdownContainer"]:has(#sr{i}) ~ [data-testid="stHorizontalBlock"] .sbtn .stButton button:hover {{
-                box-shadow: 0 4px 14px {cor}66 !important;
-                transform: translateY(-1px) !important;
-                opacity: 1 !important;
-            }}
-            </style><div id="sr{i}"></div>""", unsafe_allow_html=True)
-
-            row_c = st.columns([5, 1])
-            with row_c[0]:
-                st.markdown(f"""<div style="
-                    background:{row_bg};
-                    border-left:{border_l};
-                    border-radius:6px;
-                    padding:7px 12px;
-                    display:flex;
-                    align-items:center;
-                    gap:10px;
-                    min-height:34px;
-                    box-sizing:border-box;
-                    transition:background 0.15s;
-                ">
-                    <div style="width:8px;height:8px;border-radius:50%;background:{cor};flex-shrink:0;"></div>
-                    <span style="font-size:10px;font-weight:700;color:#1A2540;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;">{label_txt}</span>
-                    <span style="font-size:10px;font-weight:800;color:{cor};margin-left:auto;">{count}</span>
-                </div>""", unsafe_allow_html=True)
-            with row_c[1]:
-                st.markdown('<div class="sbtn">', unsafe_allow_html=True)
-                btn_label = "LIMPAR" if is_active else "VER"
-                if st.button(btn_label, key=f"sbtn_{i}"):
-                    if is_todos:
-                        st.session_state.status_filtro = None
-                    else:
-                        st.session_state.status_filtro = None if is_active else status
-                    st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
+        sf_html += '</div>'
+        st.markdown(sf_html, unsafe_allow_html=True)
 
     with g2:
         cc2=df_sel['CURVA'].value_counts(); cvl=['A','B','C']; cvv=[cc2.get(c,0) for c in cvl]
@@ -679,7 +663,7 @@ if uploaded_file:
         cells=""
         for cn in cd:
             v=row[cn]; ac=' class="left"' if cn==clie_col else ''
-            if cn=='STATUS': s=str(v); css2=STATUS_CSS.get(s,''); cells+=f'<td><span style="{css2}">{s}</span></td>'
+            if cn=='STATUS': s=str(v); css5=STATUS_CSS.get(s,''); cells+=f'<td><span style="{css5}">{s}</span></td>'
             elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'): cells+=f'<td{ac}>{fmt_br(v)}</td>'
             else: cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
         rc+=f"<tr>{cells}</tr>"
