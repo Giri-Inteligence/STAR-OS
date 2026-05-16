@@ -97,14 +97,10 @@ st.markdown("""
     filter:brightness(0.86) !important; opacity:1 !important;
 }
 
-/* INPUT OCULTO */
-[data-testid="stTextInput"]:has(input[placeholder="__sf_filter__"]) {
-    position:fixed !important; left:-9999px !important; top:-9999px !important;
-    width:200px !important; height:50px !important; overflow:visible !important;
-}
-input[placeholder="__sf_filter__"] {
-    position:fixed !important; left:-9999px !important; top:-9999px !important;
-    opacity:0 !important;
+/* BOTOES OCULTOS */
+[data-testid="stMarkdownContainer"]:has(.sfh) + [data-testid="stButton"] button {
+    position:fixed !important; left:-9999px !important; top:50px !important;
+    opacity:0 !important; width:80px !important; height:36px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -460,15 +456,6 @@ uploaded_file = st.file_uploader("Faca upload da base (XLSX ou CSV)", type=['xls
 
 if uploaded_file:
 
-    # ── INPUT OCULTO PARA FILTRO DE STATUS ───────────────────────────────────
-    # Sem value= para nao sobrescrever o que o JS escreve
-    sf_raw = st.text_input("SF_HIDDEN", key="sf_inp",
-                           label_visibility="collapsed",
-                           placeholder="__sf_filter__")
-    if sf_raw != (st.session_state.status_filtro or ''):
-        st.session_state.status_filtro = sf_raw if sf_raw else None
-        st.rerun()
-
     # ── LEITURA DO ARQUIVO ────────────────────────────────────────────────────
     def detectar_header(file):
         kw = ("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")
@@ -724,6 +711,19 @@ if uploaded_file:
         + '</tr></thead><tbody>' + rr + '</tbody></table></div>',
         unsafe_allow_html=True)
 
+    # BOTOES OCULTOS — clicados pelo JS do iframe
+    for status in STATUS_ORDER:
+        if status in df_sel['STATUS'].values:
+            safe = status.replace(' ', '_')
+            st.markdown('<span class="sfh"></span>', unsafe_allow_html=True)
+            if st.button(f'__SF_{safe}__', key=f'sfb_{safe}'):
+                st.session_state.status_filtro = None if st.session_state.status_filtro == status else status
+                st.rerun()
+    st.markdown('<span class="sfh"></span>', unsafe_allow_html=True)
+    if st.button('__SF_TODOS__', key='sfb_todos'):
+        st.session_state.status_filtro = None
+        st.rerun()
+
     # ── DIAGNOSTICO DE CARTEIRA ───────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1, g2 = st.columns([3, 2])
@@ -791,20 +791,18 @@ if uploaded_file:
             + '</div>'
             + '<script>'
             + 'function setSF(val){'
-            + 'try{'
             + 'var doc=window.parent.document;'
-            + 'var inp=doc.querySelector(\'input[placeholder="__sf_filter__"]\');'
-            + 'if(!inp)inp=doc.querySelector(\'input[aria-label="SF_HIDDEN"]\');'
-            + 'if(inp){'
-            + 'var s=Object.getOwnPropertyDescriptor(window.parent.HTMLInputElement.prototype,"value").set;'
-            + 's.call(inp,val);'
-            + 'inp.dispatchEvent(new window.parent.Event("input",{bubbles:true}));'
+            + 'var label=val===""?"__SF_TODOS__":"__SF_"+val.replace(/ /g,"_")+"__";'
+            + 'var btns=doc.querySelectorAll("button");'
+            + 'for(var i=0;i<btns.length;i++){'
+            + 'if(btns[i].textContent.trim()===label){'
+            + 'btns[i].click();'
             + 'setTimeout(function(){'
             + 'var el=doc.getElementById("carteira-anchor");'
             + 'if(el)el.scrollIntoView({behavior:"smooth",block:"start"});'
             + '},700);'
-            + '}'
-            + '}catch(e){console.error(e);}}'
+            + 'return;}}'
+            + 'console.error("Botao nao encontrado:",label);}'
             + '</script></body></html>'
         )
 
