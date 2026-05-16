@@ -570,3 +570,176 @@ if uploaded_file:
     </tr></thead>
     <tbody>{rows_unified}</tbody>
     </table></div>""", unsafe_allow_html=True)
+# ── INDICADORES ────────────────────────────────────────────────────────────
+    st.markdown(f'<div class="section-title">INDICADORES — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
+    i1,i2=st.columns(2)
+    with i1: st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">TICKET MEDIO — {ultimo_mes} (COMPRADORES ATIVOS)</div><div class="ind-val">R$ {fmt_br(ticket_ult)}</div><div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div></div>""", unsafe_allow_html=True)
+    with i2: st.markdown(f"""<div class="ind-wrap"><div class="ind-lbl">INDICE DE SAUDE &mdash; {htmllib.escape(clabel)}</div><div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div><div class="ind-sub">{n_saudaveis} de {total} clientes em crescimento ou estaveis</div></div>""", unsafe_allow_html=True)
+
+    # ── RECENCIA ──────────────────────────────────────────────────────────────
+    st.markdown("<div style='margin-top:16px'></div>", unsafe_allow_html=True)
+    l0=f"Comprou em {meses_col[-1]}"; l1=f"Ultimo pedido em {meses_col[-2]}" if len(meses_col)>1 else "Ha 1 mes"
+    l2=f"Ultimo pedido em {meses_col[-3]}" if len(meses_col)>2 else "Ha 2 meses"
+    l3p=f"Sem compra desde {meses_col[-4]} ou antes" if len(meses_col)>3 else "Ha 3+ meses"
+    faixas_rec=[(l0,'<span class="rec-ativo">Ativo recente</span>',0),(l1,'<span class="rec-atencao">Atencao</span>',1),(l2,'<span class="rec-risco">Risco alto</span>',2),(l3p,'<span class="rec-critico">Inativo critico</span>',99)]
+    rr=""
+    for crit,badge,mr in faixas_rec:
+        cnt=int((df_sel['MESES_SEM_COMPRA']>=3).sum()) if mr==99 else int((df_sel['MESES_SEM_COMPRA']==mr).sum())
+        pct=cnt/total*100 if total>0 else 0
+        rr+=f"<tr><td>{badge}</td><td style='text-align:left'>{crit}</td><td>{cnt}</td><td>{pct:.0f}%</td></tr>"
+    st.markdown(f"""<div class="ana-wrap"><div class="ana-title">RECENCIA DE COMPRA &mdash; {htmllib.escape(clabel)}</div>
+        <table class="ana-table"><thead><tr><th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th></tr></thead>
+        <tbody>{rr}</tbody></table></div>""", unsafe_allow_html=True)
+
+    # ── GRAFICOS + BAR CHART ──────────────────────────────────────────────────
+    st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
+    g1,g2=st.columns([3,2])
+
+    with g1:
+        sc=df_sel['STATUS'].value_counts()
+        status_presentes=[s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
+        cur_filter=st.session_state.status_filtro or ''
+        max_count=max([sc.get(s,0) for s in status_presentes]) if status_presentes else 1
+        titulo_grafico=f"DISTRIBUICAO POR STATUS — {clabel}"
+
+        bar_html=f"""
+<script>
+function setSF(val) {{
+    try {{
+        var input = document.querySelector('input[placeholder="__sf_filter__"]') ||
+                    document.querySelector('input[aria-label="SF_HIDDEN"]');
+        if (input) {{
+            var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+            setter.call(input, val);
+            input.dispatchEvent(new Event('input', {{ bubbles: true }}));
+        }}
+    }} catch(e) {{}}
+}}
+</script>
+<div class="hbc">
+<p class="hbc-title">{htmllib.escape(titulo_grafico)}</p>
+"""
+        for status in status_presentes:
+            cor=STATUS_BTN_COR.get(status,'#555')
+            count=sc.get(status,0)
+            pct=count/total*100 if total>0 else 0
+            bar_w=count/max_count*100
+            is_active=cur_filter==status
+            toggle_v='' if is_active else status
+            row_bg=f'{cor}12' if is_active else 'transparent'
+            border_c=cor if is_active else 'transparent'
+            btn_bg=cor if is_active else 'transparent'
+            btn_txt='#FFFFFF' if is_active else cor
+            btn_lbl='LIMPAR' if is_active else 'VER'
+            bar_html+=f"""
+<div class="hbc-row" style="background:{row_bg};border-left-color:{border_c};" onclick="setSF('{toggle_v}')">
+    <div class="hbc-lbl">{htmllib.escape(status)}</div>
+    <div class="hbc-track"><div class="hbc-fill" style="width:{bar_w:.1f}%;background:{cor};"></div></div>
+    <span class="hbc-cnt">{count} ({pct:.0f}%)</span>
+    <button class="hbc-btn" style="background:{btn_bg};color:{btn_txt};border-color:{cor};">{btn_lbl}</button>
+</div>"""
+
+        is_todos=cur_filter==''
+        bg_todos='#4B556812' if is_todos else 'transparent'
+        bc_todos='#4B5568' if is_todos else 'transparent'
+        bbg_todos='#4B5568' if is_todos else 'transparent'
+        btx_todos='#FFFFFF' if is_todos else '#4B5568'
+        blbl_todos='LIMPAR' if is_todos else 'VER'
+        bar_html+=f"""
+<hr class="hbc-sep">
+<div class="hbc-row hbc-row-todos" style="background:{bg_todos};border-left-color:{bc_todos};" onclick="setSF('')">
+    <div class="hbc-lbl" style="color:#4B5568;">TODA A CARTEIRA</div>
+    <div class="hbc-track" style="background:transparent;"></div>
+    <span class="hbc-cnt" style="color:#4B5568;">{total}</span>
+    <button class="hbc-btn" style="background:{bbg_todos};color:{btx_todos};border-color:#4B5568;">{blbl_todos}</button>
+</div>
+</div>"""
+        st.markdown(bar_html, unsafe_allow_html=True)
+
+    with g2:
+        cc2=df_sel['CURVA'].value_counts(); cvl=['A','B','C']; cvv=[cc2.get(c,0) for c in cvl]
+        fig2=go.Figure(go.Pie(labels=cvl,values=cvv,hole=0.58,
+            marker=dict(colors=['#001845','#0056b3','#4A90C4'],line=dict(color='#FFFFFF',width=2)),
+            textinfo='label+percent',
+            textfont=dict(size=13,family='Arial',color=['#FFFFFF','#FFFFFF','#1A2540']),
+            insidetextorientation='radial'))
+        fig2.update_layout(margin=dict(l=10,r=10,t=10,b=10),
+            paper_bgcolor='rgba(0,0,0,0)',height=320,showlegend=False)
+        st.markdown('<div class="chart-wrap"><div class="chart-lbl">DISTRIBUICAO POR CURVA ABC</div>', unsafe_allow_html=True)
+        st.plotly_chart(fig2,use_container_width=True,config={'displayModeBar':False})
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # ── PERFORMANCE POR VENDEDOR ──────────────────────────────────────────────
+    if sel_vend=="Todos":
+        st.markdown('<div class="section-title">PERFORMANCE POR VENDEDOR</div>', unsafe_allow_html=True)
+        rv=[]
+        for v in sorted(df_sel[vend_col].dropna().astype(str).unique()):
+            dv_todos=df[df[vend_col].astype(str)==v]; dv_sel=df_sel[df_sel[vend_col].astype(str)==v]
+            rv.append({'VENDEDOR':v,'CLIENTES TOTAL':len(dv_todos),
+                f'CLIENTES {cshort}':len(dv_sel),
+                f'RECEITA {cshort}':dv_sel['TOTAL LP'].sum(),
+                f'QDA. ACENTUADA {cshort}':len(dv_sel[dv_sel['STATUS']=='QUEDA ACENTUADA']),
+                f'QUEDA {cshort}':len(dv_sel[dv_sel['STATUS']=='QUEDA']),
+                f'CRESCIMENTO {cshort}':len(dv_sel[dv_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])]),
+                f'INATIVOS {cshort}':len(dv_sel[dv_sel['STATUS']=='INATIVO'])})
+        cv2=list(rv[0].keys()); receita_col=f'RECEITA {cshort}'
+        total_row={'VENDEDOR':'TOTAL GERAL'}
+        for k in cv2:
+            if k!='VENDEDOR': total_row[k]=sum(r[k] for r in rv)
+        hh="".join([f"<th>{c}</th>" for c in cv2]); rh=""
+        for r in rv:
+            rh+="<tr>"+"".join([
+                f"<td class='left'>{htmllib.escape(str(r[k]))}</td>" if k=='VENDEDOR'
+                else (f"<td>R$ {fmt_br(r[k])}</td>" if k==receita_col else f"<td>{r[k]}</td>")
+                for k in cv2])+"</tr>"
+        rh+="<tr class='total-row'>"+"".join([
+            f"<td class='left'>{total_row[k]}</td>" if k=='VENDEDOR'
+            else (f"<td>R$ {fmt_br(total_row[k])}</td>" if k==receita_col else f"<td>{total_row[k]}</td>")
+            for k in cv2])+"</tr>"
+        st.markdown(f"""<div class="vend-wrap"><table class="vend-table">
+            <thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>""",
+            unsafe_allow_html=True)
+
+    # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
+    st.markdown('<div id="carteira-anchor" style="scroll-margin-top:20px;"></div>', unsafe_allow_html=True)
+    filtro_ativo=st.session_state.status_filtro
+    if filtro_ativo:
+        cor_ativo=STATUS_BTN_COR.get(filtro_ativo,'#555')
+        st.markdown(f'<div class="section-title">CARTEIRA DE CLIENTES &mdash; <span style="color:{cor_ativo}">{htmllib.escape(filtro_ativo)}</span></div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
+
+    cd=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
+    dd=df_sel[df_sel['STATUS']==filtro_ativo].copy() if filtro_ativo else df_sel.copy()
+    dd=dd[cd].reset_index(drop=True)
+    hc="".join([f"<th>{c}</th>" for c in cd]); rc=""
+    for _,row in dd.iterrows():
+        cells=""
+        for cn in cd:
+            v=row[cn]; ac=' class="left"' if cn==clie_col else ''
+            if cn=='STATUS':
+                s=str(v); css5=STATUS_CSS.get(s,'')
+                cells+=f'<td><span style="{css5}">{s}</span></td>'
+            elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'):
+                cells+=f'<td{ac}>{fmt_br(v)}</td>'
+            else:
+                cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
+        rc+=f"<tr>{cells}</tr>"
+    st.markdown(f"""<div class="cart-wrap"><table class="cart-table">
+        <thead><tr>{hc}</tr></thead><tbody>{rc}</tbody></table></div>""",
+        unsafe_allow_html=True)
+
+    # ── SCROLL AUTOMATICO ─────────────────────────────────────────────────────
+    import streamlit.components.v1 as components
+    if st.session_state.get('scroll_needed', False):
+        components.html("""
+        <script>
+        setTimeout(function() {
+            try {
+                var el = window.parent.document.getElementById('carteira-anchor');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch(e) {}
+        }, 500);
+        </script>
+        """, height=0)
+        st.session_state['scroll_needed'] = False
