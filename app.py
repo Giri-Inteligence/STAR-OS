@@ -544,9 +544,24 @@ if uploaded_file:
 
     # ── ANALISE DETALHADA ─────────────────────────────────────────────────────
     st.markdown(f'<div class="section-title">ANALISE DETALHADA — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
-    prev_fat=None; prev_ticket=None; rows_unified=""
+  prev_fat=None; prev_ticket=None; rows_unified=""
     for i,mes in enumerate(last3):
-        compraram=int((df_sel[mes]>0).sum()); fat=df_sel[mes].sum(); tk=fat/compraram if compraram>0 else 0
-        vf_html=var_html(None) if i==0 else var_html((fat-prev_fat)/prev_fat*100 if prev_fat and prev_fat>0 else None)
-        vt_html=var_html(None) if i==0 else var_html((tk-prev_ticket)/prev_ticket*100 if prev_ticket and prev_ticket>0 else None)
-        rows_unified+=f"<tr><td><strong>{mes}</strong></td><td>{total}</td><td>{compraram}</td><td>R$ {fmt_br(fat)}</
+        compraram = int((df_sel[mes]>0).sum())
+        fat = df_sel[mes].sum()
+        tk  = fat/compraram if compraram>0 else 0
+        vf_html = var_html(None) if i==0 else var_html(
+            (fat-prev_fat)/prev_fat*100 if prev_fat and prev_fat>0 else None)
+        vt_html = var_html(None) if i==0 else var_html(
+            (tk-prev_ticket)/prev_ticket*100 if prev_ticket and prev_ticket>0 else None)
+        rows_unified += (
+            f"<tr>"
+            f"<td><strong>{mes}</strong></td>"
+            f"<td>{total}</td>"
+            f"<td>{compraram}</td>"
+            f"<td>R$ {fmt_br(fat)}</td>"
+            f"<td>{vf_html}</td>"
+            f"<td>R$ {fmt_br(tk)}</td>"
+            f"<td>{vt_html}</td>"
+            f"</tr>"
+        )
+        prev_fat=fat; prev_ticket=tk
