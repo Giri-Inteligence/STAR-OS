@@ -560,3 +560,13 @@ if uploaded_file:
             f"</tr>"
         )
         prev_fat=fat; prev_ticket=tk
+    st.markdown(f"""
+    <div class="ana-wrap">
+    <div class="ana-title">FATURAMENTO E TICKET MEDIO — {htmllib.escape(clabel)} — ULTIMOS 3 MESES</div>
+    <table class="ana-table">
+    <thead><tr>
+        <th>MES</th><th>CLIENTES TOTAIS</th><th>COMPRARAM NO MES</th>
+        <th>FATURAMENTO</th><th>VAR. FAT.</th><th>TICKET MEDIO</th><th>VAR. TICKET</th>
+    </tr></thead>
+    <tbody>{rows_unified}</tbody>
+    </table></div>""", unsafe_allow_html=True)
