@@ -43,44 +43,10 @@ st.markdown("""
 .ana-table td.left { text-align:left; }
 .ana-table tr:last-child td { border-bottom:none; }
 .ana-table tr:hover td { background:#F5F7FB; }
-.ana-table tr.total-row td { background:#EEF2FF; font-weight:800; color:#001845; border-top:2px solid #1A2540; }
 .rec-ativo   { background:#C6EFCE; color:#375623; font-weight:700; border-radius:6px; padding:3px 10px; font-size:0.82rem; }
 .rec-atencao { background:#FFEB9C; color:#7A4F00; font-weight:700; border-radius:6px; padding:3px 10px; font-size:0.82rem; }
 .rec-risco   { background:#FFC7CE; color:#7A0000; font-weight:700; border-radius:6px; padding:3px 10px; font-size:0.82rem; }
 .rec-critico { background:#C00000; color:#FFFFFF; font-weight:700; border-radius:6px; padding:3px 10px; font-size:0.82rem; }
-.briefing-wrap { background:#FFFFFF; border-radius:16px; padding:28px 32px; box-shadow:0 4px 24px rgba(0,0,0,0.10); border-left:6px solid #001845; }
-.briefing-status { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-.briefing-badge { font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; padding:5px 16px; border-radius:20px; }
-.badge-critico { background:#C00000; color:#FFFFFF; }
-.badge-atencao { background:#FFEB9C; color:#7A4F00; }
-.badge-estavel { background:#C6EFCE; color:#375623; }
-.briefing-titulo { font-size:1.15rem; font-weight:800; color:#0D1B2A; }
-.briefing-texto { font-size:0.90rem; color:#2D3748; line-height:1.7; margin:12px 0 18px 0; }
-.briefing-prioridades { border-top:1px solid #E5EAF2; padding-top:14px; }
-.briefing-prioridades-titulo { font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:#6B7A99; margin-bottom:10px; }
-.prioridade-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; }
-.prioridade-num { background:#001845; color:#FFFFFF; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:800; flex-shrink:0; margin-top:1px; }
-.prioridade-texto { font-size:0.87rem; color:#2D3748; font-weight:500; }
-.missao-card { background:#FFFFFF; border-radius:16px; padding:24px 28px; box-shadow:0 4px 24px rgba(0,0,0,0.10); height:100%; }
-.missao-card.critica { border-top:5px solid #C00000; }
-.missao-card.urgente { border-top:5px solid #E07000; }
-.missao-card.atencao { border-top:5px solid #B09000; }
-.missao-badge { font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; padding:4px 14px; border-radius:20px; display:inline-block; margin-bottom:12px; }
-.missao-badge.critica { background:#FFC7CE; color:#C00000; }
-.missao-badge.urgente { background:#FFE0B2; color:#E07000; }
-.missao-badge.atencao { background:#FFEB9C; color:#7A4F00; }
-.missao-titulo { font-size:1.05rem; font-weight:800; color:#0D1B2A; margin-bottom:6px; }
-.missao-contexto { font-size:0.85rem; color:#4B5568; margin-bottom:18px; line-height:1.5; }
-.missao-steps { margin-bottom:18px; }
-.missao-step { display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
-.step-num { border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; flex-shrink:0; margin-top:1px; color:#FFFFFF; }
-.step-num.critica { background:#C00000; }
-.step-num.urgente { background:#E07000; }
-.step-num.atencao { background:#B09000; }
-.step-titulo { font-size:0.87rem; font-weight:700; color:#0D1B2A; margin-bottom:2px; }
-.step-desc { font-size:0.82rem; color:#4B5568; line-height:1.5; }
-.missao-footer { border-top:2px solid #E5EAF2; padding-top:14px; }
-.missao-footer-titulo { font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:#6B7A99; margin-bottom:10px; }
 .vend-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.85rem; }
 .vend-table th { background:#1A2540; color:#FFFFFF; font-weight:700; padding:10px 10px; text-align:center; letter-spacing:0.6px; font-size:0.70rem; text-transform:uppercase; white-space:normal; line-height:1.4; vertical-align:middle; }
 .vend-table td { padding:10px 12px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; vertical-align:middle; }
@@ -96,6 +62,7 @@ st.markdown("""
 .cart-table tr:last-child td { border-bottom:none; }
 .cart-table tr:hover td { background:#F5F7FB; }
 .cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
+.status-btn-wrap { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0 0; }
 .stDownloadButton > button { background:linear-gradient(135deg,#1A5C2A 0%,#2E8B47 100%) !important; color:#FFFFFF !important; border:none !important; border-radius:12px !important; padding:15px 28px !important; font-size:0.88rem !important; font-weight:800 !important; letter-spacing:1px !important; width:100% !important; box-shadow:0 6px 24px rgba(26,92,42,0.40) !important; }
 .stDownloadButton > button:hover { opacity:0.88 !important; }
 </style>
@@ -125,12 +92,12 @@ def curva_short(sel):
 def engine_star(lp, cp):
     try: lp_v, cp_v = float(lp), float(cp)
     except: lp_v, cp_v = 0.0, 0.0
-    txt_ina  = "OBJETIVO: Diagnostico de causa\nPRE-CONTATO: Revisar ultimo pedido. Identificar o que parou de ser comprado e em que momento.\nCONTATO: Contato de diagnostico. Entender o motivo da inatividade sem pressao de venda.\nORIENTACAO: Nao ofertar produto na primeira interacao. Primeiro entender o que aconteceu. Registrar motivo antes de qualquer acao de reconquista."
-    txt_q_ac = "OBJETIVO: Recuperacao emergencial\nPRE-CONTATO: Revisar historico completo do cliente. Identificar exatamente quais produtos cairam, em que momento e qual era o volume anterior. Calcular o gap entre a media historica e o momento atual.\nCONTATO: Priorizar visita presencial ou ligacao direta - nao mensagem. Abrir diagnostico sem pressao. Entender se houve mudanca interna no cliente, problema de relacionamento ou entrada de concorrente.\nORIENTACAO: Este cliente esta em risco de perda. O objetivo da primeira interacao nao e vender - e entender. Registrar causa com precisao. Escalar para o gestor se o motivo indicar risco de ruptura definitiva."
-    txt_q    = "OBJETIVO: Estabilizacao\nPRE-CONTATO: Revisar historico de mix. Identificar quais produtos reduziram ou desapareceram nos ultimos 3 meses.\nCONTATO: Diagnosticar contexto atual do cliente. Investigar se houve mudanca operacional, financeira ou troca de fornecedor.\nORIENTACAO: Registrar causa identificada. Se houver abertura, propor recomposicao de mix com base no historico anterior."
-    txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix atual. Mapear categorias que o cliente nao compra mas que sao compativeis com seu perfil.\nCONTATO: Manter frequencia de relacionamento. Explorar oportunidade de expansao de mix.\nORIENTACAO: Cliente estavel nao e cliente seguro. Monitorar frequencia de pedidos e introduzir novos itens gradualmente."
-    txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar o driver do crescimento. Avaliar se e sazonalidade ou mudanca estrutural no cliente.\nCONTATO: Reforcar relacionamento. Garantir abastecimento e antecipar demanda dos proximos periodos.\nORIENTACAO: Proteger o cliente. Momento de crescimento e o de maior risco de abordagem pelo concorrente."
-    txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar quais produtos puxaram o crescimento. Avaliar se o cliente tem capacidade de sustentar esse volume ou se e pontual. Verificar se ha mix ainda nao explorado.\nCONTATO: Reforcar presenca. Garantir que o abastecimento esta adequado ao novo patamar de compra. Antecipar pedidos futuros.\nORIENTACAO: Crescimento acentuado atrai concorrencia. Este e o momento de maior risco de abordagem externa. Aumentar frequencia de contato e solidificar o relacionamento antes que o concorrente perceba a oportunidade."
+    txt_ina  = "OBJETIVO: Diagnostico de causa\nPRE-CONTATO: Revisar ultimo pedido.\nCONTATO: Contato de diagnostico sem pressao de venda.\nORIENTACAO: Nao ofertar produto na primeira interacao."
+    txt_q_ac = "OBJETIVO: Recuperacao emergencial\nPRE-CONTATO: Revisar historico completo. Calcular gap entre media historica e momento atual.\nCONTATO: Priorizar visita presencial ou ligacao direta.\nORIENTACAO: Objetivo da primeira interacao e entender, nao vender."
+    txt_q    = "OBJETIVO: Estabilizacao\nPRE-CONTATO: Revisar historico de mix.\nCONTATO: Diagnosticar contexto atual. Investigar mudanca operacional ou troca de fornecedor.\nORIENTACAO: Registrar causa. Propor recomposicao de mix."
+    txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix. Mapear categorias nao compradas.\nCONTATO: Manter frequencia. Explorar expansao de mix.\nORIENTACAO: Cliente estavel nao e cliente seguro."
+    txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar driver do crescimento.\nCONTATO: Reforcar relacionamento. Garantir abastecimento.\nORIENTACAO: Proteger o cliente."
+    txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar produtos que puxaram crescimento.\nCONTATO: Reforcar presenca. Garantir abastecimento.\nORIENTACAO: Crescimento acentuado atrai concorrencia."
     if cp_v <= 0:         return "INATIVO", 0, txt_ina
     if lp_v <= 0:         return "ESTAVEL", int(cp_v*1.05), txt_est
     if cp_v < lp_v*0.90: return "QUEDA ACENTUADA", int(lp_v), txt_q_ac
@@ -197,7 +164,12 @@ def gerar_excel(df_raw,fo,cc,vc,mc):
 
 STATUS_ORDER  = ['CRESCIMENTO ACENTUADO','CRESCIMENTO','ESTAVEL','QUEDA','QUEDA ACENTUADA','INATIVO']
 STATUS_COLORS = {'CRESCIMENTO ACENTUADO':'#1A6B2A','CRESCIMENTO':'#52C471','ESTAVEL':'#0070C0','QUEDA':'#FF6B6B','QUEDA ACENTUADA':'#C00000','INATIVO':'#9CA3AF'}
+STATUS_BTN_COLORS = {'CRESCIMENTO ACENTUADO':'#1A6B2A','CRESCIMENTO':'#2E8B57','ESTAVEL':'#0056b3','QUEDA':'#D44000','QUEDA ACENTUADA':'#C00000','INATIVO':'#6B7280'}
 STATUS_CSS    = {'QUEDA ACENTUADA':'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 8px;','QUEDA':'color:#C00000;font-weight:700;','CRESCIMENTO ACENTUADO':'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 8px;','CRESCIMENTO':'color:#375623;font-weight:700;','ESTAVEL':'color:#0070C0;font-weight:700;','INATIVO':'color:#6B7280;font-weight:700;'}
+
+# Session state para filtro de status
+if 'status_filtro' not in st.session_state:
+    st.session_state.status_filtro = None
 
 st.markdown("""
 <div class="giri-header">
@@ -283,40 +255,35 @@ if uploaded_file:
     extra = [cida_col] if cida_col else []
     fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META','ACAO']
 
-# ── FILTROS ───────────────────────────────────────────────────────────────
+    # ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
     fc = st.columns([2,2,2,2])
-
     LBL = '<p style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#4B5568;margin:0 0 4px 0;">{}</p>'
 
     with fc[0]:
         st.markdown(LBL.format("VENDEDOR"), unsafe_allow_html=True)
         vendedores = ["Todos"]+sorted(df_raw[vend_col].dropna().astype(str).unique().tolist())
         sel_vend = st.selectbox("Vendedor", vendedores, label_visibility="collapsed")
-
     with fc[1]:
         st.markdown(LBL.format("CIDADE"), unsafe_allow_html=True)
         if cida_col:
             cidades = ["Todas"]+sorted(df_raw[cida_col].dropna().astype(str).unique().tolist())
             sel_cida = st.selectbox("Cidade", cidades, label_visibility="collapsed")
         else:
-            sel_cida = "Todas"
-            st.caption("Coluna de cidade nao encontrada.")
-
+            sel_cida = "Todas"; st.caption("Coluna de cidade nao encontrada.")
     with fc[2]:
         st.markdown(LBL.format("CURVA"), unsafe_allow_html=True)
         curvas_disponiveis = sorted(df_raw['CURVA'].unique().tolist())
         sel_curvas = st.multiselect("Curva", options=curvas_disponiveis,
-            default=curvas_disponiveis, placeholder="Selecione...",
-            label_visibility="collapsed")
+            default=curvas_disponiveis, placeholder="Selecione...", label_visibility="collapsed")
         if not sel_curvas: sel_curvas = curvas_disponiveis
-
     with fc[3]:
         st.markdown(LBL.format("&nbsp;"), unsafe_allow_html=True)
         eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
         st.download_button(label="BAIXAR PLANILHA STAR", data=eb,
             file_name="Matriz_STAR_Giri.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
     # ── APLICAR FILTROS ───────────────────────────────────────────────────────
     df = df_raw.copy()
     if sel_vend != "Todos": df = df[df[vend_col].astype(str)==sel_vend]
@@ -351,83 +318,6 @@ if uploaded_file:
     n_saudaveis = saude_mask.sum()
     idx_saude   = n_saudaveis/total*100 if total>0 else 0
     saude_color = "#1A6B2A" if idx_saude>=70 else("#B07D00" if idx_saude>=50 else "#C00000")
-    n_qa  = len(df_sel[df_sel['STATUS']=='QUEDA ACENTUADA'])
-    n_q   = len(df_sel[df_sel['STATUS']=='QUEDA'])
-    n_in  = len(df_sel[df_sel['MESES_SEM_COMPRA']>=3])
-    fat_trend = all(df_sel[last3[i]].sum()<=df_sel[last3[i-1]].sum() for i in range(1,len(last3))) if len(last3)>=2 else False
-    contexto  = sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
-
-    # ── DIAGNOSTICO ───────────────────────────────────────────────────────────
-    st.markdown('<div class="section-title">DIAGNOSTICO COMERCIAL</div>', unsafe_allow_html=True)
-    score=0
-    if n_qa>0: score+=3
-    if n_in>0: score+=2
-    if var_rec<-20: score+=2
-    if n_q>0: score+=1
-    if idx_saude<50: score+=2
-    elif idx_saude<70: score+=1
-    if score>=5: sit_label,sit_badge,sit_cor="CRITICO","badge-critico","#C00000"
-    elif score>=2: sit_label,sit_badge,sit_cor="ATENCAO","badge-atencao","#B09000"
-    else: sit_label,sit_badge,sit_cor="ESTAVEL","badge-estavel","#375623"
-
-    frases=[]
-    if n_qa>0: frases.append(f"{n_qa} cliente(s) em queda acentuada ({clabel}), com media mensal de R$ {fmt_br(df_sel[df_sel['STATUS']=='QUEDA ACENTUADA']['MEDIA LP'].sum())}.")
-    if n_q>0:  frases.append(f"{n_q} cliente(s) em queda — compras abaixo da media historica.")
-    if abs(var_rec)>5:
-        dir2="caiu" if var_rec<0 else "cresceu"
-        frases.append(f"A receita ({clabel}) {dir2} {abs(var_rec):.0f}% em relacao ao mes anterior ({penultimo} para {ultimo_mes}).")
-    if n_in>0: frases.append(f"{n_in} cliente(s) sem compra ha mais de 90 dias. Recuperacao urgente necessaria.")
-    if fat_trend and len(last3)>=3: frases.append(f"Faturamento em queda consecutiva nos 3 ultimos meses.")
-    if idx_saude<50: frases.append(f"Apenas {idx_saude:.0f}% dos clientes selecionados estao em situacao saudavel.")
-    if not frases: frases.append(f"Carteira ({clabel}) com {idx_saude:.0f}% dos clientes em crescimento ou estaveis.")
-
-    prios=[]
-    if n_qa>0: prios.append(f"Contatar imediatamente os {n_qa} cliente(s) em queda acentuada. Diagnostico antes de qualquer oferta.")
-    if n_in>0: prios.append(f"Recuperar os {n_in} cliente(s) inativos ha mais de 90 dias. Risco de perda definitiva.")
-    if n_q>0:  prios.append(f"Investigar queda nos {n_q} cliente(s). Entender mix e historico.")
-    if not prios: prios.append("Manter frequencia de contato. Blindar os clientes em crescimento.")
-    prios=prios[:3]
-    prios_html="".join([f'<div class="prioridade-item"><div class="prioridade-num">{i+1}</div><div class="prioridade-texto">{p}</div></div>' for i,p in enumerate(prios)])
-
-    st.markdown(f"""
-    <div class="briefing-wrap" style="border-left-color:{sit_cor}">
-        <div class="briefing-status">
-            <span class="briefing-badge {sit_badge}">{sit_label}</span>
-            <span class="briefing-titulo">Diagnostico — {htmllib.escape(contexto)} | {htmllib.escape(clabel)}</span>
-        </div>
-        <div class="briefing-texto">{" ".join(frases)}</div>
-        <div class="briefing-prioridades">
-            <div class="briefing-prioridades-titulo">Prioridades de acao</div>
-            {prios_html}
-        </div>
-    </div>""", unsafe_allow_html=True)
-
-    st.markdown("<div style='margin-top:20px'></div>", unsafe_allow_html=True)
-    missoes=[]
-    if n_qa>0:
-        val_risco=df_sel[df_sel['STATUS']=='QUEDA ACENTUADA']['MEDIA LP'].sum()
-        missoes.append({'tipo':'critica','titulo':f'{n_qa} Cliente(s) em Queda Acentuada ({clabel})','contexto':f'Esses clientes tinham media mensal de R$ {fmt_br(val_risco)} e estao comprando mais de 10% abaixo do historico.','passos':[('Prepare-se antes de ligar','Abra o historico de cada cliente. Veja o que ele comprava e quanto valia por mes.'),('Entre em contato sem ofertar produto','O objetivo e entender, nao vender. O que mudou? O que parou de precisar?'),('Registre e agende o proximo passo','Anote o motivo e defina proxima acao com data.')],'key':'missao_qa'})
-    if n_in>0:
-        missoes.append({'tipo':'critica','titulo':f'{n_in} Cliente(s) Inativo(s) — Mais de 90 Dias','contexto':'Clientes que representavam receita relevante e nao compram ha mais de 3 meses.','passos':[('Revise o ultimo pedido','Qual foi o ultimo produto? Quando foi? Qual era o valor?'),('Faca contato de diagnostico sem pressao','Nao ligue para vender. Ligue para entender.'),('Defina o potencial de reconquista','Recuperavel, perdido ou a monitorar. Registre e agende.')],'key':'missao_in'})
-    if n_q>0 and len(missoes)<3:
-        missoes.append({'tipo':'urgente','titulo':f'{n_q} Cliente(s) em Queda','contexto':'Compras abaixo da media historica. Janela de intervencao aberta.','passos':[('Compare o mix atual com o historico','Quais produtos reduziram?'),('Contato de manutencao','Ha produto que ele compra de outro fornecedor?'),('Monitore o proximo mes','Se cair mais de 10%, escale para protocolo de queda acentuada.')],'key':'missao_q'})
-    if not missoes:
-        missoes.append({'tipo':'atencao','titulo':f'Manter e Expandir — {clabel}','contexto':f'Carteira em situacao saudavel com {idx_saude:.0f}% dos clientes em crescimento ou estaveis.','passos':[('Mantenha frequencia de contato','Clientes em crescimento sao os mais visados pela concorrencia.'),('Explore expansao de mix','Identifique categorias que o cliente nao compra.'),('Monitore mensalmente','Qualquer queda acima de 10% deve virar acao imediata.')],'key':'missao_ok'})
-
-    card_cols = st.columns(len(missoes)) if len(missoes)>1 else [st.container()]
-    for idx,(missao,col) in enumerate(zip(missoes,card_cols)):
-        with col:
-            tipo=missao['tipo']
-            steps_html="".join([f'<div class="missao-step"><div class="step-num {tipo}">{si+1}</div><div class="step-content"><div class="step-titulo">{st_t}</div><div class="step-desc">{st_d}</div></div></div>' for si,(st_t,st_d) in enumerate(missao['passos'])])
-            st.markdown(f"""<div class="missao-card {tipo}">
-                <span class="missao-badge {tipo}">{tipo.upper()}</span>
-                <div class="missao-titulo">{missao['titulo']}</div>
-                <div class="missao-contexto">{missao['contexto']}</div>
-                <div class="missao-steps">{steps_html}</div>
-                <div class="missao-footer"><div class="missao-footer-titulo">Registrar proximo passo</div></div>
-            </div>""", unsafe_allow_html=True)
-            st.text_input("Proximo passo:", placeholder="Descreva a acao...", key=f"ps_{missao['key']}_{idx}", label_visibility="collapsed")
-            st.date_input("Data:", value=date.today(), key=f"dt_{missao['key']}_{idx}", format="DD/MM/YYYY", label_visibility="collapsed")
 
     # ── CARDS KPI ─────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
@@ -479,45 +369,23 @@ if uploaded_file:
         </div>""", unsafe_allow_html=True)
 
     # ── ANALISE DETALHADA UNIFICADA ───────────────────────────────────────────
-    # CORRECAO 1: tabela unificada com CLIENTES TOTAIS + COMPRARAM NO MES
     st.markdown(f'<div class="section-title">ANALISE DETALHADA — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
-
-    prev_fat    = None
-    prev_ticket = None
-    rows_unified = ""
+    prev_fat = None; prev_ticket = None; rows_unified = ""
     for i, mes in enumerate(last3):
         compraram = int((df_sel[mes] > 0).sum())
         fat = df_sel[mes].sum()
         tk  = fat / compraram if compraram > 0 else 0
-
         vf_html = var_html(None) if i==0 else var_html((fat-prev_fat)/prev_fat*100 if prev_fat and prev_fat>0 else None)
         vt_html = var_html(None) if i==0 else var_html((tk-prev_ticket)/prev_ticket*100 if prev_ticket and prev_ticket>0 else None)
-
-        rows_unified += f"""<tr>
-            <td><strong>{mes}</strong></td>
-            <td>{total}</td>
-            <td>{compraram}</td>
-            <td>R$ {fmt_br(fat)}</td>
-            <td>{vf_html}</td>
-            <td>R$ {fmt_br(tk)}</td>
-            <td>{vt_html}</td>
-        </tr>"""
+        rows_unified += f"<tr><td><strong>{mes}</strong></td><td>{total}</td><td>{compraram}</td><td>R$ {fmt_br(fat)}</td><td>{vf_html}</td><td>R$ {fmt_br(tk)}</td><td>{vt_html}</td></tr>"
         prev_fat = fat; prev_ticket = tk
 
     st.markdown(f"""<div class="ana-wrap">
         <div class="ana-title">FATURAMENTO E TICKET MEDIO — {htmllib.escape(clabel)} — ULTIMOS 3 MESES</div>
-        <table class="ana-table">
-            <thead><tr>
-                <th>MES</th>
-                <th>CLIENTES TOTAIS</th>
-                <th>COMPRARAM NO MES</th>
-                <th>FATURAMENTO</th>
-                <th>VAR. FAT.</th>
-                <th>TICKET MEDIO</th>
-                <th>VAR. TICKET</th>
-            </tr></thead>
-            <tbody>{rows_unified}</tbody>
-        </table>
+        <table class="ana-table"><thead><tr>
+            <th>MES</th><th>CLIENTES TOTAIS</th><th>COMPRARAM NO MES</th>
+            <th>FATURAMENTO</th><th>VAR. FAT.</th><th>TICKET MEDIO</th><th>VAR. TICKET</th>
+        </tr></thead><tbody>{rows_unified}</tbody></table>
     </div>""", unsafe_allow_html=True)
 
     # ── RECENCIA ──────────────────────────────────────────────────────────────
@@ -535,8 +403,7 @@ if uploaded_file:
         <table class="ana-table"><thead><tr><th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th></tr></thead>
         <tbody>{rr}</tbody></table></div>""", unsafe_allow_html=True)
 
-    # ── GRAFICOS ──────────────────────────────────────────────────────────────
-    # CORRECAO 3: titulo dinamico + texto nao cortado
+    # ── GRAFICOS + BOTOES DE STATUS ───────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1,g2=st.columns([3,2])
     with g1:
@@ -545,21 +412,53 @@ if uploaded_file:
         fig1=go.Figure(go.Bar(
             x=vl, y=lb, orientation='h', marker_color=co,
             text=[f"  {v} ({p:.0f}%)" for v,p in zip(vl,pc)],
-            textposition='outside',
-            textfont=dict(size=12, family='Arial', color='#1A2540'),
+            textposition='outside', textfont=dict(size=12,family='Arial',color='#1A2540'),
             cliponaxis=False
         ))
         fig1.update_layout(
             margin=dict(l=0,r=160,t=10,b=10),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-            yaxis=dict(tickfont=dict(size=12,family='Arial',color='#1A2540'), autorange='reversed'),
+            xaxis=dict(showgrid=False,showticklabels=False,zeroline=False),
+            yaxis=dict(tickfont=dict(size=12,family='Arial',color='#1A2540'),autorange='reversed'),
             height=260, showlegend=False
         )
         titulo_grafico = f"DISTRIBUICAO POR STATUS &mdash; {htmllib.escape(clabel)}"
         st.markdown(f'<div class="chart-wrap"><div class="chart-lbl">{titulo_grafico}</div>', unsafe_allow_html=True)
         st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar':False})
+
+        # ── BOTOES DE FILTRO POR STATUS ───────────────────────────────────────
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6B7A99;margin:4px 0 8px 0;">Filtrar carteira por status:</p>', unsafe_allow_html=True)
+        status_presentes = [s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
+        n_btns = len(status_presentes) + 1
+        btn_cols = st.columns(n_btns)
+
+        for i, status in enumerate(status_presentes):
+            with btn_cols[i]:
+                cor = STATUS_BTN_COLORS.get(status, '#555')
+                ativo = st.session_state.status_filtro == status
+                borda = f"3px solid {cor}" if ativo else f"2px solid {cor}"
+                bg = cor if ativo else "transparent"
+                txt_cor = "#FFFFFF" if ativo else cor
+                st.markdown(f"""
+                <div style="text-align:center;margin-bottom:4px;">
+                    <span style="font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:{cor};">{sc.get(status,0)}</span>
+                </div>""", unsafe_allow_html=True)
+                if st.button(status.replace(" ","\n"), key=f"sbtn_{status}",
+                    help=f"Mostrar somente: {status}"):
+                    if st.session_state.status_filtro == status:
+                        st.session_state.status_filtro = None
+                    else:
+                        st.session_state.status_filtro = status
+                    st.rerun()
+
+        with btn_cols[-1]:
+            st.markdown('<div style="text-align:center;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;letter-spacing:0.8px;color:#6B7A99;">TODOS</span></div>', unsafe_allow_html=True)
+            if st.button("TODOS", key="sbtn_todos"):
+                st.session_state.status_filtro = None
+                st.rerun()
+
         st.markdown('</div>', unsafe_allow_html=True)
+
     with g2:
         cc2=df_sel['CURVA'].value_counts(); cvl=['A','B','C']; cvv=[cc2.get(c,0) for c in cvl]
         fig2=go.Figure(go.Pie(labels=cvl,values=cvv,hole=0.58,marker=dict(colors=['#001845','#0056b3','#4A90C4'],line=dict(color='#FFFFFF',width=2)),textinfo='label+percent',textfont=dict(size=13,family='Arial',color=['#FFFFFF','#FFFFFF','#1A2540']),insidetextorientation='radial'))
@@ -569,71 +468,61 @@ if uploaded_file:
         st.markdown('</div>', unsafe_allow_html=True)
 
     # ── PERFORMANCE POR VENDEDOR ──────────────────────────────────────────────
-    # CORRECAO 2: nova estrutura + labels dinamicos + linha TOTAL GERAL
     if sel_vend=="Todos":
         st.markdown('<div class="section-title">PERFORMANCE POR VENDEDOR</div>', unsafe_allow_html=True)
-
-        rv = []
+        rv=[]
         for v in sorted(df_sel[vend_col].dropna().astype(str).unique()):
             dv_todos = df[df[vend_col].astype(str)==v]
             dv_sel   = df_sel[df_sel[vend_col].astype(str)==v]
             rv.append({
-                'VENDEDOR':          v,
-                'CLIENTES TOTAL':    len(dv_todos),
+                'VENDEDOR': v,
+                'CLIENTES TOTAL': len(dv_todos),
                 f'CLIENTES {cshort}': len(dv_sel),
-                f'RECEITA {cshort}':  dv_sel['TOTAL LP'].sum(),
+                f'RECEITA {cshort}': dv_sel['TOTAL LP'].sum(),
                 f'QDA. ACENTUADA {cshort}': len(dv_sel[dv_sel['STATUS']=='QUEDA ACENTUADA']),
-                f'QUEDA {cshort}':    len(dv_sel[dv_sel['STATUS']=='QUEDA']),
+                f'QUEDA {cshort}': len(dv_sel[dv_sel['STATUS']=='QUEDA']),
                 f'CRESCIMENTO {cshort}': len(dv_sel[dv_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])]),
                 f'INATIVOS {cshort}': len(dv_sel[dv_sel['STATUS']=='INATIVO']),
             })
-
         cv2 = list(rv[0].keys())
         receita_col = f'RECEITA {cshort}'
-
-        # Linha de total geral
         total_row = {'VENDEDOR': 'TOTAL GERAL'}
         for k in cv2:
-            if k != 'VENDEDOR':
-                total_row[k] = sum(r[k] for r in rv)
-
-        # Render header
+            if k != 'VENDEDOR': total_row[k] = sum(r[k] for r in rv)
         hh = "".join([f"<th>{c}</th>" for c in cv2])
-
-        # Render linhas de vendedor
         rh = ""
         for r in rv:
             rh += "<tr>"
             for k in cv2:
                 v_val = r[k]
-                if k == 'VENDEDOR':
-                    rh += f"<td class='left'>{htmllib.escape(str(v_val))}</td>"
-                elif k == receita_col:
-                    rh += f"<td>R$ {fmt_br(v_val)}</td>"
-                else:
-                    rh += f"<td>{v_val}</td>"
+                if k=='VENDEDOR': rh += f"<td class='left'>{htmllib.escape(str(v_val))}</td>"
+                elif k==receita_col: rh += f"<td>R$ {fmt_br(v_val)}</td>"
+                else: rh += f"<td>{v_val}</td>"
             rh += "</tr>"
-
-        # Render linha TOTAL GERAL
         rh += "<tr class='total-row'>"
         for k in cv2:
             v_val = total_row[k]
-            if k == 'VENDEDOR':
-                rh += f"<td class='left'>{v_val}</td>"
-            elif k == receita_col:
-                rh += f"<td>R$ {fmt_br(v_val)}</td>"
-            else:
-                rh += f"<td>{v_val}</td>"
+            if k=='VENDEDOR': rh += f"<td class='left'>{v_val}</td>"
+            elif k==receita_col: rh += f"<td>R$ {fmt_br(v_val)}</td>"
+            else: rh += f"<td>{v_val}</td>"
         rh += "</tr>"
-
-        st.markdown(f"""<div class="vend-wrap">
-            <table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table>
-        </div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="vend-wrap"><table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>""", unsafe_allow_html=True)
 
     # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
-    st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
+    # Indica o filtro ativo de status
+    filtro_status_ativo = st.session_state.status_filtro
+    if filtro_status_ativo:
+        cor_ativo = STATUS_BTN_COLORS.get(filtro_status_ativo, '#555')
+        st.markdown(f'<div class="section-title">CARTEIRA DE CLIENTES &mdash; <span style="color:{cor_ativo}">{htmllib.escape(filtro_status_ativo)}</span></div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
+
     cd=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
-    dd=df_sel[cd].copy().reset_index(drop=True)
+    dd = df_sel.copy()
+    if filtro_status_ativo:
+        dd = dd[dd['STATUS'] == filtro_status_ativo]
+    dd = dd[cd].reset_index(drop=True)
+
     hc="".join([f"<th>{c}</th>" for c in cd]); rc=""
     for _,row in dd.iterrows():
         cells=""
