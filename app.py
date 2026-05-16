@@ -62,11 +62,19 @@ st.markdown("""
 .cart-table tr:last-child td { border-bottom:none; }
 .cart-table tr:hover td { background:#F5F7FB; }
 .cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
-.status-btn-wrap { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0 0; }
 .stDownloadButton > button { background:linear-gradient(135deg,#1A5C2A 0%,#2E8B47 100%) !important; color:#FFFFFF !important; border:none !important; border-radius:12px !important; padding:15px 28px !important; font-size:0.88rem !important; font-weight:800 !important; letter-spacing:1px !important; width:100% !important; box-shadow:0 6px 24px rgba(26,92,42,0.40) !important; }
 .stDownloadButton > button:hover { opacity:0.88 !important; }
 </style>
 """, unsafe_allow_html=True)
+
+STATUS_ORDER   = ['CRESCIMENTO ACENTUADO','CRESCIMENTO','ESTAVEL','QUEDA','QUEDA ACENTUADA','INATIVO']
+STATUS_COLORS  = {'CRESCIMENTO ACENTUADO':'#1A6B2A','CRESCIMENTO':'#52C471','ESTAVEL':'#0070C0','QUEDA':'#FF6B6B','QUEDA ACENTUADA':'#C00000','INATIVO':'#9CA3AF'}
+STATUS_BTN_COR = {'CRESCIMENTO ACENTUADO':'#1A6B2A','CRESCIMENTO':'#2E8B57','ESTAVEL':'#0056b3','QUEDA':'#D44000','QUEDA ACENTUADA':'#C00000','INATIVO':'#6B7280'}
+STATUS_ABBREV  = {'CRESCIMENTO ACENTUADO':'CRESC. ACENTUADO','CRESCIMENTO':'CRESCIMENTO','ESTAVEL':'ESTAVEL','QUEDA':'QUEDA','QUEDA ACENTUADA':'QUEDA ACENTUADA','INATIVO':'INATIVO'}
+STATUS_CSS     = {'QUEDA ACENTUADA':'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 8px;','QUEDA':'color:#C00000;font-weight:700;','CRESCIMENTO ACENTUADO':'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 8px;','CRESCIMENTO':'color:#375623;font-weight:700;','ESTAVEL':'color:#0070C0;font-weight:700;','INATIVO':'color:#6B7280;font-weight:700;'}
+
+if 'status_filtro' not in st.session_state:
+    st.session_state.status_filtro = None
 
 
 def fmt_br(v):
@@ -92,12 +100,12 @@ def curva_short(sel):
 def engine_star(lp, cp):
     try: lp_v, cp_v = float(lp), float(cp)
     except: lp_v, cp_v = 0.0, 0.0
-    txt_ina  = "OBJETIVO: Diagnostico de causa\nPRE-CONTATO: Revisar ultimo pedido.\nCONTATO: Contato de diagnostico sem pressao de venda.\nORIENTACAO: Nao ofertar produto na primeira interacao."
-    txt_q_ac = "OBJETIVO: Recuperacao emergencial\nPRE-CONTATO: Revisar historico completo. Calcular gap entre media historica e momento atual.\nCONTATO: Priorizar visita presencial ou ligacao direta.\nORIENTACAO: Objetivo da primeira interacao e entender, nao vender."
-    txt_q    = "OBJETIVO: Estabilizacao\nPRE-CONTATO: Revisar historico de mix.\nCONTATO: Diagnosticar contexto atual. Investigar mudanca operacional ou troca de fornecedor.\nORIENTACAO: Registrar causa. Propor recomposicao de mix."
-    txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix. Mapear categorias nao compradas.\nCONTATO: Manter frequencia. Explorar expansao de mix.\nORIENTACAO: Cliente estavel nao e cliente seguro."
-    txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar driver do crescimento.\nCONTATO: Reforcar relacionamento. Garantir abastecimento.\nORIENTACAO: Proteger o cliente."
-    txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar produtos que puxaram crescimento.\nCONTATO: Reforcar presenca. Garantir abastecimento.\nORIENTACAO: Crescimento acentuado atrai concorrencia."
+    txt_ina  = "OBJETIVO: Diagnostico de causa\nPRE-CONTATO: Revisar ultimo pedido.\nCONTATO: Contato de diagnostico sem pressao.\nORIENTACAO: Nao ofertar produto na primeira interacao."
+    txt_q_ac = "OBJETIVO: Recuperacao emergencial\nPRE-CONTATO: Revisar historico completo.\nCONTATO: Priorizar visita ou ligacao direta.\nORIENTACAO: Objetivo e entender, nao vender."
+    txt_q    = "OBJETIVO: Estabilizacao\nPRE-CONTATO: Revisar historico de mix.\nCONTATO: Diagnosticar contexto atual.\nORIENTACAO: Registrar causa. Propor recomposicao de mix."
+    txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix. Mapear categorias nao compradas.\nCONTATO: Manter frequencia. Explorar expansao.\nORIENTACAO: Cliente estavel nao e cliente seguro."
+    txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar driver do crescimento.\nCONTATO: Reforcar relacionamento.\nORIENTACAO: Proteger o cliente."
+    txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar produtos que puxaram crescimento.\nCONTATO: Reforcar presenca.\nORIENTACAO: Crescimento acentuado atrai concorrencia."
     if cp_v <= 0:         return "INATIVO", 0, txt_ina
     if lp_v <= 0:         return "ESTAVEL", int(cp_v*1.05), txt_est
     if cp_v < lp_v*0.90: return "QUEDA ACENTUADA", int(lp_v), txt_q_ac
@@ -162,14 +170,6 @@ def gerar_excel(df_raw,fo,cc,vc,mc):
             write_sheet(w.sheets[tab],dv,fo,cc,vc,mc,fmts)
     return buf.getvalue()
 
-STATUS_ORDER  = ['CRESCIMENTO ACENTUADO','CRESCIMENTO','ESTAVEL','QUEDA','QUEDA ACENTUADA','INATIVO']
-STATUS_COLORS = {'CRESCIMENTO ACENTUADO':'#1A6B2A','CRESCIMENTO':'#52C471','ESTAVEL':'#0070C0','QUEDA':'#FF6B6B','QUEDA ACENTUADA':'#C00000','INATIVO':'#9CA3AF'}
-STATUS_BTN_COLORS = {'CRESCIMENTO ACENTUADO':'#1A6B2A','CRESCIMENTO':'#2E8B57','ESTAVEL':'#0056b3','QUEDA':'#D44000','QUEDA ACENTUADA':'#C00000','INATIVO':'#6B7280'}
-STATUS_CSS    = {'QUEDA ACENTUADA':'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 8px;','QUEDA':'color:#C00000;font-weight:700;','CRESCIMENTO ACENTUADO':'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 8px;','CRESCIMENTO':'color:#375623;font-weight:700;','ESTAVEL':'color:#0070C0;font-weight:700;','INATIVO':'color:#6B7280;font-weight:700;'}
-
-# Session state para filtro de status
-if 'status_filtro' not in st.session_state:
-    st.session_state.status_filtro = None
 
 st.markdown("""
 <div class="giri-header">
@@ -311,13 +311,17 @@ if uploaded_file:
     risco_mask  = df_sel['STATUS'].isin(['QUEDA','QUEDA ACENTUADA','INATIVO'])
     risco_val   = df_sel.loc[risco_mask,'MEDIA LP'].sum()
     n_risco     = risco_mask.sum()
-    ticket_ult  = df_sel[ultimo_mes].mean() if total>0 else 0
-    ticket_pen  = df_sel[penultimo].mean() if total>0 else 0
-    var_ticket  = (ticket_ult-ticket_pen)/ticket_pen*100 if ticket_pen>0 else 0
     saude_mask  = df_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO','ESTAVEL'])
     n_saudaveis = saude_mask.sum()
     idx_saude   = n_saudaveis/total*100 if total>0 else 0
     saude_color = "#1A6B2A" if idx_saude>=70 else("#B07D00" if idx_saude>=50 else "#C00000")
+
+    # ── CORRECAO: ticket medio calculado apenas sobre compradores ─────────────
+    buyers_ult  = (df_sel[ultimo_mes] > 0).sum()
+    ticket_ult  = df_sel[ultimo_mes].sum() / buyers_ult if buyers_ult > 0 else 0
+    buyers_pen  = (df_sel[penultimo] > 0).sum()
+    ticket_pen  = df_sel[penultimo].sum() / buyers_pen if buyers_pen > 0 else 0
+    var_ticket  = (ticket_ult-ticket_pen)/ticket_pen*100 if ticket_pen>0 else 0
 
     # ── CARDS KPI ─────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
@@ -357,7 +361,7 @@ if uploaded_file:
     i1,i2=st.columns(2)
     with i1:
         st.markdown(f"""<div class="ind-wrap">
-            <div class="ind-lbl">TICKET MEDIO &mdash; {ultimo_mes}</div>
+            <div class="ind-lbl">TICKET MEDIO — {ultimo_mes} (COMPRADORES ATIVOS)</div>
             <div class="ind-val">R$ {fmt_br(ticket_ult)}</div>
             <div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div>
         </div>""", unsafe_allow_html=True)
@@ -403,12 +407,14 @@ if uploaded_file:
         <table class="ana-table"><thead><tr><th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th></tr></thead>
         <tbody>{rr}</tbody></table></div>""", unsafe_allow_html=True)
 
-    # ── GRAFICOS + BOTOES DE STATUS ───────────────────────────────────────────
+    # ── GRAFICOS ──────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
     g1,g2=st.columns([3,2])
     with g1:
-        sc=df_sel['STATUS'].value_counts(); lb=[s for s in STATUS_ORDER if s in sc.index]
-        vl=[sc[s] for s in lb]; co=[STATUS_COLORS[s] for s in lb]; pc=[v/total*100 if total>0 else 0 for v in vl]
+        sc=df_sel['STATUS'].value_counts()
+        lb=[s for s in STATUS_ORDER if s in sc.index]
+        vl=[sc[s] for s in lb]; co=[STATUS_COLORS[s] for s in lb]
+        pc=[v/total*100 if total>0 else 0 for v in vl]
         fig1=go.Figure(go.Bar(
             x=vl, y=lb, orientation='h', marker_color=co,
             text=[f"  {v} ({p:.0f}%)" for v,p in zip(vl,pc)],
@@ -426,33 +432,73 @@ if uploaded_file:
         st.markdown(f'<div class="chart-wrap"><div class="chart-lbl">{titulo_grafico}</div>', unsafe_allow_html=True)
         st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar':False})
 
-        # ── BOTOES DE FILTRO POR STATUS ───────────────────────────────────────
-        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6B7A99;margin:4px 0 8px 0;">Filtrar carteira por status:</p>', unsafe_allow_html=True)
+        # ── BOTOES DE STATUS — CORRIGIDOS ─────────────────────────────────────
         status_presentes = [s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
         n_btns = len(status_presentes) + 1
-        btn_cols = st.columns(n_btns)
 
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6B7A99;margin:8px 0 6px 0;">Filtrar carteira por status:</p>', unsafe_allow_html=True)
+
+        # CSS dinamico — colore cada botao pela sua posicao na coluna
+        css_btns = ""
+        for i, status in enumerate(status_presentes):
+            cor = STATUS_BTN_COR.get(status, '#555')
+            is_active = st.session_state.status_filtro == status
+            bg  = cor if is_active else 'transparent'
+            txt = '#FFFFFF' if is_active else cor
+            css_btns += f"""
+            #status-anchor + [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-child({i+1}) button {{
+                background: {bg} !important;
+                border: 2px solid {cor} !important;
+                color: {txt} !important;
+                font-size: 9px !important;
+                font-weight: 800 !important;
+                letter-spacing: 0.8px !important;
+                height: 40px !important;
+                white-space: nowrap !important;
+                width: 100% !important;
+                border-radius: 8px !important;
+                text-transform: uppercase !important;
+                padding: 0 8px !important;
+            }}
+            #status-anchor + [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-child({i+1}) button:hover {{
+                opacity: 0.85 !important;
+            }}"""
+
+        # Botao TODOS
+        cor_todos = '#4B5568'
+        is_todos = st.session_state.status_filtro is None
+        bg_todos  = cor_todos if is_todos else 'transparent'
+        txt_todos = '#FFFFFF' if is_todos else cor_todos
+        css_btns += f"""
+        #status-anchor + [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-child({n_btns}) button {{
+            background: {bg_todos} !important;
+            border: 2px solid {cor_todos} !important;
+            color: {txt_todos} !important;
+            font-size: 9px !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.8px !important;
+            height: 40px !important;
+            white-space: nowrap !important;
+            width: 100% !important;
+            border-radius: 8px !important;
+            text-transform: uppercase !important;
+        }}"""
+
+        st.markdown(f'<style>{css_btns}</style><div id="status-anchor"></div>', unsafe_allow_html=True)
+
+        btn_cols = st.columns(n_btns)
         for i, status in enumerate(status_presentes):
             with btn_cols[i]:
-                cor = STATUS_BTN_COLORS.get(status, '#555')
-                ativo = st.session_state.status_filtro == status
-                borda = f"3px solid {cor}" if ativo else f"2px solid {cor}"
-                bg = cor if ativo else "transparent"
-                txt_cor = "#FFFFFF" if ativo else cor
-                st.markdown(f"""
-                <div style="text-align:center;margin-bottom:4px;">
-                    <span style="font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:{cor};">{sc.get(status,0)}</span>
-                </div>""", unsafe_allow_html=True)
-                if st.button(status.replace(" ","\n"), key=f"sbtn_{status}",
-                    help=f"Mostrar somente: {status}"):
-                    if st.session_state.status_filtro == status:
-                        st.session_state.status_filtro = None
-                    else:
-                        st.session_state.status_filtro = status
+                cor   = STATUS_BTN_COR.get(status, '#555')
+                count = sc.get(status, 0)
+                abbrev= STATUS_ABBREV.get(status, status)
+                st.markdown(f'<p style="text-align:center;font-size:10px;font-weight:800;color:{cor};margin:0 0 3px 0;">{count}</p>', unsafe_allow_html=True)
+                if st.button(abbrev, key=f"sbtn_{status}"):
+                    st.session_state.status_filtro = status if st.session_state.status_filtro != status else None
                     st.rerun()
 
         with btn_cols[-1]:
-            st.markdown('<div style="text-align:center;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;letter-spacing:0.8px;color:#6B7A99;">TODOS</span></div>', unsafe_allow_html=True)
+            st.markdown(f'<p style="text-align:center;font-size:10px;font-weight:800;color:{cor_todos};margin:0 0 3px 0;">&nbsp;</p>', unsafe_allow_html=True)
             if st.button("TODOS", key="sbtn_todos"):
                 st.session_state.status_filtro = None
                 st.rerun()
@@ -509,18 +555,15 @@ if uploaded_file:
         st.markdown(f"""<div class="vend-wrap"><table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>""", unsafe_allow_html=True)
 
     # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
-    # Indica o filtro ativo de status
-    filtro_status_ativo = st.session_state.status_filtro
-    if filtro_status_ativo:
-        cor_ativo = STATUS_BTN_COLORS.get(filtro_status_ativo, '#555')
-        st.markdown(f'<div class="section-title">CARTEIRA DE CLIENTES &mdash; <span style="color:{cor_ativo}">{htmllib.escape(filtro_status_ativo)}</span></div>', unsafe_allow_html=True)
+    filtro_ativo = st.session_state.status_filtro
+    if filtro_ativo:
+        cor_ativo = STATUS_BTN_COR.get(filtro_ativo, '#555')
+        st.markdown(f'<div class="section-title">CARTEIRA DE CLIENTES &mdash; <span style="color:{cor_ativo}">{htmllib.escape(filtro_ativo)}</span></div>', unsafe_allow_html=True)
     else:
         st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
 
     cd=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
-    dd = df_sel.copy()
-    if filtro_status_ativo:
-        dd = dd[dd['STATUS'] == filtro_status_ativo]
+    dd = df_sel[df_sel['STATUS']==filtro_ativo].copy() if filtro_ativo else df_sel.copy()
     dd = dd[cd].reset_index(drop=True)
 
     hc="".join([f"<th>{c}</th>" for c in cd]); rc=""
