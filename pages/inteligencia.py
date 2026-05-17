@@ -33,7 +33,6 @@ st.markdown("""
     border:1px solid #374151 !important; border-radius:8px !important;
 }
 
-/* ── HEADER ── */
 .giri-header-int {
     background:linear-gradient(120deg,#071F12 0%,#0F4023 45%,#1A6B3A 80%,#22874A 100%);
     border-radius:18px; padding:30px 38px; margin-bottom:28px;
@@ -46,7 +45,6 @@ st.markdown("""
 
 .section-title { font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:2px; color:#071F12; margin:32px 0 14px 0; padding-bottom:8px; border-bottom:2px solid #1A6B3A; }
 
-/* ── KPIs ── */
 .kpi-wrap { background:#FFFFFF; border-radius:14px; padding:14px 22px 12px 22px; box-shadow:0 4px 24px rgba(7,31,18,0.10),0 1px 4px rgba(0,0,0,0.04); position:relative; overflow:hidden; text-align:center; }
 .kpi-wrap::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; border-radius:14px 14px 0 0; }
 .kpi-wrap.green::before { background:linear-gradient(90deg,#0F4023,#1A6B3A,#22874A); }
@@ -55,7 +53,6 @@ st.markdown("""
 .kpi-val { font-size:1.65rem; font-weight:800; line-height:1; margin-bottom:5px; color:#071F12; }
 .kpi-sub { font-size:0.72rem; color:#4B5568; line-height:1.4; }
 
-/* ── EROSAO BLOCO ── */
 .erosao-bloco { background:#FFFFFF; border-radius:14px; box-shadow:0 4px 24px rgba(7,31,18,0.10),0 1px 4px rgba(0,0,0,0.04); overflow:hidden; }
 .erosao-bloco-title { background:linear-gradient(90deg,#071F12 0%,#145A32 55%,#1E8449 100%); color:#FFFFFF; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; padding:12px 20px; text-align:center; }
 .eros-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.85rem; }
@@ -70,7 +67,6 @@ st.markdown("""
 .nivel-badge { font-weight:700; border-radius:6px; padding:3px 0; font-size:0.78rem; display:inline-block; width:95px; text-align:center; }
 .star-badge  { font-weight:800; border-radius:8px; padding:2px 0; font-size:0.72rem; display:inline-block; width:115px; text-align:center; }
 
-/* ── BARRA CONTEXTO ── */
 .ctx-bar { background:#FFFFFF; border-radius:10px; padding:10px 18px; margin-bottom:10px; box-shadow:0 2px 10px rgba(7,31,18,0.08); display:flex; align-items:center; gap:28px; flex-wrap:wrap; }
 .ctx-item { display:flex; align-items:center; gap:8px; }
 .ctx-lbl  { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:#145A32; }
@@ -78,7 +74,6 @@ st.markdown("""
 .ctx-sep  { width:1px; height:20px; background:#C8E6D0; }
 .top10-label { font-size:0.72rem; font-weight:700; color:#145A32; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
 
-/* ── TABELA TOP 10 ── */
 .prio-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 4px 24px rgba(7,31,18,0.10),0 1px 4px rgba(0,0,0,0.04); overflow:auto; }
 .prio-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.70rem; }
 .prio-table th { background:linear-gradient(90deg,#071F12 0%,#145A32 60%,#1A6B3A 100%); color:#FFFFFF; font-weight:700; padding:7px 9px; text-align:center; letter-spacing:0.4px; font-size:0.62rem; text-transform:uppercase; white-space:nowrap; vertical-align:middle; }
@@ -90,143 +85,59 @@ st.markdown("""
 .filtros-fila-wrap { background:#FFFFFF; border-radius:14px; padding:18px 24px 14px 24px; box-shadow:0 2px 12px rgba(7,31,18,0.08); margin-bottom:16px; }
 .filtros-fila-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.3px; color:#145A32; margin-bottom:14px; border-bottom:1px solid #C8E6D0; padding-bottom:8px; }
 
-/* ── RAIO-X HEADER ── */
 .raio-header { background:linear-gradient(120deg,#071F12 0%,#0F4023 50%,#1A6B3A 100%); border-radius:16px; padding:24px 30px; box-shadow:0 8px 36px rgba(7,31,18,0.35),0 2px 8px rgba(34,135,74,0.15); margin-bottom:20px; }
 .raio-nome { color:#FFFFFF; font-size:1.25rem; font-weight:800; letter-spacing:0.8px; margin-bottom:10px; }
 .raio-meta { display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
 .raio-tag  { font-size:0.80rem; font-weight:600; color:rgba(255,255,255,0.75); }
 .raio-tag strong { color:#FFFFFF; }
 
-/* ── RAIO-X KPIs ── */
 .raio-kpi-wrap { background:#FFFFFF; border-radius:12px; padding:14px 18px 12px 18px; box-shadow:0 3px 16px rgba(7,31,18,0.10); position:relative; overflow:hidden; text-align:center; }
 .raio-kpi-wrap::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; border-radius:12px 12px 0 0; background:linear-gradient(90deg,#0F4023,#22874A); }
 .raio-kpi-lbl { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:#4B5568; margin-bottom:6px; }
 .raio-kpi-val { font-size:1.45rem; font-weight:800; color:#071F12; line-height:1; margin-bottom:4px; }
 .raio-kpi-sub { font-size:0.68rem; color:#4B5568; }
 
-/* ── CHART ── */
 .chart-wrap { background:#FFFFFF; border-radius:14px; padding:18px 20px 10px 20px; box-shadow:0 3px 16px rgba(7,31,18,0.08); }
 .chart-lbl  { font-size:0.70rem; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; color:#071F12; text-align:center; margin-bottom:6px; }
 
-/* ── HIPOTESES — BULLETS VERMELHOS ── */
-.hip-section {
-    background:#FFFFFF; border-radius:14px;
-    padding:22px 26px;
-    box-shadow:0 3px 16px rgba(7,31,18,0.08);
-}
-.hip-section-titulo {
-    font-size:0.72rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:1.3px; color:#071F12;
-    margin-bottom:16px; padding-bottom:10px;
-    border-bottom:2px solid #C8E6D0;
-}
+.hip-section { background:#FFFFFF; border-radius:14px; padding:22px 26px; box-shadow:0 3px 16px rgba(7,31,18,0.08); }
+.hip-section-titulo { font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; color:#071F12; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #C8E6D0; }
 .hip-list { list-style:none; padding:0; margin:0; }
-.hip-list li {
-    display:flex; align-items:flex-start; gap:14px;
-    padding:13px 0; border-bottom:1px solid #F0F4F8;
-    font-size:0.88rem; color:#1A2540; line-height:1.45;
-}
+.hip-list li { display:flex; align-items:flex-start; gap:14px; padding:13px 0; border-bottom:1px solid #F0F4F8; font-size:0.88rem; color:#1A2540; line-height:1.45; }
 .hip-list li:last-child { border-bottom:none; padding-bottom:0; }
-.hip-bullet {
-    width:11px; height:11px; min-width:11px;
-    background:#C00000; border-radius:50%;
-    margin-top:5px; flex-shrink:0;
-    box-shadow:0 0 0 3px rgba(192,0,0,0.12);
-}
+.hip-bullet { width:11px; height:11px; min-width:11px; background:#C00000; border-radius:50%; margin-top:5px; flex-shrink:0; box-shadow:0 0 0 3px rgba(192,0,0,0.12); }
 
-/* ── MISSAO BRIEFING CARD ── */
-.missao-card {
-    background:#FFFFFF; border-radius:14px;
-    box-shadow:0 3px 16px rgba(7,31,18,0.08);
-    overflow:hidden;
-}
-.missao-card-header {
-    background:linear-gradient(90deg,#071F12 0%,#145A32 100%);
-    padding:12px 22px;
-}
-.missao-card-header-txt {
-    color:#FFFFFF; font-size:0.72rem; font-weight:800;
-    text-transform:uppercase; letter-spacing:1.5px;
-}
-.missao-objetivo {
-    background:#F4FBF6; border-left:4px solid #1A6B3A;
-    padding:16px 22px;
-}
-.missao-obj-lbl {
-    font-size:0.62rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:1px; color:#145A32; margin-bottom:6px;
-}
-.missao-obj-txt {
-    font-size:0.90rem; color:#071F12; line-height:1.55; font-weight:500;
-}
-.missao-callout {
-    background:#071F12; padding:16px 22px;
-}
-.missao-call-lbl {
-    font-size:0.62rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:1px; color:rgba(255,255,255,0.55); margin-bottom:6px;
-}
-.missao-call-txt {
-    font-size:0.93rem; color:#FFFFFF; line-height:1.5; font-weight:600;
-}
-.missao-metrics {
-    display:flex; border-bottom:1px solid #E5EAF2;
-}
-.missao-metric {
-    flex:1; padding:14px 22px; border-right:1px solid #E5EAF2;
-}
+.missao-card { background:#FFFFFF; border-radius:14px; box-shadow:0 3px 16px rgba(7,31,18,0.08); overflow:hidden; }
+.missao-card-header { background:linear-gradient(90deg,#071F12 0%,#145A32 100%); padding:12px 22px; }
+.missao-card-header-txt { color:#FFFFFF; font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; }
+.missao-objetivo { background:#F4FBF6; border-left:4px solid #1A6B3A; padding:16px 22px; }
+.missao-obj-lbl { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#145A32; margin-bottom:6px; }
+.missao-obj-txt { font-size:0.90rem; color:#071F12; line-height:1.55; font-weight:500; }
+.missao-callout { background:#071F12; padding:16px 22px; }
+.missao-call-lbl { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.55); margin-bottom:6px; }
+.missao-call-txt { font-size:0.93rem; color:#FFFFFF; line-height:1.5; font-weight:600; }
+.missao-metrics { display:flex; border-bottom:1px solid #E5EAF2; }
+.missao-metric { flex:1; padding:14px 22px; border-right:1px solid #E5EAF2; }
 .missao-metric:last-child { border-right:none; }
-.missao-metric-lbl {
-    font-size:0.62rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:1px; color:#145A32; margin-bottom:5px;
-}
-.missao-metric-val {
-    font-size:0.88rem; color:#1A2540; font-weight:600; line-height:1.4;
-}
-.missao-sucesso {
-    display:flex; align-items:flex-start; gap:14px;
-    padding:14px 22px; border-bottom:1px solid #E5EAF2;
-    background:#FAFFFE;
-}
-.missao-suc-ico {
-    width:26px; height:26px; min-width:26px;
-    background:#1A6B3A; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    color:#FFFFFF; font-size:0.85rem; font-weight:800;
-    margin-top:1px; flex-shrink:0;
-}
-.missao-suc-lbl {
-    font-size:0.62rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:1px; color:#145A32; margin-bottom:4px;
-}
+.missao-metric-lbl { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#145A32; margin-bottom:5px; }
+.missao-metric-val { font-size:0.88rem; color:#1A2540; font-weight:600; line-height:1.4; }
+.missao-sucesso { display:flex; align-items:flex-start; gap:14px; padding:14px 22px; border-bottom:1px solid #E5EAF2; background:#FAFFFE; }
+.missao-suc-ico { width:26px; height:26px; min-width:26px; background:#1A6B3A; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#FFFFFF; font-size:0.85rem; font-weight:800; margin-top:1px; flex-shrink:0; }
+.missao-suc-lbl { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#145A32; margin-bottom:4px; }
 .missao-suc-txt { font-size:0.85rem; color:#1A2540; line-height:1.45; }
-.missao-escala {
-    display:flex; align-items:flex-start; gap:14px;
-    padding:14px 22px; background:#FFF8F8;
-}
-.missao-esc-ico {
-    width:26px; height:26px; min-width:26px;
-    background:#C00000; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    color:#FFFFFF; font-size:0.90rem; font-weight:800;
-    margin-top:1px; flex-shrink:0;
-}
-.missao-esc-lbl {
-    font-size:0.62rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:1px; color:#C00000; margin-bottom:4px;
-}
+.missao-escala { display:flex; align-items:flex-start; gap:14px; padding:14px 22px; background:#FFF8F8; }
+.missao-esc-ico { width:26px; height:26px; min-width:26px; background:#C00000; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#FFFFFF; font-size:0.90rem; font-weight:800; margin-top:1px; flex-shrink:0; }
+.missao-esc-lbl { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#C00000; margin-bottom:4px; }
 .missao-esc-txt { font-size:0.85rem; color:#1A2540; line-height:1.45; }
 
-/* ── PERGUNTAS ── */
 .perg-section { background:#FFFFFF; border-radius:14px; padding:22px 26px; box-shadow:0 3px 16px rgba(7,31,18,0.08); }
 .perg-section-titulo { font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; color:#071F12; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #C8E6D0; }
 .perg-bloco { background:#F4FBF6; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
 .perg-bloco:last-child { margin-bottom:0; }
-.perg-num   { font-size:0.65rem; font-weight:800; color:#145A32; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:5px; }
-.perg-txt   { font-size:0.88rem; font-weight:600; color:#071F12; margin-bottom:10px; line-height:1.4; }
+.perg-num { font-size:0.65rem; font-weight:800; color:#145A32; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:5px; }
+.perg-txt { font-size:0.88rem; font-weight:600; color:#071F12; margin-bottom:10px; line-height:1.4; }
 .opcao-pill { display:inline-block; background:#FFFFFF; border:1px solid #C8E6D0; border-radius:20px; padding:4px 14px; margin:3px 4px 3px 0; font-size:0.76rem; color:#145A32; font-weight:600; }
 
-/* ── ABORDAGEM ── */
 .abordagem-bloco { background:linear-gradient(135deg,#EAF5EE,#F4FBF6); border-radius:12px; padding:18px 22px; border-left:4px solid #1A6B3A; }
 .abordagem-lbl { font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#145A32; margin-bottom:8px; }
 .abordagem-txt { font-size:0.88rem; color:#071F12; font-style:italic; line-height:1.6; }
@@ -257,21 +168,21 @@ NIVEL_MAP = {
 }
 
 HIPOTESES = {
-    'QUEDA ACENTUADA': ['Perda parcial ou total de share para concorrente', 'Retracao do mercado ou queda de demanda final', 'Estoque elevado no cliente', 'Problema comercial: preco, prazo, entrega ou atendimento', 'Mudanca interna no cliente (gestor, mix, operacao)', 'Sazonalidade pontual', 'Causa ainda nao identificada'],
-    'QUEDA':           ['Reducao gradual de frequencia de compra', 'Reducao de mix comprado', 'Sinal inicial de diversificacao de fornecedores', 'Ajuste de estoque pontual', 'Ponto comercial sensivel emergindo', 'Risco de evolucao para Queda Acentuada'],
-    'ESTAVEL':         ['Conta protegida e vinculo preservado', 'Risco oculto nao identificado nos numeros', 'Satisfacao sensivel com ponto de melhoria', 'Oportunidade de expansao de mix nao explorada', 'Pressao concorrencial em andamento silencioso', 'Erosao relacional sem reflexo ainda no volume'],
-    'CRESCIMENTO':     ['Crescimento recorrente por aumento real de demanda', 'Crescimento pontual — nao repetivel', 'Expansao de mix com novos itens', 'Falha temporaria de concorrente', 'Oportunidade estrategica de conta', 'Crescimento vulneravel a retomada da concorrencia'],
+    'QUEDA ACENTUADA':       ['Perda parcial ou total de share para concorrente', 'Retracao do mercado ou queda de demanda final', 'Estoque elevado no cliente', 'Problema comercial: preco, prazo, entrega ou atendimento', 'Mudanca interna no cliente (gestor, mix, operacao)', 'Sazonalidade pontual', 'Causa ainda nao identificada'],
+    'QUEDA':                 ['Reducao gradual de frequencia de compra', 'Reducao de mix comprado', 'Sinal inicial de diversificacao de fornecedores', 'Ajuste de estoque pontual', 'Ponto comercial sensivel emergindo', 'Risco de evolucao para Queda Acentuada'],
+    'ESTAVEL':               ['Conta protegida e vinculo preservado', 'Risco oculto nao identificado nos numeros', 'Satisfacao sensivel com ponto de melhoria', 'Oportunidade de expansao de mix nao explorada', 'Pressao concorrencial em andamento silencioso', 'Erosao relacional sem reflexo ainda no volume'],
+    'CRESCIMENTO':           ['Crescimento recorrente por aumento real de demanda', 'Crescimento pontual — nao repetivel', 'Expansao de mix com novos itens', 'Falha temporaria de concorrente', 'Oportunidade estrategica de conta', 'Crescimento vulneravel a retomada da concorrencia'],
     'CRESCIMENTO ACENTUADO': ['Crescimento recorrente por aumento real de demanda', 'Expansao operacional do cliente', 'Falha de concorrente — janela de oportunidade', 'Oportunidade estrategica — possivel contrato maior', 'Crescimento pontual superestimado', 'Crescimento vulneravel — concorrencia retornara'],
-    'INATIVO':         ['Inativo recuperavel — demanda ainda existe', 'Estoque elevado temporariamente', 'Ruptura comercial: preco, condicao ou atendimento', 'Perda estrutural — concorrente consolidado', 'Mudanca operacional ou de segmento', 'Relacionamento enfraquecido ao longo do tempo', 'Inativo sem potencial real de retomada'],
+    'INATIVO':               ['Inativo recuperavel — demanda ainda existe', 'Estoque elevado temporariamente', 'Ruptura comercial: preco, condicao ou atendimento', 'Perda estrutural — concorrente consolidado', 'Mudanca operacional ou de segmento', 'Relacionamento enfraquecido ao longo do tempo', 'Inativo sem potencial real de retomada'],
 }
 
 MISSAO = {
-    'QUEDA ACENTUADA': {'objetivo': 'Diagnosticar a causa da queda e tentar recuperar volume prioritario no menor prazo possivel.', 'missao': 'A missao nao e vender imediatamente. A missao e entender a causa da queda.', 'prazo': '48 horas — Curva A', 'reavaliacao': '15 dias apos o primeiro contato', 'sucesso': 'Retomada parcial, causa identificada ou plano de recuperacao definido.', 'escala': 'Concorrente identificado, queda superior a 30%, sem avanco apos 15 dias.', 'abordagem': '"Percebemos uma mudanca no comportamento de compras dos ultimos meses e gostariamos de entender melhor o contexto da operacao antes de pensar em qualquer acao comercial."'},
-    'QUEDA':           {'objetivo': 'Detectar e corrigir erosao silenciosa antes que o cliente evolua para Queda Acentuada.', 'missao': 'Entender o que comecou a mudar. Investigar frequencia, mix, share, giro e qualidade relacional.', 'prazo': '5 dias uteis — Curva A', 'reavaliacao': '15 a 30 dias apos o contato', 'sucesso': 'Cliente estabilizou, causa identificada ou plano preventivo definido.', 'escala': 'Queda aumenta, cliente cita concorrente, problema comercial aparece.', 'abordagem': '"Percebemos uma pequena reducao no volume recente. Houve alguma mudanca no movimento, no giro ou na necessidade de compra?"'},
-    'ESTAVEL':         {'objetivo': 'Blindar a conta, validar qualidade do vinculo e impedir erosao futura.', 'missao': 'Validar se a estabilidade e real ou apenas aparente. Identificar riscos ocultos e oportunidades incrementais.', 'prazo': 'Ciclo mensal — Curva A', 'reavaliacao': '30 dias', 'sucesso': 'Vinculo preservado, risco oculto descartado, cliente mantido no patamar.', 'escala': 'Sinal de concorrencia, reclamacao, reducao de mix, relacao excessivamente transacional.', 'abordagem': '"O volume atual de compras continua adequado para a operacao de voces? Existe algum ponto que possamos melhorar?"'},
-    'CRESCIMENTO':     {'objetivo': 'Consolidar o avanco, proteger a conta e transformar crescimento em novo patamar sustentavel.', 'missao': 'Descobrir o que gerou o crescimento e avaliar se e recorrente, pontual, vulneravel ou expansivel.', 'prazo': 'Ciclo mensal — Curva A', 'reavaliacao': '30 dias', 'sucesso': 'Cliente mantem novo patamar, amplia mix ou confirma recorrencia.', 'escala': 'Crescimento associado a oportunidade maior, crescimento vulneravel a concorrencia.', 'abordagem': '"O que explica o aumento recente no volume de compra? Esse novo volume tende a se manter?"'},
+    'QUEDA ACENTUADA':       {'objetivo': 'Diagnosticar a causa da queda e tentar recuperar volume prioritario no menor prazo possivel.', 'missao': 'A missao nao e vender imediatamente. A missao e entender a causa da queda.', 'prazo': '48 horas — Curva A', 'reavaliacao': '15 dias apos o primeiro contato', 'sucesso': 'Retomada parcial, causa identificada ou plano de recuperacao definido.', 'escala': 'Concorrente identificado, queda superior a 30%, sem avanco apos 15 dias.', 'abordagem': '"Percebemos uma mudanca no comportamento de compras dos ultimos meses e gostariamos de entender melhor o contexto da operacao antes de pensar em qualquer acao comercial."'},
+    'QUEDA':                 {'objetivo': 'Detectar e corrigir erosao silenciosa antes que o cliente evolua para Queda Acentuada.', 'missao': 'Entender o que comecou a mudar. Investigar frequencia, mix, share, giro e qualidade relacional.', 'prazo': '5 dias uteis — Curva A', 'reavaliacao': '15 a 30 dias apos o contato', 'sucesso': 'Cliente estabilizou, causa identificada ou plano preventivo definido.', 'escala': 'Queda aumenta, cliente cita concorrente, problema comercial aparece.', 'abordagem': '"Percebemos uma pequena reducao no volume recente. Houve alguma mudanca no movimento, no giro ou na necessidade de compra?"'},
+    'ESTAVEL':               {'objetivo': 'Blindar a conta, validar qualidade do vinculo e impedir erosao futura.', 'missao': 'Validar se a estabilidade e real ou apenas aparente. Identificar riscos ocultos e oportunidades incrementais.', 'prazo': 'Ciclo mensal — Curva A', 'reavaliacao': '30 dias', 'sucesso': 'Vinculo preservado, risco oculto descartado, cliente mantido no patamar.', 'escala': 'Sinal de concorrencia, reclamacao, reducao de mix, relacao excessivamente transacional.', 'abordagem': '"O volume atual de compras continua adequado para a operacao de voces? Existe algum ponto que possamos melhorar?"'},
+    'CRESCIMENTO':           {'objetivo': 'Consolidar o avanco, proteger a conta e transformar crescimento em novo patamar sustentavel.', 'missao': 'Descobrir o que gerou o crescimento e avaliar se e recorrente, pontual, vulneravel ou expansivel.', 'prazo': 'Ciclo mensal — Curva A', 'reavaliacao': '30 dias', 'sucesso': 'Cliente mantem novo patamar, amplia mix ou confirma recorrencia.', 'escala': 'Crescimento associado a oportunidade maior, crescimento vulneravel a concorrencia.', 'abordagem': '"O que explica o aumento recente no volume de compra? Esse novo volume tende a se manter?"'},
     'CRESCIMENTO ACENTUADO': {'objetivo': 'Consolidar o avanco com urgencia, proteger a conta e identificar oportunidade estrategica.', 'missao': 'Entender o motor do crescimento acentuado e blindar a conta antes que a concorrencia reaja.', 'prazo': '5 dias uteis — Curva A em Crescimento Acentuado', 'reavaliacao': '15 a 30 dias', 'sucesso': 'Cliente mantem patamar, confirma recorrencia, oportunidade consolidada.', 'escala': 'Expansao de unidade, possibilidade de contrato maior, crescimento vulneravel.', 'abordagem': '"Percebemos um crescimento expressivo nos ultimos meses. O que esta puxando esse aumento e como podemos garantir continuidade?"'},
-    'INATIVO':         {'objetivo': 'Validar possibilidade real de recuperacao antes de qualquer acao comercial.', 'missao': 'Descobrir se existe possibilidade concreta de retomada. Nao ofertar produto na primeira interacao.', 'prazo': 'Curva A: imediato. Curva B: ate 10 dias uteis.', 'reavaliacao': '15 a 30 dias', 'sucesso': 'Cliente demonstra intencao real de retomada.', 'escala': 'Cliente estrategico, ruptura grave, concorrente dominante, potencial relevante.', 'abordagem': '"O que levou a interrupcao das compras? A demanda relacionada aos nossos produtos continua existindo?"'},
+    'INATIVO':               {'objetivo': 'Validar possibilidade real de recuperacao antes de qualquer acao comercial.', 'missao': 'Descobrir se existe possibilidade concreta de retomada. Nao ofertar produto na primeira interacao.', 'prazo': 'Curva A: imediato. Curva B: ate 10 dias uteis.', 'reavaliacao': '15 a 30 dias', 'sucesso': 'Cliente demonstra intencao real de retomada.', 'escala': 'Cliente estrategico, ruptura grave, concorrente dominante, potencial relevante.', 'abordagem': '"O que levou a interrupcao das compras? A demanda relacionada aos nossos produtos continua existindo?"'},
 }
 
 PERGUNTAS = {
@@ -346,27 +257,78 @@ def erosao_display(n):
     else:        return '#C6EFCE', '#375623', 'BAIXA EROSAO'
 
 
-def sinal_prioridade(curva, status):
+def calcular_prioridade(curva, status, erosao, risco):
+    """
+    Prioridade = Impacto Economico x Intensidade do Risco x Contexto Operacional
+    Pilar 1 — Impacto Economico (max 40 pts): curva + receita em risco absoluta
+    Pilar 2 — Intensidade do Risco (max 40 pts): Indice de Erosao STAR
+    Pilar 3 — Contexto Operacional (max 20 pts): status comportamental
+    """
     c = str(curva).strip().upper()
     s = str(status).strip().upper()
-    if c == 'A' and s in ['QUEDA ACENTUADA', 'QUEDA', 'INATIVO']:
-        return 'PRIORIDADE MAXIMA', '#C00000', '#FFFFFF'
-    elif c == 'A':
-        return 'PRIORIDADE ALTA', '#D44000', '#FFFFFF'
-    elif c == 'B' and s in ['QUEDA ACENTUADA', 'QUEDA']:
-        return 'PRIORIDADE MEDIA', '#0056b3', '#FFFFFF'
-    elif c == 'B':
-        return 'PRIORIDADE SELETIVA', '#4B5568', '#FFFFFF'
-    else:
-        return 'GESTAO PADRAO', '#6B7280', '#FFFFFF'
+    e = int(erosao)
+    r = float(risco or 0)
+
+    # PILAR 1 — IMPACTO ECONOMICO (max 40)
+    curva_pts = {'A': 25, 'B': 15, 'C': 5}.get(c, 5)
+    if r > 20000:   risco_pts = 15
+    elif r > 10000: risco_pts = 12
+    elif r > 5000:  risco_pts = 9
+    elif r > 1000:  risco_pts = 6
+    elif r > 0:     risco_pts = 3
+    else:           risco_pts = 0
+    pilar1 = curva_pts + risco_pts
+
+    # PILAR 2 — INTENSIDADE DO RISCO (max 40)
+    if e >= 8:   pilar2 = 40
+    elif e >= 6: pilar2 = 32
+    elif e >= 4: pilar2 = 22
+    elif e >= 2: pilar2 = 12
+    else:        pilar2 = 5
+
+    # PILAR 3 — CONTEXTO OPERACIONAL (max 20)
+    pilar3 = {
+        'QUEDA ACENTUADA': 20, 'INATIVO': 16, 'QUEDA': 14,
+        'ESTAVEL': 8, 'CRESCIMENTO': 4, 'CRESCIMENTO ACENTUADO': 2,
+    }.get(s, 5)
+
+    total = pilar1 + pilar2 + pilar3  # max 100
+
+    if total >= 70:   return 'PRIORIDADE MAXIMA',   '#C00000', '#FFFFFF', total
+    elif total >= 50: return 'PRIORIDADE ALTA',      '#D44000', '#FFFFFF', total
+    elif total >= 30: return 'PRIORIDADE MEDIA',     '#0056b3', '#FFFFFF', total
+    elif total >= 15: return 'PRIORIDADE SELETIVA',  '#4B5568', '#FFFFFF', total
+    else:             return 'GESTAO PADRAO',         '#6B7280', '#FFFFFF', total
 
 
-def score_prioridade(curva, status, erosao, media_lp):
-    cp = {'A': 300, 'B': 150, 'C': 50}.get(str(curva).strip().upper(), 30)
-    sp = {'QUEDA ACENTUADA': 500, 'QUEDA': 350, 'INATIVO': 280, 'ESTAVEL': 150, 'CRESCIMENTO': 80, 'CRESCIMENTO ACENTUADO': 50}.get(str(status).strip().upper(), 50)
-    ep = int(erosao) * 20
-    rp = min(float(media_lp or 0) / 100, 300)
-    return cp + sp + ep + rp
+def score_ranking(curva, status, erosao, risco):
+    """Mesmo tres pilares, escala ampliada para ranking da fila."""
+    c = str(curva).strip().upper()
+    s = str(status).strip().upper()
+    e = int(erosao)
+    r = float(risco or 0)
+
+    curva_pts = {'A': 250, 'B': 150, 'C': 50}.get(c, 50)
+    if r > 20000:   risco_pts = 150
+    elif r > 10000: risco_pts = 120
+    elif r > 5000:  risco_pts = 90
+    elif r > 1000:  risco_pts = 60
+    elif r > 0:     risco_pts = 30
+    else:           risco_pts = 0
+    p1 = curva_pts + risco_pts
+
+    if e >= 8:   p2 = 400
+    elif e >= 6: p2 = 320
+    elif e >= 4: p2 = 220
+    elif e >= 2: p2 = 120
+    else:        p2 = 50
+
+    p3 = {
+        'QUEDA ACENTUADA': 200, 'INATIVO': 160, 'QUEDA': 140,
+        'ESTAVEL': 80, 'CRESCIMENTO': 40, 'CRESCIMENTO ACENTUADO': 20,
+    }.get(s, 50)
+
+    return p1 + p2 + p3
 
 
 def fmt_num(v):
@@ -424,10 +386,10 @@ if not all([col_cli, col_mlp, col_mcp, col_sta]):
     st.stop()
 
 df['_EROSAO'] = df.apply(lambda r: calcular_erosao_star(r.get(col_mlp, 0), r.get(col_mcp, 0)), axis=1)
-df['_SCORE']  = df.apply(lambda r: score_prioridade(
-    r.get(col_curv, 'C') if col_curv else 'C',
-    r.get(col_sta, ''), r['_EROSAO'], r.get(col_mlp, 0)), axis=1)
 df['_RISCO']  = df.apply(lambda r: max(0.0, float(r.get(col_mlp, 0) or 0) - float(r.get(col_mcp, 0) or 0)), axis=1)
+df['_SCORE']  = df.apply(lambda r: score_ranking(
+    r.get(col_curv, 'C') if col_curv else 'C',
+    r.get(col_sta, ''), r['_EROSAO'], r['_RISCO']), axis=1)
 df_sorted = df.sort_values('_SCORE', ascending=False).reset_index(drop=True)
 
 # ── FILTROS GERAIS ────────────────────────────────────────────────────────
@@ -514,16 +476,21 @@ st.markdown(f"<div class='top10-label'>EXIBINDO TOP 10 DE {n_fila} CLIENTES PRIO
 if not df_top10.empty:
     rows_html = ""
     for i, (_, r) in enumerate(df_top10.iterrows(), 1):
-        en = int(r['_EROSAO']); ebg, efg, elbl = erosao_display(en)
+        en   = int(r['_EROSAO'])
+        ebg, efg, _ = erosao_display(en)
         sta  = str(r.get(col_sta, '')).strip().upper()
         scss = STATUS_CSS.get(sta, 'color:#1A2540;font-weight:600;')
         nome = str(r.get(col_cli, ''))
+        p_lbl, p_bg, p_fg, _ = calcular_prioridade(
+            r.get(col_curv, 'C') if col_curv else 'C',
+            sta, en, r['_RISCO']
+        )
         rows_html += (
             f"<tr><td><strong>#{i}</strong></td>"
             f"<td class='left'><strong>{nome}</strong></td>"
             f"<td><span style='{scss}'>{sta}</span></td>"
             f"<td><span class='star-badge' style='background:{ebg};color:{efg};'>EROSAO STAR {en}</span></td>"
-            f"<td><span class='nivel-badge' style='background:{ebg};color:{efg};'>{elbl}</span></td>"
+            f"<td><span style='background:{p_bg};color:{p_fg};font-weight:700;border-radius:6px;padding:2px 8px;font-size:0.68rem;white-space:nowrap;display:inline-block;'>{p_lbl}</span></td>"
             f"<td>{fmt_num(r.get(col_mlp,0))}</td>"
             f"<td>{fmt_num(r.get(col_mcp,0))}</td>"
             f"<td style='color:#C00000;font-weight:700;'>{fmt_num(r['_RISCO'])}</td></tr>"
@@ -531,7 +498,7 @@ if not df_top10.empty:
     st.markdown(
         f"<div class='prio-wrap'><table class='prio-table'>"
         f"<thead><tr><th>#</th><th>CLIENTE</th><th>STATUS</th>"
-        f"<th>INDICE EROSAO</th><th>NIVEL</th>"
+        f"<th>INDICE EROSAO</th><th>PRIORIDADE</th>"
         f"<th>MEDIA LP</th><th>MEDIA CP</th><th>RISCO</th>"
         f"</tr></thead><tbody>{rows_html}</tbody></table></div>",
         unsafe_allow_html=True
@@ -565,11 +532,10 @@ r_eros = int(row['_EROSAO'])
 r_risco= float(row['_RISCO'])
 r_diff = round(((r_mlp - r_mcp) / r_mlp * 100), 1) if r_mlp > 0 else 0.0
 
-ebg, efg, elbl    = erosao_display(r_eros)
-p_lbl, p_bg, p_fg = sinal_prioridade(r_curv, r_sta)
-sta_css            = STATUS_CSS.get(r_sta, '')
+ebg, efg, elbl         = erosao_display(r_eros)
+p_lbl, p_bg, p_fg, p_score = calcular_prioridade(r_curv, r_sta, r_eros, r_risco)
+sta_css                = STATUS_CSS.get(r_sta, '')
 
-# Cabeçalho
 st.markdown(f"""
 <div class='raio-header'>
   <div class='raio-nome'>{r_nome}</div>
@@ -583,7 +549,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# KPIs
 rk1, rk2, rk3, rk4 = st.columns(4)
 with rk1:
     st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>INDICE DE EROSAO STAR</div><div class='raio-kpi-val'><span style='background:{ebg};color:{efg};border-radius:8px;padding:2px 14px;'>STAR {r_eros}</span></div><div class='raio-kpi-sub'>{elbl}</div></div>", unsafe_allow_html=True)
@@ -597,7 +562,6 @@ with rk4:
     cor_r = '#C00000' if r_diff > 0 else '#1A6B3A'
     st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>RECEITA EM RISCO</div><div class='raio-kpi-val' style='color:{cor_r};'>{fmt_num(r_risco)}</div><div class='raio-kpi-sub'>{sinal}</div></div>", unsafe_allow_html=True)
 
-# Histórico
 if meses_cols:
     valores_meses = [float(row.get(m, 0) or 0) for m in meses_cols]
     cores_barras  = ['#C00000' if v < r_mlp * 0.98 else '#1A6B3A' for v in valores_meses]
@@ -617,31 +581,22 @@ if meses_cols:
     st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
     st.markdown("</div></div>", unsafe_allow_html=True)
 
-# ── HIPOTESES — BULLETS VERMELHOS ────────────────────────────────────────
 hips = HIPOTESES.get(r_sta, HIPOTESES.get('ESTAVEL', []))
 miss = MISSAO.get(r_sta, MISSAO.get('ESTAVEL', {}))
 
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
-items_hip = "".join([
-    f"<li><div class='hip-bullet'></div>{h}</li>"
-    for h in hips
-])
+items_hip = "".join([f"<li><div class='hip-bullet'></div>{h}</li>" for h in hips])
 st.markdown(
-    f"<div class='hip-section'>"
-    f"<div class='hip-section-titulo'>HIPOTESES INICIAIS</div>"
-    f"<ul class='hip-list'>{items_hip}</ul>"
-    f"</div>",
+    f"<div class='hip-section'><div class='hip-section-titulo'>HIPOTESES INICIAIS</div>"
+    f"<ul class='hip-list'>{items_hip}</ul></div>",
     unsafe_allow_html=True
 )
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ── MISSAO — BRIEFING CARD ────────────────────────────────────────────────
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
 st.markdown(f"""
 <div class='missao-card'>
-  <div class='missao-card-header'>
-    <div class='missao-card-header-txt'>MISSAO DO CONTATO</div>
-  </div>
+  <div class='missao-card-header'><div class='missao-card-header-txt'>MISSAO DO CONTATO</div></div>
   <div class='missao-objetivo'>
     <div class='missao-obj-lbl'>OBJETIVO DO CONTATO</div>
     <div class='missao-obj-txt'>{miss.get('objetivo','—')}</div>
@@ -678,7 +633,6 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ── PERGUNTAS ─────────────────────────────────────────────────────────────
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
 pergs  = PERGUNTAS.get(r_sta, PERGUNTAS.get('ESTAVEL', []))
 p_html = ""
@@ -686,22 +640,17 @@ for i, pq in enumerate(pergs, 1):
     opcoes_html = "".join([f"<span class='opcao-pill'>{o}</span>" for o in pq['o']])
     p_html += f"<div class='perg-bloco'><div class='perg-num'>Pergunta {i}</div><div class='perg-txt'>{pq['p']}</div><div>{opcoes_html}</div></div>"
 st.markdown(
-    f"<div class='perg-section'>"
-    f"<div class='perg-section-titulo'>PERGUNTAS DE DIAGNOSTICO — {r_sta}</div>"
-    f"{p_html}</div>",
+    f"<div class='perg-section'><div class='perg-section-titulo'>PERGUNTAS DE DIAGNOSTICO — {r_sta}</div>{p_html}</div>",
     unsafe_allow_html=True
 )
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ── ABORDAGEM ─────────────────────────────────────────────────────────────
 abord = miss.get('abordagem', '')
 if abord:
     st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
     st.markdown(
-        f"<div class='abordagem-bloco'>"
-        f"<div class='abordagem-lbl'>LINHA DE ABORDAGEM SUGERIDA</div>"
-        f"<div class='abordagem-txt'>{abord}</div>"
-        f"</div>",
+        f"<div class='abordagem-bloco'><div class='abordagem-lbl'>LINHA DE ABORDAGEM SUGERIDA</div>"
+        f"<div class='abordagem-txt'>{abord}</div></div>",
         unsafe_allow_html=True
     )
     st.markdown("</div>", unsafe_allow_html=True)
