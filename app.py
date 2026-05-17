@@ -4,7 +4,6 @@ import html as htmllib
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
-import streamlit.components.v1 as components
 from datetime import date
 
 try:
@@ -74,8 +73,6 @@ st.markdown("""
 .cart-table tr:last-child td { border-bottom:none; }
 .cart-table tr:hover td { background:#F5F7FB; }
 .cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
-
-/* BAR CHART */
 .hbc { background:#FFFFFF; border-radius:14px; padding:20px 22px; box-shadow:0 2px 18px rgba(0,0,0,0.07); }
 .hbc-title { font-size:0.85rem; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; color:#1A2540; text-align:center; margin-bottom:16px; }
 .hbc-row { display:flex; align-items:center; gap:10px; padding:6px 6px; border-radius:6px; border-left:3px solid transparent; margin-bottom:3px; }
@@ -83,6 +80,8 @@ st.markdown("""
 .hbc-track { flex:1; height:18px; background:#EDF1F7; border-radius:4px; overflow:hidden; min-width:50px; }
 .hbc-fill { height:100%; border-radius:4px; }
 .hbc-cnt { font-size:10px; font-weight:700; color:#4B5568; width:72px; flex-shrink:0; text-align:left; padding-left:6px; white-space:nowrap; }
+.dl-row { display:flex; justify-content:center; gap:24px; margin-top:16px; }
+.dl-lbl { font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#4B5568; margin:0 0 4px 0; text-align:center; }
 
 /* BOTOES DOWNLOAD */
 [data-testid="stMarkdownContainer"]:has(.dlg) ~ [data-testid="stDownloadButton"] button {
@@ -105,15 +104,6 @@ st.markdown("""
 [data-testid="stMarkdownContainer"]:has(.dlb) ~ [data-testid="stDownloadButton"] button:hover {
     filter:brightness(0.86) !important; opacity:1 !important;
 }
-
-/* COMPRESSOR ESPACAMENTO BOTOES G2 */
-[data-testid="stMarkdownContainer"]:has(span[id^="sa_"]) {
-    height:0 !important; overflow:hidden !important;
-    margin:0 !important; padding:0 !important; min-height:0 !important;
-}
-[data-testid="stMarkdownContainer"]:has(span[id^="sa_"]) + [data-testid="stButton"] {
-    margin:0 0 2px 0 !important; padding:0 !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -127,11 +117,6 @@ STATUS_CSS     = {
     'ESTAVEL':               'color:#0070C0;font-weight:700;',
     'INATIVO':               'color:#6B7280;font-weight:700;',
 }
-
-if 'status_filtro' not in st.session_state:
-    st.session_state.status_filtro = None
-if 'scroll_needed' not in st.session_state:
-    st.session_state.scroll_needed = False
 
 
 def fmt_br(v):
@@ -526,35 +511,38 @@ if uploaded_file:
 
     # ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
-    fc = st.columns([2,2,2,2,2])
-    LBL = '<p style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#4B5568;margin:0 0 4px 0;">{}</p>'
+    LBL = '<p class="dl-lbl">{}</p>'
 
-    with fc[0]:
+    # Linha 1: 3 filtros centralizados e equidistantes
+    _, fc1, fc2, fc3, _ = st.columns([0.5, 2, 2, 2, 0.5])
+    with fc1:
         st.markdown(LBL.format("VENDEDOR"), unsafe_allow_html=True)
         vendedores = ["Todos"]+sorted(df_raw[vend_col].dropna().astype(str).unique().tolist())
         sel_vend = st.selectbox("Vendedor",vendedores,label_visibility="collapsed")
-    with fc[1]:
+    with fc2:
         st.markdown(LBL.format("CIDADE"), unsafe_allow_html=True)
         if cida_col:
             cidades = ["Todas"]+sorted(df_raw[cida_col].dropna().astype(str).unique().tolist())
             sel_cida = st.selectbox("Cidade",cidades,label_visibility="collapsed")
         else:
             sel_cida = "Todas"; st.caption("Cidade nao encontrada.")
-    with fc[2]:
+    with fc3:
         st.markdown(LBL.format("CURVA"), unsafe_allow_html=True)
         curvas_disp = sorted(df_raw['CURVA'].unique().tolist())
         sel_curvas = st.multiselect("Curva",options=curvas_disp,default=curvas_disp,
             placeholder="Selecione...",label_visibility="collapsed")
         if not sel_curvas: sel_curvas = curvas_disp
-    with fc[3]:
-        st.markdown(LBL.format("&nbsp;"), unsafe_allow_html=True)
-        eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
+
+    # Linha 2: botoes de download centralizados
+    st.markdown('<div style="height:8px;"></div>', unsafe_allow_html=True)
+    eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
+    _, dl1, dl2, _ = st.columns([1.5, 2, 2, 1.5])
+    with dl1:
         st.markdown('<span class="dlg"></span>', unsafe_allow_html=True)
         st.download_button(label="BAIXAR STAR",data=eb,
             file_name="Matriz_STAR_Giri.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    with fc[4]:
-        st.markdown(LBL.format("&nbsp;"), unsafe_allow_html=True)
+    with dl2:
         pdf_container = st.container()
 
     # ── METRICAS ──────────────────────────────────────────────────────────────
@@ -593,7 +581,8 @@ if uploaded_file:
         nome_pdf=f"STAR_{contexto.replace(' ','_')}_{clabel.replace(' ','_').replace('+','')}.pdf"
         with pdf_container:
             st.markdown('<span class="dlb"></span>', unsafe_allow_html=True)
-            st.download_button(label="BAIXAR RELATORIO PDF",data=pdf_bytes,file_name=nome_pdf,mime="application/pdf")
+            st.download_button(label="BAIXAR RELATORIO PDF",data=pdf_bytes,
+                file_name=nome_pdf,mime="application/pdf")
     else:
         with pdf_container: st.caption("Instale reportlab para PDF")
 
@@ -636,72 +625,24 @@ if uploaded_file:
 
     # ── DIAGNOSTICO DE CARTEIRA ───────────────────────────────────────────────
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
-
     sc=df_sel['STATUS'].value_counts()
     status_presentes=[s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
-    cur_filter=st.session_state.status_filtro or ''
     max_count=max([sc.get(s,0) for s in status_presentes]) if status_presentes else 1
 
-    g1,g2,g3=st.columns([5,1,3])
-
+    g1,g2=st.columns([3,2])
     with g1:
         titulo=htmllib.escape(f"DISTRIBUICAO POR STATUS — {clabel}")
         rows_bar=""
         for status in status_presentes:
             cor=STATUS_BTN_COR.get(status,'#555'); count=sc.get(status,0)
             pct=count/total*100 if total>0 else 0; bar_w=count/max_count*100
-            is_active=cur_filter==status
-            row_bg=cor+'14' if is_active else 'transparent'
-            border_c=cor if is_active else 'transparent'
-            rows_bar+=(f'<div class="hbc-row" style="background:{row_bg};border-left-color:{border_c};">'
+            rows_bar+=(f'<div class="hbc-row">'
                 f'<div class="hbc-lbl">{htmllib.escape(status)}</div>'
                 f'<div class="hbc-track"><div class="hbc-fill" style="width:{bar_w:.1f}%;background:{cor};"></div></div>'
                 f'<span class="hbc-cnt">{count} ({pct:.0f}%)</span></div>')
         st.markdown('<div class="hbc">'+f'<p class="hbc-title">{titulo}</p>'+rows_bar+'</div>', unsafe_allow_html=True)
 
     with g2:
-        st.markdown('<div style="height:52px;"></div>', unsafe_allow_html=True)
-        for status in status_presentes:
-            cor=STATUS_BTN_COR.get(status,'#555')
-            is_active=st.session_state.status_filtro==status
-            bg=cor if is_active else 'transparent'; txt='#FFFFFF' if is_active else cor
-            safe=status.replace(' ','_'); lbl='LIMPAR' if is_active else 'VER'
-            st.markdown(
-                f'<style>[data-testid="stMarkdownContainer"]:has(#sa_{safe}) + [data-testid="stButton"] button {{'
-                f'background:{bg}!important;color:{txt}!important;border:2px solid {cor}!important;'
-                f'border-radius:5px!important;height:28px!important;font-size:8px!important;'
-                f'font-weight:800!important;width:100%!important;padding:0 4px!important;'
-                f'text-transform:uppercase!important;letter-spacing:0.5px!important;'
-                f'box-shadow:0 2px 5px rgba(0,0,0,0.12)!important;white-space:nowrap!important;}}'
-                f'[data-testid="stMarkdownContainer"]:has(#sa_{safe}) + [data-testid="stButton"] button:hover{{'
-                f'filter:brightness(0.88)!important;opacity:1!important;}}'
-                f'</style><span id="sa_{safe}"></span>',
-                unsafe_allow_html=True)
-            if st.button(lbl, key=f'sfb_{safe}'):
-                st.session_state.status_filtro=None if is_active else status
-                st.session_state.scroll_needed=True
-                st.rerun()
-
-        st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #D1D9E6;">', unsafe_allow_html=True)
-        is_todos=st.session_state.status_filtro is None
-        bg_t='#4B5568' if is_todos else 'transparent'; txt_t='#FFFFFF' if is_todos else '#4B5568'; lbl_t='LIMPAR' if is_todos else 'TODOS'
-        st.markdown(
-            f'<style>[data-testid="stMarkdownContainer"]:has(#sa_todos) + [data-testid="stButton"] button {{'
-            f'background:{bg_t}!important;color:{txt_t}!important;border:2px solid #4B5568!important;'
-            f'border-radius:5px!important;height:28px!important;font-size:8px!important;'
-            f'font-weight:800!important;width:100%!important;padding:0 4px!important;'
-            f'text-transform:uppercase!important;letter-spacing:0.5px!important;'
-            f'box-shadow:0 2px 5px rgba(0,0,0,0.12)!important;}}'
-            f'[data-testid="stMarkdownContainer"]:has(#sa_todos) + [data-testid="stButton"] button:hover{{'
-            f'filter:brightness(0.88)!important;opacity:1!important;}}'
-            f'</style><span id="sa_todos"></span>',
-            unsafe_allow_html=True)
-        if st.button(lbl_t, key='sfb_todos'):
-            st.session_state.status_filtro=None
-            st.session_state.scroll_needed=True
-            st.rerun()
-
-    with g3:
         cc2=df_sel['CURVA'].value_counts(); cvl=['A','B','C']; cvv=[cc2.get(c,0) for c in cvl]
         fig2=go.Figure(go.Pie(labels=cvl,values=cvv,hole=0.58,
             marker=dict(colors=['#001845','#0056b3','#4A90C4'],line=dict(color='#FFFFFF',width=2)),
@@ -735,13 +676,24 @@ if uploaded_file:
         st.markdown(f'<div class="vend-wrap"><table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>', unsafe_allow_html=True)
 
     # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
-    st.markdown('<div id="carteira-anchor" style="scroll-margin-top:20px;"></div>', unsafe_allow_html=True)
-    filtro_ativo=st.session_state.status_filtro
+    st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
+
+    # Filtro de status na propria carteira
+    status_opts = ['Todos os status'] + [s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
+    fcart1, fcart2 = st.columns([2, 5])
+    with fcart1:
+        st.markdown('<p class="dl-lbl">FILTRAR POR STATUS</p>', unsafe_allow_html=True)
+        sel_status = st.selectbox("Status", status_opts, label_visibility="collapsed", key="cart_status")
+
+    filtro_ativo = None if sel_status == 'Todos os status' else sel_status
+
     if filtro_ativo:
-        cor_ativo=STATUS_BTN_COR.get(filtro_ativo,'#555')
-        st.markdown(f'<div class="section-title">CARTEIRA DE CLIENTES &mdash; <span style="color:{cor_ativo}">{htmllib.escape(filtro_ativo)}</span></div>', unsafe_allow_html=True)
-    else:
-        st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
+        cor_ativo = STATUS_BTN_COR.get(filtro_ativo,'#555')
+        st.markdown(
+            f'<p style="font-size:0.80rem;font-weight:700;text-transform:uppercase;'
+            f'letter-spacing:1px;color:{cor_ativo};margin:6px 0 10px 0;">'
+            f'Exibindo: {filtro_ativo} — {len(df_sel[df_sel["STATUS"]==filtro_ativo])} clientes</p>',
+            unsafe_allow_html=True)
 
     cd=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
     dd=df_sel[df_sel['STATUS']==filtro_ativo].copy() if filtro_ativo else df_sel.copy()
@@ -756,17 +708,3 @@ if uploaded_file:
             else: cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
         rc+=f"<tr>{cells}</tr>"
     st.markdown(f'<div class="cart-wrap"><table class="cart-table"><thead><tr>{hc}</tr></thead><tbody>{rc}</tbody></table></div>', unsafe_allow_html=True)
-
-    # ── SCROLL AUTOMATICO ─────────────────────────────────────────────────────
-    if st.session_state.get('scroll_needed', False):
-        components.html("""
-        <script>
-        setTimeout(function() {
-            try {
-                var el = window.parent.document.getElementById('carteira-anchor');
-                if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
-            } catch(e) {}
-        }, 400);
-        </script>
-        """, height=0)
-        st.session_state.scroll_needed = False
