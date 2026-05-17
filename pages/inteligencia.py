@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import re
 
-st.set_page_config(page_title="Giri | Inteligencia de Carteira", layout="wide")
+st.set_page_config(page_title="Giri | Inteligência de Carteira", layout="wide")
 
 st.markdown("""
 <style>
@@ -154,10 +154,10 @@ STATUS_CSS = {
 }
 
 FAIXAS_EROSAO = [
-    ('EROSAO STAR 8 A 10', 'CRITICO',    '#C00000', '#FFFFFF', lambda s: s >= 8),
-    ('EROSAO STAR 6 A 7',  'ALTO RISCO', '#FFC7CE', '#C00000', lambda s: 6 <= s <= 7),
-    ('EROSAO STAR 4 A 5',  'ATENCAO',    '#FFEB9C', '#7A4F00', lambda s: 4 <= s <= 5),
-    ('EROSAO STAR 1 A 3',  'BAIXA',      '#C6EFCE', '#375623', lambda s: s <= 3),
+    ('EROSÃO STAR 8 A 10', 'CRÍTICO',    '#C00000', '#FFFFFF', lambda s: s >= 8),
+    ('EROSÃO STAR 6 A 7',  'ALTO RISCO', '#FFC7CE', '#C00000', lambda s: 6 <= s <= 7),
+    ('EROSÃO STAR 4 A 5',  'ATENÇÃO',    '#FFEB9C', '#7A4F00', lambda s: 4 <= s <= 5),
+    ('EROSÃO STAR 1 A 3',  'BAIXA',      '#C6EFCE', '#375623', lambda s: s <= 3),
 ]
 
 NIVEL_MAP = {
@@ -168,65 +168,116 @@ NIVEL_MAP = {
 }
 
 HIPOTESES = {
-    'QUEDA ACENTUADA':       ['Perda parcial ou total de share para concorrente', 'Retracao do mercado ou queda de demanda final', 'Estoque elevado no cliente', 'Problema comercial: preco, prazo, entrega ou atendimento', 'Mudanca interna no cliente (gestor, mix, operacao)', 'Sazonalidade pontual', 'Causa ainda nao identificada'],
-    'QUEDA':                 ['Reducao gradual de frequencia de compra', 'Reducao de mix comprado', 'Sinal inicial de diversificacao de fornecedores', 'Ajuste de estoque pontual', 'Ponto comercial sensivel emergindo', 'Risco de evolucao para Queda Acentuada'],
-    'ESTAVEL':               ['Conta protegida e vinculo preservado', 'Risco oculto nao identificado nos numeros', 'Satisfacao sensivel com ponto de melhoria', 'Oportunidade de expansao de mix nao explorada', 'Pressao concorrencial em andamento silencioso', 'Erosao relacional sem reflexo ainda no volume'],
-    'CRESCIMENTO':           ['Crescimento recorrente por aumento real de demanda', 'Crescimento pontual — nao repetivel', 'Expansao de mix com novos itens', 'Falha temporaria de concorrente', 'Oportunidade estrategica de conta', 'Crescimento vulneravel a retomada da concorrencia'],
-    'CRESCIMENTO ACENTUADO': ['Crescimento recorrente por aumento real de demanda', 'Expansao operacional do cliente', 'Falha de concorrente — janela de oportunidade', 'Oportunidade estrategica — possivel contrato maior', 'Crescimento pontual superestimado', 'Crescimento vulneravel — concorrencia retornara'],
-    'INATIVO':               ['Inativo recuperavel — demanda ainda existe', 'Estoque elevado temporariamente', 'Ruptura comercial: preco, condicao ou atendimento', 'Perda estrutural — concorrente consolidado', 'Mudanca operacional ou de segmento', 'Relacionamento enfraquecido ao longo do tempo', 'Inativo sem potencial real de retomada'],
+    'QUEDA ACENTUADA':       ['Perda parcial ou total de share para concorrente', 'Retração do mercado ou queda de demanda final', 'Estoque elevado no cliente', 'Problema comercial: preço, prazo, entrega ou atendimento', 'Mudança interna no cliente — gestor, mix ou operação', 'Sazonalidade pontual', 'Causa ainda não identificada'],
+    'QUEDA':                 ['Redução gradual de frequência de compra', 'Redução de mix comprado', 'Sinal inicial de diversificação de fornecedores', 'Ajuste de estoque pontual', 'Ponto comercial sensível emergindo', 'Risco de evolução para Queda Acentuada'],
+    'ESTAVEL':               ['Conta protegida e vínculo preservado', 'Risco oculto não identificado nos números', 'Satisfação sensível com ponto de melhoria', 'Oportunidade de expansão de mix não explorada', 'Pressão concorrencial em andamento silencioso', 'Erosão relacional sem reflexo ainda no volume'],
+    'CRESCIMENTO':           ['Crescimento recorrente por aumento real de demanda', 'Crescimento pontual — não repetível', 'Expansão de mix com novos itens', 'Falha temporária de concorrente', 'Oportunidade estratégica de conta', 'Crescimento vulnerável à retomada da concorrência'],
+    'CRESCIMENTO ACENTUADO': ['Crescimento recorrente por aumento real de demanda', 'Expansão operacional do cliente', 'Falha de concorrente — janela de oportunidade', 'Oportunidade estratégica — possível contrato maior', 'Crescimento pontual superestimado', 'Crescimento vulnerável — concorrência retornará'],
+    'INATIVO':               ['Inativo recuperável — demanda ainda existe', 'Estoque elevado temporariamente', 'Ruptura comercial: preço, condição ou atendimento', 'Perda estrutural — concorrente consolidado', 'Mudança operacional ou de segmento', 'Relacionamento enfraquecido ao longo do tempo', 'Inativo sem potencial real de retomada'],
 }
 
 MISSAO = {
-    'QUEDA ACENTUADA':       {'objetivo': 'Diagnosticar a causa da queda e tentar recuperar volume prioritario no menor prazo possivel.', 'missao': 'A missao nao e vender imediatamente. A missao e entender a causa da queda.', 'prazo': '48 horas — Curva A', 'reavaliacao': '15 dias apos o primeiro contato', 'sucesso': 'Retomada parcial, causa identificada ou plano de recuperacao definido.', 'escala': 'Concorrente identificado, queda superior a 30%, sem avanco apos 15 dias.', 'abordagem': '"Percebemos uma mudanca no comportamento de compras dos ultimos meses e gostariamos de entender melhor o contexto da operacao antes de pensar em qualquer acao comercial."'},
-    'QUEDA':                 {'objetivo': 'Detectar e corrigir erosao silenciosa antes que o cliente evolua para Queda Acentuada.', 'missao': 'Entender o que comecou a mudar. Investigar frequencia, mix, share, giro e qualidade relacional.', 'prazo': '5 dias uteis — Curva A', 'reavaliacao': '15 a 30 dias apos o contato', 'sucesso': 'Cliente estabilizou, causa identificada ou plano preventivo definido.', 'escala': 'Queda aumenta, cliente cita concorrente, problema comercial aparece.', 'abordagem': '"Percebemos uma pequena reducao no volume recente. Houve alguma mudanca no movimento, no giro ou na necessidade de compra?"'},
-    'ESTAVEL':               {'objetivo': 'Blindar a conta, validar qualidade do vinculo e impedir erosao futura.', 'missao': 'Validar se a estabilidade e real ou apenas aparente. Identificar riscos ocultos e oportunidades incrementais.', 'prazo': 'Ciclo mensal — Curva A', 'reavaliacao': '30 dias', 'sucesso': 'Vinculo preservado, risco oculto descartado, cliente mantido no patamar.', 'escala': 'Sinal de concorrencia, reclamacao, reducao de mix, relacao excessivamente transacional.', 'abordagem': '"O volume atual de compras continua adequado para a operacao de voces? Existe algum ponto que possamos melhorar?"'},
-    'CRESCIMENTO':           {'objetivo': 'Consolidar o avanco, proteger a conta e transformar crescimento em novo patamar sustentavel.', 'missao': 'Descobrir o que gerou o crescimento e avaliar se e recorrente, pontual, vulneravel ou expansivel.', 'prazo': 'Ciclo mensal — Curva A', 'reavaliacao': '30 dias', 'sucesso': 'Cliente mantem novo patamar, amplia mix ou confirma recorrencia.', 'escala': 'Crescimento associado a oportunidade maior, crescimento vulneravel a concorrencia.', 'abordagem': '"O que explica o aumento recente no volume de compra? Esse novo volume tende a se manter?"'},
-    'CRESCIMENTO ACENTUADO': {'objetivo': 'Consolidar o avanco com urgencia, proteger a conta e identificar oportunidade estrategica.', 'missao': 'Entender o motor do crescimento acentuado e blindar a conta antes que a concorrencia reaja.', 'prazo': '5 dias uteis — Curva A em Crescimento Acentuado', 'reavaliacao': '15 a 30 dias', 'sucesso': 'Cliente mantem patamar, confirma recorrencia, oportunidade consolidada.', 'escala': 'Expansao de unidade, possibilidade de contrato maior, crescimento vulneravel.', 'abordagem': '"Percebemos um crescimento expressivo nos ultimos meses. O que esta puxando esse aumento e como podemos garantir continuidade?"'},
-    'INATIVO':               {'objetivo': 'Validar possibilidade real de recuperacao antes de qualquer acao comercial.', 'missao': 'Descobrir se existe possibilidade concreta de retomada. Nao ofertar produto na primeira interacao.', 'prazo': 'Curva A: imediato. Curva B: ate 10 dias uteis.', 'reavaliacao': '15 a 30 dias', 'sucesso': 'Cliente demonstra intencao real de retomada.', 'escala': 'Cliente estrategico, ruptura grave, concorrente dominante, potencial relevante.', 'abordagem': '"O que levou a interrupcao das compras? A demanda relacionada aos nossos produtos continua existindo?"'},
+    'QUEDA ACENTUADA': {
+        'objetivo':    'Diagnosticar a causa da queda e tentar recuperar volume prioritário no menor prazo possível.',
+        'missao':      'A missão não é vender imediatamente. A missão é entender a causa da queda.',
+        'reavaliacao': '7 dias após o primeiro contato',
+        'sucesso':     'Retomada parcial, causa identificada ou plano de recuperação definido.',
+        'escala':      'O cliente citar concorrente como causa da queda; a queda for superior a 30%; não houver avanço concreto após 7 dias.',
+        'abordagem':   '"Percebemos uma mudança no comportamento de compras dos últimos meses e gostaríamos de entender melhor o contexto da operação antes de pensar em qualquer ação comercial."',
+    },
+    'QUEDA': {
+        'objetivo':    'Detectar e corrigir erosão silenciosa antes que o cliente evolua para Queda Acentuada.',
+        'missao':      'Entender o que começou a mudar. Investigar frequência, mix, share, giro e qualidade relacional.',
+        'reavaliacao': '15 dias após o contato',
+        'sucesso':     'Cliente estabilizou, causa identificada ou plano preventivo definido.',
+        'escala':      'A queda aumentar no próximo ciclo; o cliente mencionar outro fornecedor; um problema comercial for identificado.',
+        'abordagem':   '"Percebemos uma pequena redução no volume recente. Houve alguma mudança no movimento, no giro ou na necessidade de compra?"',
+    },
+    'ESTAVEL': {
+        'objetivo':    'Blindar a conta, validar a qualidade do vínculo e impedir erosão futura.',
+        'missao':      'Validar se a estabilidade é real ou apenas aparente. Identificar riscos ocultos e oportunidades incrementais.',
+        'reavaliacao': '30 dias',
+        'sucesso':     'Vínculo preservado, risco oculto descartado, cliente mantido no patamar.',
+        'escala':      'O cliente mencionar concorrente ou sinalizar insatisfação; houver redução de mix ou frequência no próximo ciclo.',
+        'abordagem':   '"O volume atual de compras continua adequado para a operação de vocês? Existe algum ponto que possamos melhorar?"',
+    },
+    'CRESCIMENTO': {
+        'objetivo':    'Consolidar o avanço, proteger a conta e transformar o crescimento em novo patamar sustentável.',
+        'missao':      'Descobrir o que gerou o crescimento e avaliar se é recorrente, pontual, vulnerável ou expansível.',
+        'reavaliacao': '30 dias',
+        'sucesso':     'Cliente mantém novo patamar, amplia mix ou confirma recorrência.',
+        'escala':      'O crescimento indicar oportunidade estratégica maior; houver risco concreto de retomada pela concorrência.',
+        'abordagem':   '"O que explica o aumento recente no volume de compra? Esse novo volume tende a se manter?"',
+    },
+    'CRESCIMENTO ACENTUADO': {
+        'objetivo':    'Consolidar o avanço com urgência, proteger a conta e identificar oportunidade estratégica.',
+        'missao':      'Entender o motor do crescimento acentuado e blindar a conta antes que a concorrência reaja.',
+        'reavaliacao': '15 a 30 dias',
+        'sucesso':     'Cliente mantém patamar, confirma recorrência, oportunidade consolidada.',
+        'escala':      'O crescimento indicar possibilidade de contrato ou volume maior; houver sinal de retomada da concorrência.',
+        'abordagem':   '"Percebemos um crescimento expressivo nos últimos meses. O que está puxando esse aumento e como podemos garantir continuidade?"',
+    },
+    'INATIVO': {
+        'objetivo':    'Validar possibilidade real de recuperação antes de qualquer ação comercial.',
+        'missao':      'Descobrir se existe possibilidade concreta de retomada. Não ofertar produto na primeira interação.',
+        'reavaliacao': '15 a 30 dias',
+        'sucesso':     'Cliente demonstra intenção real de retomada.',
+        'escala':      'O cliente for Curva A estratégico; houver sinal claro de recuperabilidade com obstáculo comercial identificado; o relacionamento estiver rompido por causa comercial corrigível.',
+        'abordagem':   '"O que levou à interrupção das compras? A demanda relacionada aos nossos produtos continua existindo?"',
+    },
+}
+
+PRAZOS = {
+    'QUEDA ACENTUADA':       {'A': '24 a 48 horas', 'B': 'até 5 dias úteis', 'C': 'até 10 dias úteis'},
+    'QUEDA':                 {'A': 'até 3 dias úteis', 'B': 'até 7 dias úteis', 'C': 'ciclo mensal'},
+    'ESTAVEL':               {'A': 'dentro do ciclo mensal', 'B': 'ciclo mensal', 'C': 'gestão padronizada'},
+    'CRESCIMENTO':           {'A': 'dentro do ciclo mensal', 'B': 'ciclo mensal', 'C': 'gestão padronizada'},
+    'CRESCIMENTO ACENTUADO': {'A': 'até 5 dias úteis', 'B': 'até 10 dias úteis', 'C': 'ciclo mensal'},
+    'INATIVO':               {'A': 'imediato — até 48 horas', 'B': 'até 10 dias úteis', 'C': 'análise de recuperabilidade'},
 }
 
 PERGUNTAS = {
     'QUEDA ACENTUADA': [
-        {'p': 'Como esta o movimento da empresa nos ultimos meses?', 'o': ['Caiu claramente', 'Esta parecido com antes', 'Aumentou']},
-        {'p': 'Os produtos que voces compram de nos continuam girando bem?', 'o': ['Giro caiu', 'Giro esta normal', 'Giro aumentou']},
-        {'p': 'Voces passaram a comprar parte dessa demanda com outro fornecedor?', 'o': ['Sim', 'Parcialmente', 'Nao identificado']},
-        {'p': 'Existe algum ponto nosso dificultando a compra: preco, prazo, entrega, atendimento ou disponibilidade?', 'o': ['Sim, existe problema claro', 'Existe algum incomodo, mas nao e decisivo', 'Nao existe problema percebido']},
-        {'p': 'Existe possibilidade de retomarmos parte do volume nos proximos dias ou semanas?', 'o': ['Alta possibilidade', 'Possibilidade media', 'Baixa possibilidade']},
+        {'p': 'Como está o movimento da empresa nos últimos meses?', 'o': ['Caiu claramente', 'Está parecido com antes', 'Aumentou']},
+        {'p': 'Os produtos que vocês compram de nós continuam girando bem?', 'o': ['Giro caiu', 'Giro está normal', 'Giro aumentou']},
+        {'p': 'Vocês passaram a comprar parte dessa demanda com outro fornecedor?', 'o': ['Sim', 'Parcialmente', 'Não identificado']},
+        {'p': 'Existe algum ponto nosso dificultando a compra: preço, prazo, entrega, atendimento ou disponibilidade?', 'o': ['Sim, existe problema claro', 'Existe algum incômodo, mas não é decisivo', 'Não existe problema percebido']},
+        {'p': 'Existe possibilidade de retomarmos parte do volume nos próximos dias ou semanas?', 'o': ['Alta possibilidade', 'Possibilidade média', 'Baixa possibilidade']},
     ],
     'QUEDA': [
-        {'p': 'Percebemos uma pequena reducao no volume recente. Houve alguma mudanca no movimento, no giro ou na necessidade de compra?', 'o': ['Sim, houve reducao', 'Nao houve mudanca clara', 'Nao sei avaliar']},
-        {'p': 'A frequencia de reposicao continua parecida com a de antes?', 'o': ['Reduziu', 'Esta parecida', 'Aumentou']},
-        {'p': 'Algum produto ou categoria deixou de fazer sentido para voces neste momento?', 'o': ['Sim', 'Parcialmente', 'Nao']},
-        {'p': 'Alguma parte da demanda passou a ser atendida por outro fornecedor ou outro tipo de produto?', 'o': ['Sim', 'Parcialmente', 'Nao identificado']},
-        {'p': 'O que precisariamos ajustar agora para manter o volume de compra em linha com o historico?', 'o': ['Condicao comercial', 'Mix ou produto', 'Frequencia ou atendimento', 'Nada neste momento']},
+        {'p': 'Percebemos uma pequena redução no volume recente. Houve alguma mudança no movimento, no giro ou na necessidade de compra?', 'o': ['Sim, houve redução', 'Não houve mudança clara', 'Não sei avaliar']},
+        {'p': 'A frequência de reposição continua parecida com a de antes?', 'o': ['Reduziu', 'Está parecida', 'Aumentou']},
+        {'p': 'Algum produto ou categoria deixou de fazer sentido para vocês neste momento?', 'o': ['Sim', 'Parcialmente', 'Não']},
+        {'p': 'Alguma parte da demanda passou a ser atendida por outro fornecedor ou outro tipo de produto?', 'o': ['Sim', 'Parcialmente', 'Não identificado']},
+        {'p': 'O que precisaríamos ajustar agora para manter o volume de compra em linha com o histórico?', 'o': ['Condição comercial', 'Mix ou produto', 'Frequência ou atendimento', 'Nada neste momento']},
     ],
     'ESTAVEL': [
-        {'p': 'O volume atual de compras continua adequado para a operacao de voces?', 'o': ['Sim, esta adequado', 'Parcialmente', 'Nao esta adequado']},
-        {'p': 'Existe algum ponto que possa afetar as compras nos proximos meses?', 'o': ['Sim', 'Talvez', 'Nao identificado']},
-        {'p': 'Hoje existe algum ponto nosso que deveria melhorar: atendimento, prazo, preco, entrega ou suporte?', 'o': ['Sim, existe ponto claro', 'Existe ponto leve', 'Nao ha ponto relevante']},
-        {'p': 'Existe alguma linha ou produto que voces ainda nao compram conosco e que faria sentido avaliarmos?', 'o': ['Sim', 'Talvez', 'Nao neste momento']},
-        {'p': 'Algum fornecedor tem tentado ocupar mais espaco nessa categoria?', 'o': ['Sim', 'Parcialmente', 'Nao identificado']},
+        {'p': 'O volume atual de compras continua adequado para a operação de vocês?', 'o': ['Sim, está adequado', 'Parcialmente', 'Não está adequado']},
+        {'p': 'Existe algum ponto que possa afetar as compras nos próximos meses?', 'o': ['Sim', 'Talvez', 'Não identificado']},
+        {'p': 'Hoje existe algum ponto nosso que deveria melhorar: atendimento, prazo, preço, entrega ou suporte?', 'o': ['Sim, existe ponto claro', 'Existe ponto leve', 'Não há ponto relevante']},
+        {'p': 'Existe alguma linha ou produto que vocês ainda não compram conosco e que faria sentido avaliarmos?', 'o': ['Sim', 'Talvez', 'Não neste momento']},
+        {'p': 'Algum fornecedor tem tentado ocupar mais espaço nessa categoria?', 'o': ['Sim', 'Parcialmente', 'Não identificado']},
     ],
     'CRESCIMENTO': [
-        {'p': 'O que explica o aumento recente no volume de compra?', 'o': ['Aumento real de demanda', 'Compra pontual', 'Mudanca de mix', 'Nao sei avaliar']},
-        {'p': 'Esse novo volume tende a se manter nos proximos meses?', 'o': ['Sim, tende a se manter', 'Talvez', 'Nao, foi pontual']},
-        {'p': 'O crescimento veio de produtos que voces ja compravam ou de novas linhas?', 'o': ['Produtos ja comprados', 'Novas linhas', 'Ambos']},
-        {'p': 'Existe espaco para ampliarmos alguma linha, frequencia ou categoria?', 'o': ['Sim', 'Talvez', 'Nao neste momento']},
-        {'p': 'Algum outro fornecedor esta tentando disputar esse aumento de demanda?', 'o': ['Sim', 'Parcialmente', 'Nao identificado']},
+        {'p': 'O que explica o aumento recente no volume de compra?', 'o': ['Aumento real de demanda', 'Compra pontual', 'Mudança de mix', 'Não sei avaliar']},
+        {'p': 'Esse novo volume tende a se manter nos próximos meses?', 'o': ['Sim, tende a se manter', 'Talvez', 'Não, foi pontual']},
+        {'p': 'O crescimento veio de produtos que vocês já compravam ou de novas linhas?', 'o': ['Produtos já comprados', 'Novas linhas', 'Ambos']},
+        {'p': 'Existe espaço para ampliarmos alguma linha, frequência ou categoria?', 'o': ['Sim', 'Talvez', 'Não neste momento']},
+        {'p': 'Algum outro fornecedor está tentando disputar esse aumento de demanda?', 'o': ['Sim', 'Parcialmente', 'Não identificado']},
     ],
     'CRESCIMENTO ACENTUADO': [
-        {'p': 'O que explica o aumento expressivo no volume de compra?', 'o': ['Aumento real de demanda', 'Expansao operacional', 'Falha de concorrente', 'Nao sei avaliar']},
-        {'p': 'Esse novo patamar de compra tende a se manter nos proximos meses?', 'o': ['Sim, tende a se manter', 'Talvez', 'Nao, foi pontual']},
-        {'p': 'Existe espaco para ampliarmos ainda mais alguma linha ou categoria?', 'o': ['Sim', 'Talvez', 'Nao neste momento']},
-        {'p': 'Algum concorrente esta tentando retomar esse espaco?', 'o': ['Sim', 'Parcialmente', 'Nao identificado']},
-        {'p': 'Existe possibilidade de formalizarmos um acordo ou condicao de maior volume?', 'o': ['Sim, ha interesse', 'Talvez', 'Nao neste momento']},
+        {'p': 'O que explica o aumento expressivo no volume de compra?', 'o': ['Aumento real de demanda', 'Expansão operacional', 'Falha de concorrente', 'Não sei avaliar']},
+        {'p': 'Esse novo patamar de compra tende a se manter nos próximos meses?', 'o': ['Sim, tende a se manter', 'Talvez', 'Não, foi pontual']},
+        {'p': 'Existe espaço para ampliarmos ainda mais alguma linha ou categoria?', 'o': ['Sim', 'Talvez', 'Não neste momento']},
+        {'p': 'Algum concorrente está tentando retomar esse espaço?', 'o': ['Sim', 'Parcialmente', 'Não identificado']},
+        {'p': 'Existe possibilidade de formalizarmos um acordo ou condição de maior volume?', 'o': ['Sim, há interesse', 'Talvez', 'Não neste momento']},
     ],
     'INATIVO': [
-        {'p': 'O que levou a interrupcao das compras nos ultimos meses?', 'o': ['Mudanca operacional', 'Concorrencia', 'Estoque elevado', 'Problema comercial', 'Sem motivo claro']},
-        {'p': 'A demanda relacionada aos nossos produtos continua existindo hoje?', 'o': ['Sim', 'Parcialmente', 'Nao']},
-        {'p': 'Existe abertura para retomarmos conversa comercial sobre essa categoria?', 'o': ['Sim', 'Talvez', 'Nao']},
-        {'p': 'Hoje essa demanda esta concentrada em outro fornecedor?', 'o': ['Sim', 'Parcialmente', 'Nao identificado']},
-        {'p': 'O que precisaria acontecer para retomarmos essa parceria?', 'o': ['Ajuste comercial', 'Atendimento', 'Mix ou produto', 'Nada especifico', 'Nao ha interesse']},
+        {'p': 'O que levou à interrupção das compras nos últimos meses?', 'o': ['Mudança operacional', 'Concorrência', 'Estoque elevado', 'Problema comercial', 'Sem motivo claro']},
+        {'p': 'A demanda relacionada aos nossos produtos continua existindo hoje?', 'o': ['Sim', 'Parcialmente', 'Não']},
+        {'p': 'Existe abertura para retomarmos conversa comercial sobre essa categoria?', 'o': ['Sim', 'Talvez', 'Não']},
+        {'p': 'Hoje essa demanda está concentrada em outro fornecedor?', 'o': ['Sim', 'Parcialmente', 'Não identificado']},
+        {'p': 'O que precisaria acontecer para retomarmos essa parceria?', 'o': ['Ajuste comercial', 'Atendimento', 'Mix ou produto', 'Nada específico', 'Não há interesse']},
     ],
 }
 
@@ -251,25 +302,24 @@ def calcular_erosao_star(lp, cp):
 
 
 def erosao_display(n):
-    if n >= 8:   return '#C00000', '#FFFFFF', 'CRITICO'
+    if n >= 8:   return '#C00000', '#FFFFFF', 'CRÍTICO'
     elif n >= 6: return '#FFC7CE', '#C00000', 'ALTO RISCO'
-    elif n >= 4: return '#FFEB9C', '#7A4F00', 'ATENCAO'
-    else:        return '#C6EFCE', '#375623', 'BAIXA EROSAO'
+    elif n >= 4: return '#FFEB9C', '#7A4F00', 'ATENÇÃO'
+    else:        return '#C6EFCE', '#375623', 'BAIXA EROSÃO'
+
+
+def get_prazo(status, curva):
+    s = str(status).strip().upper()
+    c = str(curva).strip().upper()
+    return PRAZOS.get(s, {}).get(c, 'a definir com o gestor')
 
 
 def calcular_prioridade(curva, status, erosao, risco):
-    """
-    Prioridade = Impacto Economico x Intensidade do Risco x Contexto Operacional
-    Pilar 1 — Impacto Economico (max 40 pts): curva + receita em risco absoluta
-    Pilar 2 — Intensidade do Risco (max 40 pts): Indice de Erosao STAR
-    Pilar 3 — Contexto Operacional (max 20 pts): status comportamental
-    """
     c = str(curva).strip().upper()
     s = str(status).strip().upper()
     e = int(erosao)
     r = float(risco or 0)
 
-    # PILAR 1 — IMPACTO ECONOMICO (max 40)
     curva_pts = {'A': 25, 'B': 15, 'C': 5}.get(c, 5)
     if r > 20000:   risco_pts = 15
     elif r > 10000: risco_pts = 12
@@ -279,35 +329,27 @@ def calcular_prioridade(curva, status, erosao, risco):
     else:           risco_pts = 0
     pilar1 = curva_pts + risco_pts
 
-    # PILAR 2 — INTENSIDADE DO RISCO (max 40)
     if e >= 8:   pilar2 = 40
     elif e >= 6: pilar2 = 32
     elif e >= 4: pilar2 = 22
     elif e >= 2: pilar2 = 12
     else:        pilar2 = 5
 
-    # PILAR 3 — CONTEXTO OPERACIONAL (max 20)
-    pilar3 = {
-        'QUEDA ACENTUADA': 20, 'INATIVO': 16, 'QUEDA': 14,
-        'ESTAVEL': 8, 'CRESCIMENTO': 4, 'CRESCIMENTO ACENTUADO': 2,
-    }.get(s, 5)
+    pilar3 = {'QUEDA ACENTUADA': 20, 'INATIVO': 16, 'QUEDA': 14, 'ESTAVEL': 8, 'CRESCIMENTO': 4, 'CRESCIMENTO ACENTUADO': 2}.get(s, 5)
 
-    total = pilar1 + pilar2 + pilar3  # max 100
-
-    if total >= 70:   return 'PRIORIDADE MAXIMA',   '#C00000', '#FFFFFF', total
+    total = pilar1 + pilar2 + pilar3
+    if total >= 70:   return 'PRIORIDADE MÁXIMA',   '#C00000', '#FFFFFF', total
     elif total >= 50: return 'PRIORIDADE ALTA',      '#D44000', '#FFFFFF', total
-    elif total >= 30: return 'PRIORIDADE MEDIA',     '#0056b3', '#FFFFFF', total
+    elif total >= 30: return 'PRIORIDADE MÉDIA',     '#0056b3', '#FFFFFF', total
     elif total >= 15: return 'PRIORIDADE SELETIVA',  '#4B5568', '#FFFFFF', total
-    else:             return 'GESTAO PADRAO',         '#6B7280', '#FFFFFF', total
+    else:             return 'GESTÃO PADRÃO',         '#6B7280', '#FFFFFF', total
 
 
 def score_ranking(curva, status, erosao, risco):
-    """Mesmo tres pilares, escala ampliada para ranking da fila."""
     c = str(curva).strip().upper()
     s = str(status).strip().upper()
     e = int(erosao)
     r = float(risco or 0)
-
     curva_pts = {'A': 250, 'B': 150, 'C': 50}.get(c, 50)
     if r > 20000:   risco_pts = 150
     elif r > 10000: risco_pts = 120
@@ -316,18 +358,12 @@ def score_ranking(curva, status, erosao, risco):
     elif r > 0:     risco_pts = 30
     else:           risco_pts = 0
     p1 = curva_pts + risco_pts
-
     if e >= 8:   p2 = 400
     elif e >= 6: p2 = 320
     elif e >= 4: p2 = 220
     elif e >= 2: p2 = 120
     else:        p2 = 50
-
-    p3 = {
-        'QUEDA ACENTUADA': 200, 'INATIVO': 160, 'QUEDA': 140,
-        'ESTAVEL': 80, 'CRESCIMENTO': 40, 'CRESCIMENTO ACENTUADO': 20,
-    }.get(s, 50)
-
+    p3 = {'QUEDA ACENTUADA': 200, 'INATIVO': 160, 'QUEDA': 140, 'ESTAVEL': 80, 'CRESCIMENTO': 40, 'CRESCIMENTO ACENTUADO': 20}.get(s, 50)
     return p1 + p2 + p3
 
 
@@ -343,7 +379,7 @@ def find_col(df, *kw):
     return None
 
 
-# ── BOTAO VOLTAR ─────────────────────────────────────────────────────────
+# ── BOTÃO VOLTAR ──────────────────────────────────────────────────────────
 st.page_link("app.py", label="← Voltar ao Dashboard STAR")
 
 # ── HEADER ───────────────────────────────────────────────────────────────
@@ -351,14 +387,14 @@ st.markdown("""
 <div class="giri-header-int">
   <div class="giri-header-dot">&#9650;</div>
   <div>
-    <h1>GIRI | INTELIGENCIA DE CARTEIRA</h1>
-    <p>PRIORIZACAO OPERACIONAL — INDICE DE EROSAO STAR — CAMADA 2</p>
+    <h1>GIRI | INTELIGÊNCIA DE CARTEIRA</h1>
+    <p>PRIORIZAÇÃO OPERACIONAL — ÍNDICE DE EROSÃO STAR — CAMADA 2</p>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── UPLOAD ───────────────────────────────────────────────────────────────
-st.markdown("<p style='font-size:0.85rem;color:#4B5568;margin-bottom:6px;'>Faca upload da Matriz STAR gerada pelo dashboard (XLSX ou CSV)</p>", unsafe_allow_html=True)
+# ── UPLOAD ────────────────────────────────────────────────────────────────
+st.markdown("<p style='font-size:0.85rem;color:#4B5568;margin-bottom:6px;'>Faça upload da Matriz STAR gerada pelo dashboard (XLSX ou CSV)</p>", unsafe_allow_html=True)
 uploaded = st.file_uploader("", type=["xlsx", "csv"], label_visibility="collapsed")
 
 if not uploaded:
@@ -371,7 +407,6 @@ except Exception as e:
     st.stop()
 
 df.columns = [str(c).strip().upper() for c in df.columns]
-
 col_cli  = find_col(df, 'CLIENTE')
 col_vend = find_col(df, 'VENDEDOR')
 col_curv = find_col(df, 'CURVA')
@@ -382,7 +417,7 @@ col_sta  = find_col(df, 'STATUS')
 meses_cols = [c for c in df.columns if re.match(r'^[A-Z]{3}/\d{2}$', c)]
 
 if not all([col_cli, col_mlp, col_mcp, col_sta]):
-    st.error("Arquivo nao reconhecido. Faca o download da Matriz STAR pelo dashboard e suba esse arquivo aqui.")
+    st.error("Arquivo não reconhecido. Faça o download da Matriz STAR pelo dashboard e suba esse arquivo aqui.")
     st.stop()
 
 df['_EROSAO'] = df.apply(lambda r: calcular_erosao_star(r.get(col_mlp, 0), r.get(col_mcp, 0)), axis=1)
@@ -413,13 +448,13 @@ if sel_curva and col_curv:         df_f = df_f[df_f[col_curv].astype(str).str.up
 n_total = len(df_f)
 risco_t = df_f['_RISCO'].sum()
 
-# ── VISAO GERAL ──────────────────────────────────────────────────────────
-st.markdown("<div class='section-title'>VISAO GERAL — PRIORIZACAO</div>", unsafe_allow_html=True)
+# ── VISÃO GERAL ───────────────────────────────────────────────────────────
+st.markdown("<div class='section-title'>VISÃO GERAL — PRIORIZAÇÃO</div>", unsafe_allow_html=True)
 k1, k2 = st.columns(2)
 with k1:
-    st.markdown(f"<div class='kpi-wrap green'><div class='kpi-lbl'>CLIENTES NA SELECAO</div><div class='kpi-val'>{n_total}</div><div class='kpi-sub'>na fila de priorizacao</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='kpi-wrap green'><div class='kpi-lbl'>CLIENTES NA SELEÇÃO</div><div class='kpi-val'>{n_total}</div><div class='kpi-sub'>na fila de priorização</div></div>", unsafe_allow_html=True)
 with k2:
-    st.markdown(f"<div class='kpi-wrap dark'><div class='kpi-lbl'>RECEITA EM RISCO</div><div class='kpi-val'>{fmt_num(risco_t)}</div><div class='kpi-sub'>diferenca LP vs CP acumulada</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='kpi-wrap dark'><div class='kpi-lbl'>RECEITA EM RISCO</div><div class='kpi-val'>{fmt_num(risco_t)}</div><div class='kpi-sub'>diferença LP vs CP acumulada</div></div>", unsafe_allow_html=True)
 
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
 rows_eros = ""
@@ -428,20 +463,20 @@ for fl, nl, bg, fg, fn in FAIXAS_EROSAO:
     pct_f = round(n_f / n_total * 100, 1) if n_total > 0 else 0.0
     rows_eros += f"<tr><td class='left'><span class='faixa-badge' style='background:{bg};color:{fg};'>{fl}</span></td><td><span class='nivel-badge' style='background:{bg};color:{fg};'>{nl}</span></td><td><strong>{n_f}</strong></td><td><strong>{pct_f}%</strong></td></tr>"
 rows_eros += f"<tr><td class='left' colspan='2'><strong>TOTAL</strong></td><td><strong>{n_total}</strong></td><td><strong>100%</strong></td></tr>"
-st.markdown(f"<div class='erosao-bloco'><div class='erosao-bloco-title'>INDICE DE EROSAO STAR</div><table class='eros-table'><thead><tr><th class='left'>FAIXA</th><th class='center'>NIVEL</th><th class='center'>CLIENTES</th><th class='center'>%</th></tr></thead><tbody>{rows_eros}</tbody></table></div>", unsafe_allow_html=True)
+st.markdown(f"<div class='erosao-bloco'><div class='erosao-bloco-title'>ÍNDICE DE EROSÃO STAR</div><table class='eros-table'><thead><tr><th class='left'>FAIXA</th><th class='center'>NÍVEL</th><th class='center'>CLIENTES</th><th class='center'>%</th></tr></thead><tbody>{rows_eros}</tbody></table></div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ── FILA ─────────────────────────────────────────────────────────────────
+# ── FILA OPERACIONAL ──────────────────────────────────────────────────────
 st.markdown("<div class='section-title'>FILA OPERACIONAL DE PRIORIDADE</div>", unsafe_allow_html=True)
 st.markdown("<div class='filtros-fila-wrap'><div class='filtros-fila-title'>FILTRAR FILA</div>", unsafe_allow_html=True)
 fa, fb, fc, fd = st.columns(4)
 s_opts = ['Todos os status', 'QUEDA ACENTUADA', 'QUEDA', 'ESTAVEL', 'CRESCIMENTO', 'CRESCIMENTO ACENTUADO', 'INATIVO']
-i_opts = ['Todos', 'EROSAO STAR 8 A 10', 'EROSAO STAR 6 A 7', 'EROSAO STAR 4 A 5', 'EROSAO STAR 1 A 3']
+i_opts = ['Todos', 'EROSÃO STAR 8 A 10', 'EROSÃO STAR 6 A 7', 'EROSÃO STAR 4 A 5', 'EROSÃO STAR 1 A 3']
 n_opts = ['Todos', 'CRITICO', 'ALTO RISCO', 'ATENCAO', 'BAIXA']
 with fa: busca   = st.text_input("POR CLIENTE", placeholder="Digite o nome...")
 with fb: sel_sta = st.selectbox("POR STATUS", s_opts)
-with fc: sel_ind = st.selectbox("POR INDICE DE EROSAO STAR", i_opts)
-with fd: sel_niv = st.selectbox("POR NIVEL", n_opts)
+with fc: sel_ind = st.selectbox("POR ÍNDICE DE EROSÃO STAR", i_opts)
+with fd: sel_niv = st.selectbox("POR NÍVEL", n_opts)
 st.markdown("</div>", unsafe_allow_html=True)
 
 df_fila = df_f.copy()
@@ -482,14 +517,12 @@ if not df_top10.empty:
         scss = STATUS_CSS.get(sta, 'color:#1A2540;font-weight:600;')
         nome = str(r.get(col_cli, ''))
         p_lbl, p_bg, p_fg, _ = calcular_prioridade(
-            r.get(col_curv, 'C') if col_curv else 'C',
-            sta, en, r['_RISCO']
-        )
+            r.get(col_curv, 'C') if col_curv else 'C', sta, en, r['_RISCO'])
         rows_html += (
             f"<tr><td><strong>#{i}</strong></td>"
             f"<td class='left'><strong>{nome}</strong></td>"
             f"<td><span style='{scss}'>{sta}</span></td>"
-            f"<td><span class='star-badge' style='background:{ebg};color:{efg};'>EROSAO STAR {en}</span></td>"
+            f"<td><span class='star-badge' style='background:{ebg};color:{efg};'>EROSÃO STAR {en}</span></td>"
             f"<td><span style='background:{p_bg};color:{p_fg};font-weight:700;border-radius:6px;padding:2px 8px;font-size:0.68rem;white-space:nowrap;display:inline-block;'>{p_lbl}</span></td>"
             f"<td>{fmt_num(r.get(col_mlp,0))}</td>"
             f"<td>{fmt_num(r.get(col_mcp,0))}</td>"
@@ -498,8 +531,8 @@ if not df_top10.empty:
     st.markdown(
         f"<div class='prio-wrap'><table class='prio-table'>"
         f"<thead><tr><th>#</th><th>CLIENTE</th><th>STATUS</th>"
-        f"<th>INDICE EROSAO</th><th>PRIORIDADE</th>"
-        f"<th>MEDIA LP</th><th>MEDIA CP</th><th>RISCO</th>"
+        f"<th>ÍNDICE EROSÃO</th><th>PRIORIDADE</th>"
+        f"<th>MÉDIA LP</th><th>MÉDIA CP</th><th>RISCO</th>"
         f"</tr></thead><tbody>{rows_html}</tbody></table></div>",
         unsafe_allow_html=True
     )
@@ -507,12 +540,12 @@ else:
     st.info("Nenhum cliente encontrado para os filtros selecionados.")
 
 # ════════════════════════════════════════════════════════════════════════
-# RAIO-X
+# RAIO-X DO CLIENTE
 # ════════════════════════════════════════════════════════════════════════
 st.markdown("<div class='section-title'>RAIO-X DO CLIENTE</div>", unsafe_allow_html=True)
 
 if df_fila.empty:
-    st.info("Aplique os filtros acima para visualizar clientes disponiveis para o Raio-X.")
+    st.info("Aplique os filtros acima para visualizar clientes disponíveis para o Raio-X.")
     st.stop()
 
 nomes_lista = ['Selecione um cliente...'] + df_fila[col_cli].astype(str).tolist()
@@ -532,9 +565,10 @@ r_eros = int(row['_EROSAO'])
 r_risco= float(row['_RISCO'])
 r_diff = round(((r_mlp - r_mcp) / r_mlp * 100), 1) if r_mlp > 0 else 0.0
 
-ebg, efg, elbl         = erosao_display(r_eros)
+ebg, efg, elbl              = erosao_display(r_eros)
 p_lbl, p_bg, p_fg, p_score = calcular_prioridade(r_curv, r_sta, r_eros, r_risco)
-sta_css                = STATUS_CSS.get(r_sta, '')
+sta_css                     = STATUS_CSS.get(r_sta, '')
+prazo_dinamico              = get_prazo(r_sta, r_curv)
 
 st.markdown(f"""
 <div class='raio-header'>
@@ -543,7 +577,7 @@ st.markdown(f"""
     <div class='raio-tag'>Vendedor: <strong>{r_vend}</strong></div>
     <div class='raio-tag'>Curva: <strong>{r_curv}</strong></div>
     <div class='raio-tag'><span style='{sta_css}'>{r_sta}</span></div>
-    <div class='raio-tag'><span style='background:{ebg};color:{efg};font-weight:800;border-radius:8px;padding:3px 12px;font-size:0.85rem;'>EROSAO STAR {r_eros}</span></div>
+    <div class='raio-tag'><span style='background:{ebg};color:{efg};font-weight:800;border-radius:8px;padding:3px 12px;font-size:0.85rem;'>EROSÃO STAR {r_eros}</span></div>
     <div class='raio-tag'><span style='background:{p_bg};color:{p_fg};font-weight:700;border-radius:6px;padding:3px 12px;font-size:0.80rem;'>{p_lbl}</span></div>
   </div>
 </div>
@@ -551,14 +585,14 @@ st.markdown(f"""
 
 rk1, rk2, rk3, rk4 = st.columns(4)
 with rk1:
-    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>INDICE DE EROSAO STAR</div><div class='raio-kpi-val'><span style='background:{ebg};color:{efg};border-radius:8px;padding:2px 14px;'>STAR {r_eros}</span></div><div class='raio-kpi-sub'>{elbl}</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>ÍNDICE DE EROSÃO STAR</div><div class='raio-kpi-val'><span style='background:{ebg};color:{efg};border-radius:8px;padding:2px 14px;'>STAR {r_eros}</span></div><div class='raio-kpi-sub'>{elbl}</div></div>", unsafe_allow_html=True)
 with rk2:
-    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>MEDIA LP</div><div class='raio-kpi-val'>{fmt_num(r_mlp)}</div><div class='raio-kpi-sub'>referencia historica</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>MÉDIA LP</div><div class='raio-kpi-val'>{fmt_num(r_mlp)}</div><div class='raio-kpi-sub'>referência histórica</div></div>", unsafe_allow_html=True)
 with rk3:
     cor_cp = '#C00000' if r_mcp < r_mlp * 0.98 else '#1A6B3A'
-    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>MEDIA CP</div><div class='raio-kpi-val' style='color:{cor_cp};'>{fmt_num(r_mcp)}</div><div class='raio-kpi-sub'>comportamento recente</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>MÉDIA CP</div><div class='raio-kpi-val' style='color:{cor_cp};'>{fmt_num(r_mcp)}</div><div class='raio-kpi-sub'>comportamento recente</div></div>", unsafe_allow_html=True)
 with rk4:
-    sinal = f"▼ {r_diff}% abaixo da media" if r_diff > 0 else f"▲ {abs(r_diff)}% acima da media"
+    sinal = f"▼ {r_diff}% abaixo da média" if r_diff > 0 else f"▲ {abs(r_diff)}% acima da média"
     cor_r = '#C00000' if r_diff > 0 else '#1A6B3A'
     st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>RECEITA EM RISCO</div><div class='raio-kpi-val' style='color:{cor_r};'>{fmt_num(r_risco)}</div><div class='raio-kpi-sub'>{sinal}</div></div>", unsafe_allow_html=True)
 
@@ -571,13 +605,13 @@ if meses_cols:
         textfont=dict(size=10, color='#1A2540')))
     if r_mlp > 0:
         fig.add_hline(y=r_mlp, line_dash='dash', line_color='#145A32', line_width=2,
-            annotation_text=f'Media LP: {fmt_num(r_mlp)}',
+            annotation_text=f'Média LP: {fmt_num(r_mlp)}',
             annotation_font_color='#145A32', annotation_font_size=11)
     fig.update_layout(plot_bgcolor='white', paper_bgcolor='white', height=250,
         margin=dict(t=30, b=10, l=10, r=10), showlegend=False,
         yaxis=dict(showgrid=True, gridcolor='#E5EAF2', tickfont=dict(size=10)),
         xaxis=dict(tickfont=dict(size=11, color='#1A2540', family='Arial')))
-    st.markdown("<div style='margin-top:16px;'><div class='chart-wrap'><div class='chart-lbl'>HISTORICO MENSAL DE COMPRAS</div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:16px;'><div class='chart-wrap'><div class='chart-lbl'>HISTÓRICO MENSAL DE COMPRAS</div>", unsafe_allow_html=True)
     st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
     st.markdown("</div></div>", unsafe_allow_html=True)
 
@@ -587,7 +621,7 @@ miss = MISSAO.get(r_sta, MISSAO.get('ESTAVEL', {}))
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
 items_hip = "".join([f"<li><div class='hip-bullet'></div>{h}</li>" for h in hips])
 st.markdown(
-    f"<div class='hip-section'><div class='hip-section-titulo'>HIPOTESES INICIAIS</div>"
+    f"<div class='hip-section'><div class='hip-section-titulo'>HIPÓTESES INICIAIS</div>"
     f"<ul class='hip-list'>{items_hip}</ul></div>",
     unsafe_allow_html=True
 )
@@ -596,36 +630,36 @@ st.markdown("</div>", unsafe_allow_html=True)
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
 st.markdown(f"""
 <div class='missao-card'>
-  <div class='missao-card-header'><div class='missao-card-header-txt'>MISSAO DO CONTATO</div></div>
+  <div class='missao-card-header'><div class='missao-card-header-txt'>MISSÃO DO CONTATO</div></div>
   <div class='missao-objetivo'>
     <div class='missao-obj-lbl'>OBJETIVO DO CONTATO</div>
     <div class='missao-obj-txt'>{miss.get('objetivo','—')}</div>
   </div>
   <div class='missao-callout'>
-    <div class='missao-call-lbl'>SUA MISSAO</div>
+    <div class='missao-call-lbl'>SUA MISSÃO</div>
     <div class='missao-call-txt'>{miss.get('missao','—')}</div>
   </div>
   <div class='missao-metrics'>
     <div class='missao-metric'>
       <div class='missao-metric-lbl'>PRAZO</div>
-      <div class='missao-metric-val'>{miss.get('prazo','—')}</div>
+      <div class='missao-metric-val'>{prazo_dinamico}</div>
     </div>
     <div class='missao-metric'>
-      <div class='missao-metric-lbl'>REAVALIACAO</div>
+      <div class='missao-metric-lbl'>REAVALIAÇÃO</div>
       <div class='missao-metric-val'>{miss.get('reavaliacao','—')}</div>
     </div>
   </div>
   <div class='missao-sucesso'>
     <div class='missao-suc-ico'>&#10003;</div>
     <div>
-      <div class='missao-suc-lbl'>CRITERIO DE SUCESSO</div>
+      <div class='missao-suc-lbl'>CRITÉRIO DE SUCESSO</div>
       <div class='missao-suc-txt'>{miss.get('sucesso','—')}</div>
     </div>
   </div>
   <div class='missao-escala'>
     <div class='missao-esc-ico'>!</div>
     <div>
-      <div class='missao-esc-lbl'>QUANDO ESCALAR</div>
+      <div class='missao-esc-lbl'>ACIONE O GESTOR SE</div>
       <div class='missao-esc-txt'>{miss.get('escala','—')}</div>
     </div>
   </div>
@@ -640,7 +674,7 @@ for i, pq in enumerate(pergs, 1):
     opcoes_html = "".join([f"<span class='opcao-pill'>{o}</span>" for o in pq['o']])
     p_html += f"<div class='perg-bloco'><div class='perg-num'>Pergunta {i}</div><div class='perg-txt'>{pq['p']}</div><div>{opcoes_html}</div></div>"
 st.markdown(
-    f"<div class='perg-section'><div class='perg-section-titulo'>PERGUNTAS DE DIAGNOSTICO — {r_sta}</div>{p_html}</div>",
+    f"<div class='perg-section'><div class='perg-section-titulo'>PERGUNTAS DE DIAGNÓSTICO — {r_sta}</div>{p_html}</div>",
     unsafe_allow_html=True
 )
 st.markdown("</div>", unsafe_allow_html=True)
