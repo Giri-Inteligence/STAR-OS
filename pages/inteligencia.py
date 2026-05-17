@@ -65,20 +65,32 @@ st.markdown("""
 
 .faixa-badge { font-weight:800; border-radius:8px; padding:4px 0; font-size:0.83rem; display:inline-block; width:175px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.12); }
 .nivel-badge { font-weight:700; border-radius:6px; padding:3px 0; font-size:0.78rem; display:inline-block; width:95px; text-align:center; }
-.star-badge  { font-weight:800; border-radius:8px; padding:2px 0; font-size:0.75rem; display:inline-block; width:120px; text-align:center; }
+.star-badge  { font-weight:800; border-radius:8px; padding:2px 0; font-size:0.72rem; display:inline-block; width:115px; text-align:center; }
 
+/* ── BARRA DE CONTEXTO ── */
+.ctx-bar {
+    background:#FFFFFF; border-radius:10px;
+    padding:10px 18px; margin-bottom:10px;
+    box-shadow:0 2px 10px rgba(7,31,18,0.08);
+    display:flex; align-items:center; gap:28px; flex-wrap:wrap;
+}
+.ctx-item { display:flex; align-items:center; gap:8px; }
+.ctx-lbl  { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:#145A32; }
+.ctx-val  { font-size:0.78rem; font-weight:700; color:#1A2540; }
+.ctx-sep  { width:1px; height:20px; background:#C8E6D0; }
+.top10-label { font-size:0.72rem; font-weight:700; color:#145A32; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+
+/* ── TABELA TOP 10 — FONTE REDUZIDA ── */
 .prio-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 4px 24px rgba(7,31,18,0.10),0 1px 4px rgba(0,0,0,0.04); overflow:auto; }
-.prio-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.75rem; }
-.prio-table th { background:linear-gradient(90deg,#071F12 0%,#145A32 60%,#1A6B3A 100%); color:#FFFFFF; font-weight:700; padding:9px 10px; text-align:center; letter-spacing:0.5px; font-size:0.65rem; text-transform:uppercase; white-space:nowrap; vertical-align:middle; }
-.prio-table td { padding:7px 10px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; vertical-align:middle; font-size:0.75rem; }
+.prio-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.70rem; }
+.prio-table th { background:linear-gradient(90deg,#071F12 0%,#145A32 60%,#1A6B3A 100%); color:#FFFFFF; font-weight:700; padding:7px 9px; text-align:center; letter-spacing:0.4px; font-size:0.62rem; text-transform:uppercase; white-space:nowrap; vertical-align:middle; }
+.prio-table td { padding:5px 9px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; vertical-align:middle; font-size:0.70rem; }
 .prio-table td.left { text-align:left; }
 .prio-table tr:last-child td { border-bottom:none; }
 .prio-table tr:hover td { background:#F4FBF6; }
 
 .filtros-fila-wrap { background:#FFFFFF; border-radius:14px; padding:18px 24px 14px 24px; box-shadow:0 2px 12px rgba(7,31,18,0.08); margin-bottom:16px; }
 .filtros-fila-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.3px; color:#145A32; margin-bottom:14px; border-bottom:1px solid #C8E6D0; padding-bottom:8px; }
-
-.top10-label { font-size:0.72rem; font-weight:700; color:#145A32; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
 
 /* ── RAIO-X ── */
 .raio-header { background:linear-gradient(120deg,#071F12 0%,#0F4023 50%,#1A6B3A 100%); border-radius:16px; padding:24px 30px; box-shadow:0 8px 36px rgba(7,31,18,0.35),0 2px 8px rgba(34,135,74,0.15); margin-bottom:20px; }
@@ -115,9 +127,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 STATUS_CSS = {
-    'QUEDA ACENTUADA':       'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 7px;white-space:nowrap;display:inline-block;font-size:0.73rem;',
+    'QUEDA ACENTUADA':       'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 6px;white-space:nowrap;display:inline-block;font-size:0.68rem;',
     'QUEDA':                 'color:#C00000;font-weight:700;',
-    'CRESCIMENTO ACENTUADO': 'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 7px;white-space:nowrap;display:inline-block;font-size:0.73rem;',
+    'CRESCIMENTO ACENTUADO': 'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 6px;white-space:nowrap;display:inline-block;font-size:0.68rem;',
     'CRESCIMENTO':           'color:#375623;font-weight:700;',
     'ESTAVEL':               'color:#0070C0;font-weight:700;',
     'INATIVO':               'color:#6B7280;font-weight:700;',
@@ -351,7 +363,7 @@ rows_eros += f"<tr><td class='left' colspan='2'><strong>TOTAL</strong></td><td><
 st.markdown(f"<div class='erosao-bloco'><div class='erosao-bloco-title'>INDICE DE EROSAO STAR</div><table class='eros-table'><thead><tr><th class='left'>FAIXA</th><th class='center'>NIVEL</th><th class='center'>CLIENTES</th><th class='center'>%</th></tr></thead><tbody>{rows_eros}</tbody></table></div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ── FILA OPERACIONAL — TOP 10 ─────────────────────────────────────────────
+# ── FILA OPERACIONAL ─────────────────────────────────────────────────────
 st.markdown("<div class='section-title'>FILA OPERACIONAL DE PRIORIDADE</div>", unsafe_allow_html=True)
 
 st.markdown("<div class='filtros-fila-wrap'><div class='filtros-fila-title'>FILTRAR FILA</div>", unsafe_allow_html=True)
@@ -366,17 +378,33 @@ with fd: sel_niv = st.selectbox("POR NIVEL", n_opts)
 st.markdown("</div>", unsafe_allow_html=True)
 
 df_fila = df_f.copy()
-if busca.strip():            df_fila = df_fila[df_fila[col_cli].astype(str).str.upper().str.contains(busca.strip().upper(), na=False)]
+if busca.strip():                df_fila = df_fila[df_fila[col_cli].astype(str).str.upper().str.contains(busca.strip().upper(), na=False)]
 if sel_sta != 'Todos os status': df_fila = df_fila[df_fila[col_sta].astype(str).str.upper() == sel_sta]
-if '8 A 10' in sel_ind:     df_fila = df_fila[df_fila['_EROSAO'] >= 8]
-elif '6 A 7' in sel_ind:    df_fila = df_fila[df_fila['_EROSAO'].between(6, 7)]
-elif '4 A 5' in sel_ind:    df_fila = df_fila[df_fila['_EROSAO'].between(4, 5)]
-elif '1 A 3' in sel_ind:    df_fila = df_fila[df_fila['_EROSAO'] <= 3]
+if '8 A 10' in sel_ind:          df_fila = df_fila[df_fila['_EROSAO'] >= 8]
+elif '6 A 7' in sel_ind:         df_fila = df_fila[df_fila['_EROSAO'].between(6, 7)]
+elif '4 A 5' in sel_ind:         df_fila = df_fila[df_fila['_EROSAO'].between(4, 5)]
+elif '1 A 3' in sel_ind:         df_fila = df_fila[df_fila['_EROSAO'] <= 3]
 if sel_niv != 'Todos' and sel_niv in NIVEL_MAP:
     df_fila = df_fila[df_fila['_EROSAO'].apply(NIVEL_MAP[sel_niv])]
 
 df_top10 = df_fila.head(10)
 n_fila   = len(df_fila)
+
+# ── BARRA DE CONTEXTO ─────────────────────────────────────────────────────
+ctx_vend  = sel_v if sel_v != 'Todos' else ' + '.join(vends) if vends else 'Todos'
+ctx_curva = ' + '.join(sorted(sel_curva)) if sel_curva else 'Nenhuma'
+ctx_cid   = sel_cid if sel_cid != 'Todas' else 'Todas'
+
+st.markdown(
+    f"<div class='ctx-bar'>"
+    f"<div class='ctx-item'><span class='ctx-lbl'>VENDEDOR</span><span class='ctx-val'>{ctx_vend}</span></div>"
+    f"<div class='ctx-sep'></div>"
+    f"<div class='ctx-item'><span class='ctx-lbl'>CURVA</span><span class='ctx-val'>{ctx_curva}</span></div>"
+    f"<div class='ctx-sep'></div>"
+    f"<div class='ctx-item'><span class='ctx-lbl'>CIDADE</span><span class='ctx-val'>{ctx_cid}</span></div>"
+    f"</div>",
+    unsafe_allow_html=True
+)
 
 st.markdown(
     f"<div class='top10-label'>EXIBINDO TOP 10 DE {n_fila} CLIENTES PRIORIZADOS</div>",
@@ -390,9 +418,7 @@ if not df_top10.empty:
         ebg, efg, elbl = erosao_display(en)
         sta  = str(r.get(col_sta, '')).strip().upper()
         scss = STATUS_CSS.get(sta, 'color:#1A2540;font-weight:600;')
-        curv = str(r.get(col_curv, '')) if col_curv else ''
         nome = str(r.get(col_cli, ''))
-        vend = str(r.get(col_vend, '')) if col_vend else ''
         mlp  = fmt_num(r.get(col_mlp, 0))
         mcp  = fmt_num(r.get(col_mcp, 0))
         risk = fmt_num(r['_RISCO'])
@@ -400,8 +426,6 @@ if not df_top10.empty:
             f"<tr>"
             f"<td><strong>#{i}</strong></td>"
             f"<td class='left'><strong>{nome}</strong></td>"
-            f"<td>{vend}</td>"
-            f"<td><strong>{curv}</strong></td>"
             f"<td><span style='{scss}'>{sta}</span></td>"
             f"<td><span class='star-badge' style='background:{ebg};color:{efg};'>EROSAO STAR {en}</span></td>"
             f"<td><span class='nivel-badge' style='background:{ebg};color:{efg};'>{elbl}</span></td>"
@@ -413,8 +437,9 @@ if not df_top10.empty:
     st.markdown(
         f"<div class='prio-wrap'><table class='prio-table'>"
         f"<thead><tr>"
-        f"<th>#</th><th>CLIENTE</th><th>VENDEDOR</th><th>CURVA</th><th>STATUS</th>"
-        f"<th>INDICE EROSAO</th><th>NIVEL</th><th>MEDIA LP</th><th>MEDIA CP</th><th>RISCO</th>"
+        f"<th>#</th><th>CLIENTE</th><th>STATUS</th>"
+        f"<th>INDICE EROSAO</th><th>NIVEL</th>"
+        f"<th>MEDIA LP</th><th>MEDIA CP</th><th>RISCO</th>"
         f"</tr></thead>"
         f"<tbody>{rows_html}</tbody></table></div>",
         unsafe_allow_html=True
@@ -431,8 +456,8 @@ if df_fila.empty:
     st.info("Aplique os filtros acima para visualizar clientes disponiveis para o Raio-X.")
     st.stop()
 
-nomes_lista  = ['Selecione um cliente...'] + df_fila[col_cli].astype(str).tolist()
-sel_cliente  = st.selectbox("SELECIONAR CLIENTE", nomes_lista)
+nomes_lista = ['Selecione um cliente...'] + df_fila[col_cli].astype(str).tolist()
+sel_cliente = st.selectbox("SELECIONAR CLIENTE", nomes_lista)
 
 if sel_cliente == 'Selecione um cliente...':
     st.stop()
