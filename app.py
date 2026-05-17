@@ -4,6 +4,7 @@ import html as htmllib
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
+import streamlit.components.v1 as components
 from datetime import date
 
 try:
@@ -74,7 +75,7 @@ st.markdown("""
 .cart-table tr:hover td { background:#F5F7FB; }
 .cart-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 2px 18px rgba(0,0,0,0.07); overflow:auto; max-height:520px; }
 
-/* BAR CHART VISUAL */
+/* BAR CHART */
 .hbc { background:#FFFFFF; border-radius:14px; padding:20px 22px; box-shadow:0 2px 18px rgba(0,0,0,0.07); }
 .hbc-title { font-size:0.85rem; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; color:#1A2540; text-align:center; margin-bottom:16px; }
 .hbc-row { display:flex; align-items:center; gap:10px; padding:6px 6px; border-radius:6px; border-left:3px solid transparent; margin-bottom:3px; }
@@ -104,6 +105,15 @@ st.markdown("""
 [data-testid="stMarkdownContainer"]:has(.dlb) ~ [data-testid="stDownloadButton"] button:hover {
     filter:brightness(0.86) !important; opacity:1 !important;
 }
+
+/* COMPRESSOR ESPACAMENTO BOTOES G2 */
+[data-testid="stMarkdownContainer"]:has(span[id^="sa_"]) {
+    height:0 !important; overflow:hidden !important;
+    margin:0 !important; padding:0 !important; min-height:0 !important;
+}
+[data-testid="stMarkdownContainer"]:has(span[id^="sa_"]) + [data-testid="stButton"] {
+    margin:0 0 2px 0 !important; padding:0 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -120,6 +130,8 @@ STATUS_CSS     = {
 
 if 'status_filtro' not in st.session_state:
     st.session_state.status_filtro = None
+if 'scroll_needed' not in st.session_state:
+    st.session_state.scroll_needed = False
 
 
 def fmt_br(v):
@@ -433,8 +445,6 @@ def gerar_pdf(df_sel,df_full,col_config,filters,metrics):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# APP
-# ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="giri-header">
     <div class="giri-header-dot">&#9733;</div>
@@ -553,30 +563,22 @@ if uploaded_file:
     if cida_col and sel_cida!="Todas": df = df[df[cida_col].astype(str)==sel_cida]
 
     n_a_total=len(df[df['CURVA']=='A']); n_b_total=len(df[df['CURVA']=='B']); n_c_total=len(df[df['CURVA']=='C'])
-    df_sel  = df[df['CURVA'].isin(sel_curvas)]
-    clabel  = curva_label_fmt(sel_curvas)
-    cshort  = curva_short(sel_curvas)
-
-    ultimo_mes = meses_col[-1]
-    penultimo  = meses_col[-2] if len(meses_col)>1 else meses_col[-1]
-    last3      = meses_col[-3:] if len(meses_col)>=3 else meses_col
-
-    total       = len(df_sel)
-    rec_ult     = df_sel[ultimo_mes].sum(); rec_pen=df_sel[penultimo].sum()
-    var_rec     = (rec_ult-rec_pen)/rec_pen*100 if rec_pen>0 else 0
-    meta_total  = df_sel['META'].sum()
+    df_sel=df[df['CURVA'].isin(sel_curvas)]; clabel=curva_label_fmt(sel_curvas); cshort=curva_short(sel_curvas)
+    ultimo_mes=meses_col[-1]; penultimo=meses_col[-2] if len(meses_col)>1 else meses_col[-1]
+    last3=meses_col[-3:] if len(meses_col)>=3 else meses_col
+    total=len(df_sel); rec_ult=df_sel[ultimo_mes].sum(); rec_pen=df_sel[penultimo].sum()
+    var_rec=(rec_ult-rec_pen)/rec_pen*100 if rec_pen>0 else 0
+    meta_total=df_sel['META'].sum()
     meta_a=df[df['CURVA']=='A']['META'].sum(); meta_b=df[df['CURVA']=='B']['META'].sum(); meta_c=df[df['CURVA']=='C']['META'].sum()
-    risco_mask  = df_sel['STATUS'].isin(['QUEDA','QUEDA ACENTUADA','INATIVO'])
-    risco_val   = df_sel.loc[risco_mask,'MEDIA LP'].sum(); n_risco=risco_mask.sum()
-    saude_mask  = df_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO','ESTAVEL'])
-    n_saudaveis = saude_mask.sum(); idx_saude=n_saudaveis/total*100 if total>0 else 0
-    saude_color = "#1A6B2A" if idx_saude>=70 else ("#B07D00" if idx_saude>=50 else "#C00000")
-    buyers_ult  = (df_sel[ultimo_mes]>0).sum()
-    ticket_ult  = df_sel[ultimo_mes].sum()/buyers_ult if buyers_ult>0 else 0
-    buyers_pen  = (df_sel[penultimo]>0).sum()
-    ticket_pen  = df_sel[penultimo].sum()/buyers_pen if buyers_pen>0 else 0
-    var_ticket  = (ticket_ult-ticket_pen)/ticket_pen*100 if ticket_pen>0 else 0
-    contexto    = sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
+    risco_mask=df_sel['STATUS'].isin(['QUEDA','QUEDA ACENTUADA','INATIVO'])
+    risco_val=df_sel.loc[risco_mask,'MEDIA LP'].sum(); n_risco=risco_mask.sum()
+    saude_mask=df_sel['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO','ESTAVEL'])
+    n_saudaveis=saude_mask.sum(); idx_saude=n_saudaveis/total*100 if total>0 else 0
+    saude_color="#1A6B2A" if idx_saude>=70 else ("#B07D00" if idx_saude>=50 else "#C00000")
+    buyers_ult=(df_sel[ultimo_mes]>0).sum(); ticket_ult=df_sel[ultimo_mes].sum()/buyers_ult if buyers_ult>0 else 0
+    buyers_pen=(df_sel[penultimo]>0).sum(); ticket_pen=df_sel[penultimo].sum()/buyers_pen if buyers_pen>0 else 0
+    var_ticket=(ticket_ult-ticket_pen)/ticket_pen*100 if ticket_pen>0 else 0
+    contexto=sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
 
     # ── PDF ───────────────────────────────────────────────────────────────────
     if REPORTLAB_OK:
@@ -587,222 +589,125 @@ if uploaded_file:
                      'rec_ult':rec_ult,'var_rec':var_rec,'meta_total':meta_total,
                      'risco_val':risco_val,'n_risco':n_risco,'ticket_ult':ticket_ult,
                      'buyers_ult':buyers_ult,'idx_saude':idx_saude,'n_saudaveis':n_saudaveis}
-        pdf_bytes = gerar_pdf(df_sel,df,col_config,filters_pdf,metrics_pdf)
-        nome_pdf = f"STAR_{contexto.replace(' ','_')}_{clabel.replace(' ','_').replace('+','')}.pdf"
+        pdf_bytes=gerar_pdf(df_sel,df,col_config,filters_pdf,metrics_pdf)
+        nome_pdf=f"STAR_{contexto.replace(' ','_')}_{clabel.replace(' ','_').replace('+','')}.pdf"
         with pdf_container:
             st.markdown('<span class="dlb"></span>', unsafe_allow_html=True)
-            st.download_button(label="BAIXAR RELATORIO PDF",data=pdf_bytes,
-                file_name=nome_pdf,mime="application/pdf")
+            st.download_button(label="BAIXAR RELATORIO PDF",data=pdf_bytes,file_name=nome_pdf,mime="application/pdf")
     else:
-        with pdf_container:
-            st.caption("Instale reportlab para PDF")
+        with pdf_container: st.caption("Instale reportlab para PDF")
 
     # ── KPI CARDS ─────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
-    k1,k2,k3,k4 = st.columns(4)
-    with k1: st.markdown(
-        f'<div class="kpi-wrap blue"><div class="kpi-lbl">COMPOSICAO DA CARTEIRA</div>'
-        f'<div class="kpi-val">{fmt_br(total)}</div>'
-        f'<div class="kpi-breakdown">'
-        f'<span style="color:{"#0056b3" if "A" in sel_curvas else "#B0BAC9"}">A: {n_a_total}</span> | '
-        f'<span style="color:{"#0056b3" if "B" in sel_curvas else "#B0BAC9"}">B: {n_b_total}</span> | '
-        f'<span style="color:{"#0056b3" if "C" in sel_curvas else "#B0BAC9"}">C: {n_c_total}</span>'
-        f'</div></div>', unsafe_allow_html=True)
-    with k2: st.markdown(
-        f'<div class="kpi-wrap blue"><div class="kpi-lbl">RECEITA {htmllib.escape(clabel)} &mdash; {ultimo_mes}</div>'
-        f'<div class="kpi-val">R$ {fmt_br(rec_ult)}</div>'
-        f'<div class="kpi-sub">vs {penultimo}: {var_html(var_rec)}</div></div>', unsafe_allow_html=True)
-    with k3: st.markdown(
-        f'<div class="kpi-wrap dark"><div class="kpi-lbl">META DO MES</div>'
-        f'<div class="kpi-val">R$ {fmt_br(meta_total)}</div>'
-        f'<div class="kpi-breakdown"><span>A: R$ {fmt_br(meta_a)}</span><br>'
-        f'<span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span>'
-        f'</div></div>', unsafe_allow_html=True)
-    with k4: st.markdown(
-        f'<div class="kpi-wrap red"><div class="kpi-lbl">RECEITA EM RISCO &mdash; {htmllib.escape(clabel)}</div>'
-        f'<div class="kpi-val red">R$ {fmt_br(risco_val)}</div>'
-        f'<div class="kpi-sub">{n_risco} clientes em queda ou inativos</div></div>', unsafe_allow_html=True)
+    k1,k2,k3,k4=st.columns(4)
+    with k1: st.markdown(f'<div class="kpi-wrap blue"><div class="kpi-lbl">COMPOSICAO DA CARTEIRA</div><div class="kpi-val">{fmt_br(total)}</div><div class="kpi-breakdown"><span style="color:{"#0056b3" if "A" in sel_curvas else "#B0BAC9"}">A: {n_a_total}</span> | <span style="color:{"#0056b3" if "B" in sel_curvas else "#B0BAC9"}">B: {n_b_total}</span> | <span style="color:{"#0056b3" if "C" in sel_curvas else "#B0BAC9"}">C: {n_c_total}</span></div></div>', unsafe_allow_html=True)
+    with k2: st.markdown(f'<div class="kpi-wrap blue"><div class="kpi-lbl">RECEITA {htmllib.escape(clabel)} &mdash; {ultimo_mes}</div><div class="kpi-val">R$ {fmt_br(rec_ult)}</div><div class="kpi-sub">vs {penultimo}: {var_html(var_rec)}</div></div>', unsafe_allow_html=True)
+    with k3: st.markdown(f'<div class="kpi-wrap dark"><div class="kpi-lbl">META DO MES</div><div class="kpi-val">R$ {fmt_br(meta_total)}</div><div class="kpi-breakdown"><span>A: R$ {fmt_br(meta_a)}</span><br><span>B: R$ {fmt_br(meta_b)}</span> | <span>C: R$ {fmt_br(meta_c)}</span></div></div>', unsafe_allow_html=True)
+    with k4: st.markdown(f'<div class="kpi-wrap red"><div class="kpi-lbl">RECEITA EM RISCO &mdash; {htmllib.escape(clabel)}</div><div class="kpi-val red">R$ {fmt_br(risco_val)}</div><div class="kpi-sub">{n_risco} clientes em queda ou inativos</div></div>', unsafe_allow_html=True)
 
     # ── INDICADORES ───────────────────────────────────────────────────────────
     st.markdown(f'<div class="section-title">INDICADORES — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
-    i1,i2 = st.columns(2)
-    with i1: st.markdown(
-        f'<div class="ind-wrap"><div class="ind-lbl">TICKET MEDIO — {ultimo_mes} (COMPRADORES ATIVOS)</div>'
-        f'<div class="ind-val">R$ {fmt_br(ticket_ult)}</div>'
-        f'<div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div></div>', unsafe_allow_html=True)
-    with i2: st.markdown(
-        f'<div class="ind-wrap"><div class="ind-lbl">INDICE DE SAUDE &mdash; {htmllib.escape(clabel)}</div>'
-        f'<div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div>'
-        f'<div class="ind-sub">{n_saudaveis} de {total} clientes em crescimento ou estaveis</div></div>', unsafe_allow_html=True)
+    i1,i2=st.columns(2)
+    with i1: st.markdown(f'<div class="ind-wrap"><div class="ind-lbl">TICKET MEDIO — {ultimo_mes} (COMPRADORES ATIVOS)</div><div class="ind-val">R$ {fmt_br(ticket_ult)}</div><div class="ind-sub">vs {penultimo}: {var_html(var_ticket)}</div></div>', unsafe_allow_html=True)
+    with i2: st.markdown(f'<div class="ind-wrap"><div class="ind-lbl">INDICE DE SAUDE &mdash; {htmllib.escape(clabel)}</div><div class="ind-val" style="color:{saude_color}">{idx_saude:.0f}%</div><div class="ind-sub">{n_saudaveis} de {total} clientes em crescimento ou estaveis</div></div>', unsafe_allow_html=True)
 
     # ── ANALISE DETALHADA ─────────────────────────────────────────────────────
     st.markdown(f'<div class="section-title">ANALISE DETALHADA — {htmllib.escape(clabel)}</div>', unsafe_allow_html=True)
     prev_fat=None; prev_ticket=None; rows_unified=""
     for i,mes in enumerate(last3):
-        compraram = int((df_sel[mes]>0).sum())
-        fat = df_sel[mes].sum()
-        tk  = fat/compraram if compraram>0 else 0
-        vf_html = var_html(None) if i==0 else var_html(
-            (fat-prev_fat)/prev_fat*100 if prev_fat and prev_fat>0 else None)
-        vt_html = var_html(None) if i==0 else var_html(
-            (tk-prev_ticket)/prev_ticket*100 if prev_ticket and prev_ticket>0 else None)
-        rows_unified += (
-            "<tr>"
-            + f"<td><strong>{mes}</strong></td>"
-            + f"<td>{total}</td>"
-            + f"<td>{compraram}</td>"
-            + f"<td>R$ {fmt_br(fat)}</td>"
-            + f"<td>{vf_html}</td>"
-            + f"<td>R$ {fmt_br(tk)}</td>"
-            + f"<td>{vt_html}</td>"
-            + "</tr>"
-        )
+        compraram=int((df_sel[mes]>0).sum()); fat=df_sel[mes].sum(); tk=fat/compraram if compraram>0 else 0
+        vf_html=var_html(None) if i==0 else var_html((fat-prev_fat)/prev_fat*100 if prev_fat and prev_fat>0 else None)
+        vt_html=var_html(None) if i==0 else var_html((tk-prev_ticket)/prev_ticket*100 if prev_ticket and prev_ticket>0 else None)
+        rows_unified+=("<tr>"+f"<td><strong>{mes}</strong></td>"+f"<td>{total}</td>"+f"<td>{compraram}</td>"+f"<td>R$ {fmt_br(fat)}</td>"+f"<td>{vf_html}</td>"+f"<td>R$ {fmt_br(tk)}</td>"+f"<td>{vt_html}</td>"+"</tr>")
         prev_fat=fat; prev_ticket=tk
-    st.markdown(
-        '<div class="ana-wrap">'
-        + f'<div class="ana-title">FATURAMENTO E TICKET MEDIO — {htmllib.escape(clabel)} — ULTIMOS 3 MESES</div>'
-        + '<table class="ana-table"><thead><tr>'
-        + '<th>MES</th><th>CLIENTES TOTAIS</th><th>COMPRARAM NO MES</th>'
-        + '<th>FATURAMENTO</th><th>VAR. FAT.</th><th>TICKET MEDIO</th><th>VAR. TICKET</th>'
-        + '</tr></thead><tbody>' + rows_unified + '</tbody></table></div>',
-        unsafe_allow_html=True)
+    st.markdown('<div class="ana-wrap">'+f'<div class="ana-title">FATURAMENTO E TICKET MEDIO — {htmllib.escape(clabel)} — ULTIMOS 3 MESES</div>'+'<table class="ana-table"><thead><tr><th>MES</th><th>CLIENTES TOTAIS</th><th>COMPRARAM NO MES</th><th>FATURAMENTO</th><th>VAR. FAT.</th><th>TICKET MEDIO</th><th>VAR. TICKET</th></tr></thead><tbody>'+rows_unified+'</tbody></table></div>', unsafe_allow_html=True)
 
     # ── RECENCIA ──────────────────────────────────────────────────────────────
     st.markdown("<div style='margin-top:16px'></div>", unsafe_allow_html=True)
-    l0  = f"Comprou em {meses_col[-1]}"
-    l1  = f"Ultimo pedido em {meses_col[-2]}" if len(meses_col)>1 else "Ha 1 mes"
-    l2  = f"Ultimo pedido em {meses_col[-3]}" if len(meses_col)>2 else "Ha 2 meses"
-    l3p = f"Sem compra desde {meses_col[-4]} ou antes" if len(meses_col)>3 else "Ha 3+ meses"
-    faixas_rec = [
-        (l0,  '<span class="rec-ativo">Ativo recente</span>',   0),
-        (l1,  '<span class="rec-atencao">Atencao</span>',        1),
-        (l2,  '<span class="rec-risco">Risco alto</span>',       2),
-        (l3p, '<span class="rec-critico">Inativo critico</span>',99),
-    ]
-    rr = ""
-    for crit,badge,mr in faixas_rec:
-        cnt = int((df_sel['MESES_SEM_COMPRA']>=3).sum()) if mr==99 \
-              else int((df_sel['MESES_SEM_COMPRA']==mr).sum())
-        pct = cnt/total*100 if total>0 else 0
-        rr += f"<tr><td>{badge}</td><td style='text-align:left'>{crit}</td><td>{cnt}</td><td>{pct:.0f}%</td></tr>"
-    st.markdown(
-        f'<div class="ana-wrap"><div class="ana-title">RECENCIA DE COMPRA &mdash; {htmllib.escape(clabel)}</div>'
-        + '<table class="ana-table"><thead><tr>'
-        + '<th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th>'
-        + '</tr></thead><tbody>' + rr + '</tbody></table></div>',
-        unsafe_allow_html=True)
+    l0=f"Comprou em {meses_col[-1]}"; l1=f"Ultimo pedido em {meses_col[-2]}" if len(meses_col)>1 else "Ha 1 mes"
+    l2=f"Ultimo pedido em {meses_col[-3]}" if len(meses_col)>2 else "Ha 2 meses"
+    l3p=f"Sem compra desde {meses_col[-4]} ou antes" if len(meses_col)>3 else "Ha 3+ meses"
+    rr=""
+    for crit,badge,mr in [(l0,'<span class="rec-ativo">Ativo recente</span>',0),(l1,'<span class="rec-atencao">Atencao</span>',1),(l2,'<span class="rec-risco">Risco alto</span>',2),(l3p,'<span class="rec-critico">Inativo critico</span>',99)]:
+        cnt=int((df_sel['MESES_SEM_COMPRA']>=3).sum()) if mr==99 else int((df_sel['MESES_SEM_COMPRA']==mr).sum())
+        pct=cnt/total*100 if total>0 else 0
+        rr+=f"<tr><td>{badge}</td><td style='text-align:left'>{crit}</td><td>{cnt}</td><td>{pct:.0f}%</td></tr>"
+    st.markdown(f'<div class="ana-wrap"><div class="ana-title">RECENCIA DE COMPRA &mdash; {htmllib.escape(clabel)}</div><table class="ana-table"><thead><tr><th>CLASSIFICACAO</th><th style="text-align:left">CRITERIO</th><th>CLIENTES</th><th>%</th></tr></thead><tbody>'+rr+'</tbody></table></div>', unsafe_allow_html=True)
 
     # ── DIAGNOSTICO DE CARTEIRA ───────────────────────────────────────────────
-    # LAYOUT: [grafico visual] | [botoes VER reais] | [donut ABC]
-    # Os botoes VER sao widgets Streamlit nativos — sem JavaScript, funcionam sempre.
     st.markdown('<div class="section-title">DIAGNOSTICO DE CARTEIRA</div>', unsafe_allow_html=True)
 
-    sc = df_sel['STATUS'].value_counts()
-    status_presentes = [s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
-    cur_filter = st.session_state.status_filtro or ''
-    max_count  = max([sc.get(s,0) for s in status_presentes]) if status_presentes else 1
+    sc=df_sel['STATUS'].value_counts()
+    status_presentes=[s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
+    cur_filter=st.session_state.status_filtro or ''
+    max_count=max([sc.get(s,0) for s in status_presentes]) if status_presentes else 1
 
-    g1, g2, g3 = st.columns([5, 1, 3])
+    g1,g2,g3=st.columns([5,1,3])
 
-    # G1 — GRAFICO DE BARRAS (puramente visual, sem botoes)
     with g1:
-        titulo = htmllib.escape(f"DISTRIBUICAO POR STATUS — {clabel}")
-        rows_bar = ""
+        titulo=htmllib.escape(f"DISTRIBUICAO POR STATUS — {clabel}")
+        rows_bar=""
         for status in status_presentes:
-            cor       = STATUS_BTN_COR.get(status,'#555')
-            count     = sc.get(status,0)
-            pct       = count/total*100 if total>0 else 0
-            bar_w     = count/max_count*100
-            is_active = cur_filter == status
-            row_bg    = cor+'14' if is_active else 'transparent'
-            border_c  = cor if is_active else 'transparent'
-            rows_bar += (
-                f'<div class="hbc-row" style="background:{row_bg};border-left-color:{border_c};">'
+            cor=STATUS_BTN_COR.get(status,'#555'); count=sc.get(status,0)
+            pct=count/total*100 if total>0 else 0; bar_w=count/max_count*100
+            is_active=cur_filter==status
+            row_bg=cor+'14' if is_active else 'transparent'
+            border_c=cor if is_active else 'transparent'
+            rows_bar+=(f'<div class="hbc-row" style="background:{row_bg};border-left-color:{border_c};">'
                 f'<div class="hbc-lbl">{htmllib.escape(status)}</div>'
                 f'<div class="hbc-track"><div class="hbc-fill" style="width:{bar_w:.1f}%;background:{cor};"></div></div>'
-                f'<span class="hbc-cnt">{count} ({pct:.0f}%)</span>'
-                f'</div>'
-            )
-        st.markdown(
-            '<div class="hbc">'
-            + f'<p class="hbc-title">{titulo}</p>'
-            + rows_bar
-            + '</div>',
-            unsafe_allow_html=True)
+                f'<span class="hbc-cnt">{count} ({pct:.0f}%)</span></div>')
+        st.markdown('<div class="hbc">'+f'<p class="hbc-title">{titulo}</p>'+rows_bar+'</div>', unsafe_allow_html=True)
 
-    # G2 — BOTOES VER (widgets Streamlit reais — sem JS, funcionamento garantido)
     with g2:
-        # Espacador alinha com o titulo do grafico
         st.markdown('<div style="height:52px;"></div>', unsafe_allow_html=True)
-
         for status in status_presentes:
-            cor       = STATUS_BTN_COR.get(status,'#555')
-            is_active = st.session_state.status_filtro == status
-            bg        = cor if is_active else 'transparent'
-            txt       = '#FFFFFF' if is_active else cor
-            safe      = status.replace(' ','_')
-            lbl       = 'LIMPAR' if is_active else 'VER'
-
-            # Ancora CSS para estilizar cada botao individualmente
+            cor=STATUS_BTN_COR.get(status,'#555')
+            is_active=st.session_state.status_filtro==status
+            bg=cor if is_active else 'transparent'; txt='#FFFFFF' if is_active else cor
+            safe=status.replace(' ','_'); lbl='LIMPAR' if is_active else 'VER'
             st.markdown(
-                f'<style>'
-                f'[data-testid="stMarkdownContainer"]:has(#sa_{safe}) + [data-testid="stButton"] button {{'
-                f'background:{bg}!important;color:{txt}!important;'
-                f'border:2px solid {cor}!important;border-radius:5px!important;'
-                f'height:28px!important;font-size:8px!important;font-weight:800!important;'
-                f'width:100%!important;padding:0 4px!important;'
+                f'<style>[data-testid="stMarkdownContainer"]:has(#sa_{safe}) + [data-testid="stButton"] button {{'
+                f'background:{bg}!important;color:{txt}!important;border:2px solid {cor}!important;'
+                f'border-radius:5px!important;height:28px!important;font-size:8px!important;'
+                f'font-weight:800!important;width:100%!important;padding:0 4px!important;'
                 f'text-transform:uppercase!important;letter-spacing:0.5px!important;'
-                f'box-shadow:0 2px 5px rgba(0,0,0,0.12)!important;'
-                f'margin-bottom:3px!important;white-space:nowrap!important;'
-                f'}}'
+                f'box-shadow:0 2px 5px rgba(0,0,0,0.12)!important;white-space:nowrap!important;}}'
                 f'[data-testid="stMarkdownContainer"]:has(#sa_{safe}) + [data-testid="stButton"] button:hover{{'
                 f'filter:brightness(0.88)!important;opacity:1!important;}}'
                 f'</style><span id="sa_{safe}"></span>',
                 unsafe_allow_html=True)
-
             if st.button(lbl, key=f'sfb_{safe}'):
-                st.session_state.status_filtro = None if is_active else status
+                st.session_state.status_filtro=None if is_active else status
+                st.session_state.scroll_needed=True
                 st.rerun()
 
-        # Linha separadora + botao TODOS
-        st.markdown('<hr style="margin:6px 0;border:none;border-top:1px solid #D1D9E6;">', unsafe_allow_html=True)
-
-        is_todos  = st.session_state.status_filtro is None
-        bg_t      = '#4B5568' if is_todos else 'transparent'
-        txt_t     = '#FFFFFF' if is_todos else '#4B5568'
-        lbl_t     = 'LIMPAR' if is_todos else 'TODOS'
-
+        st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #D1D9E6;">', unsafe_allow_html=True)
+        is_todos=st.session_state.status_filtro is None
+        bg_t='#4B5568' if is_todos else 'transparent'; txt_t='#FFFFFF' if is_todos else '#4B5568'; lbl_t='LIMPAR' if is_todos else 'TODOS'
         st.markdown(
-            f'<style>'
-            f'[data-testid="stMarkdownContainer"]:has(#sa_todos) + [data-testid="stButton"] button {{'
-            f'background:{bg_t}!important;color:{txt_t}!important;'
-            f'border:2px solid #4B5568!important;border-radius:5px!important;'
-            f'height:28px!important;font-size:8px!important;font-weight:800!important;'
-            f'width:100%!important;padding:0 4px!important;'
+            f'<style>[data-testid="stMarkdownContainer"]:has(#sa_todos) + [data-testid="stButton"] button {{'
+            f'background:{bg_t}!important;color:{txt_t}!important;border:2px solid #4B5568!important;'
+            f'border-radius:5px!important;height:28px!important;font-size:8px!important;'
+            f'font-weight:800!important;width:100%!important;padding:0 4px!important;'
             f'text-transform:uppercase!important;letter-spacing:0.5px!important;'
-            f'box-shadow:0 2px 5px rgba(0,0,0,0.12)!important;'
-            f'}}'
+            f'box-shadow:0 2px 5px rgba(0,0,0,0.12)!important;}}'
             f'[data-testid="stMarkdownContainer"]:has(#sa_todos) + [data-testid="stButton"] button:hover{{'
             f'filter:brightness(0.88)!important;opacity:1!important;}}'
             f'</style><span id="sa_todos"></span>',
             unsafe_allow_html=True)
-
         if st.button(lbl_t, key='sfb_todos'):
-            st.session_state.status_filtro = None
+            st.session_state.status_filtro=None
+            st.session_state.scroll_needed=True
             st.rerun()
 
-    # G3 — DONUT ABC
     with g3:
-        cc2 = df_sel['CURVA'].value_counts()
-        cvl = ['A','B','C']; cvv = [cc2.get(c,0) for c in cvl]
-        fig2 = go.Figure(go.Pie(
-            labels=cvl, values=cvv, hole=0.58,
+        cc2=df_sel['CURVA'].value_counts(); cvl=['A','B','C']; cvv=[cc2.get(c,0) for c in cvl]
+        fig2=go.Figure(go.Pie(labels=cvl,values=cvv,hole=0.58,
             marker=dict(colors=['#001845','#0056b3','#4A90C4'],line=dict(color='#FFFFFF',width=2)),
-            textinfo='label+percent',
-            textfont=dict(size=13,family='Arial',color=['#FFFFFF','#FFFFFF','#1A2540']),
+            textinfo='label+percent',textfont=dict(size=13,family='Arial',color=['#FFFFFF','#FFFFFF','#1A2540']),
             insidetextorientation='radial'))
-        fig2.update_layout(margin=dict(l=10,r=10,t=10,b=10),
-            paper_bgcolor='rgba(0,0,0,0)',height=320,showlegend=False)
+        fig2.update_layout(margin=dict(l=10,r=10,t=10,b=10),paper_bgcolor='rgba(0,0,0,0)',height=320,showlegend=False)
         st.markdown('<div class="chart-wrap"><div class="chart-lbl">DISTRIBUICAO POR CURVA ABC</div>', unsafe_allow_html=True)
         st.plotly_chart(fig2,use_container_width=True,config={'displayModeBar':False})
         st.markdown('</div>', unsafe_allow_html=True)
@@ -810,68 +715,58 @@ if uploaded_file:
     # ── PERFORMANCE POR VENDEDOR ──────────────────────────────────────────────
     if sel_vend=="Todos":
         st.markdown('<div class="section-title">PERFORMANCE POR VENDEDOR</div>', unsafe_allow_html=True)
-        rv = []
+        rv=[]
         for v in sorted(df_sel[vend_col].dropna().astype(str).unique()):
-            dv_t = df[df[vend_col].astype(str)==v]
-            dv_s = df_sel[df_sel[vend_col].astype(str)==v]
-            rv.append({
-                'VENDEDOR': v,
-                'CLIENTES TOTAL': len(dv_t),
-                f'CLIENTES {cshort}': len(dv_s),
-                f'RECEITA {cshort}': dv_s['TOTAL LP'].sum(),
-                f'QDA. ACENTUADA {cshort}': len(dv_s[dv_s['STATUS']=='QUEDA ACENTUADA']),
-                f'QUEDA {cshort}': len(dv_s[dv_s['STATUS']=='QUEDA']),
-                f'CRESCIMENTO {cshort}': len(dv_s[dv_s['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])]),
-                f'INATIVOS {cshort}': len(dv_s[dv_s['STATUS']=='INATIVO']),
-            })
+            dv_t=df[df[vend_col].astype(str)==v]; dv_s=df_sel[df_sel[vend_col].astype(str)==v]
+            rv.append({'VENDEDOR':v,'CLIENTES TOTAL':len(dv_t),f'CLIENTES {cshort}':len(dv_s),
+                f'RECEITA {cshort}':dv_s['TOTAL LP'].sum(),
+                f'QDA. ACENTUADA {cshort}':len(dv_s[dv_s['STATUS']=='QUEDA ACENTUADA']),
+                f'QUEDA {cshort}':len(dv_s[dv_s['STATUS']=='QUEDA']),
+                f'CRESCIMENTO {cshort}':len(dv_s[dv_s['STATUS'].isin(['CRESCIMENTO','CRESCIMENTO ACENTUADO'])]),
+                f'INATIVOS {cshort}':len(dv_s[dv_s['STATUS']=='INATIVO'])})
         cv2=list(rv[0].keys()); rcol=f'RECEITA {cshort}'
         total_row={'VENDEDOR':'TOTAL GERAL'}
         for k in cv2:
             if k!='VENDEDOR': total_row[k]=sum(r[k] for r in rv)
         hh="".join([f"<th>{c}</th>" for c in cv2]); rh=""
         for r in rv:
-            rh+="<tr>"+"".join([
-                f"<td class='left'>{htmllib.escape(str(r[k]))}</td>" if k=='VENDEDOR'
-                else (f"<td>R$ {fmt_br(r[k])}</td>" if k==rcol else f"<td>{r[k]}</td>")
-                for k in cv2])+"</tr>"
-        rh+="<tr class='total-row'>"+"".join([
-            f"<td class='left'>{total_row[k]}</td>" if k=='VENDEDOR'
-            else (f"<td>R$ {fmt_br(total_row[k])}</td>" if k==rcol else f"<td>{total_row[k]}</td>")
-            for k in cv2])+"</tr>"
-        st.markdown(
-            f'<div class="vend-wrap"><table class="vend-table">'
-            f'<thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>',
-            unsafe_allow_html=True)
+            rh+="<tr>"+"".join([f"<td class='left'>{htmllib.escape(str(r[k]))}</td>" if k=='VENDEDOR' else (f"<td>R$ {fmt_br(r[k])}</td>" if k==rcol else f"<td>{r[k]}</td>") for k in cv2])+"</tr>"
+        rh+="<tr class='total-row'>"+"".join([f"<td class='left'>{total_row[k]}</td>" if k=='VENDEDOR' else (f"<td>R$ {fmt_br(total_row[k])}</td>" if k==rcol else f"<td>{total_row[k]}</td>") for k in cv2])+"</tr>"
+        st.markdown(f'<div class="vend-wrap"><table class="vend-table"><thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>', unsafe_allow_html=True)
 
     # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
     st.markdown('<div id="carteira-anchor" style="scroll-margin-top:20px;"></div>', unsafe_allow_html=True)
-    filtro_ativo = st.session_state.status_filtro
+    filtro_ativo=st.session_state.status_filtro
     if filtro_ativo:
-        cor_ativo = STATUS_BTN_COR.get(filtro_ativo,'#555')
-        st.markdown(
-            f'<div class="section-title">CARTEIRA DE CLIENTES &mdash; '
-            f'<span style="color:{cor_ativo}">{htmllib.escape(filtro_ativo)}</span></div>',
-            unsafe_allow_html=True)
+        cor_ativo=STATUS_BTN_COR.get(filtro_ativo,'#555')
+        st.markdown(f'<div class="section-title">CARTEIRA DE CLIENTES &mdash; <span style="color:{cor_ativo}">{htmllib.escape(filtro_ativo)}</span></div>', unsafe_allow_html=True)
     else:
         st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
 
-    cd = ['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
-    dd = df_sel[df_sel['STATUS']==filtro_ativo].copy() if filtro_ativo else df_sel.copy()
-    dd = dd[cd].reset_index(drop=True)
-    hc = "".join([f"<th>{c}</th>" for c in cd]); rc = ""
+    cd=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
+    dd=df_sel[df_sel['STATUS']==filtro_ativo].copy() if filtro_ativo else df_sel.copy()
+    dd=dd[cd].reset_index(drop=True)
+    hc="".join([f"<th>{c}</th>" for c in cd]); rc=""
     for _,row in dd.iterrows():
-        cells = ""
+        cells=""
         for cn in cd:
             v=row[cn]; ac=' class="left"' if cn==clie_col else ''
-            if cn=='STATUS':
-                s=str(v); css5=STATUS_CSS.get(s,'')
-                cells+=f'<td><span style="{css5}">{s}</span></td>'
-            elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'):
-                cells+=f'<td{ac}>{fmt_br(v)}</td>'
-            else:
-                cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
+            if cn=='STATUS': s=str(v); css5=STATUS_CSS.get(s,''); cells+=f'<td><span style="{css5}">{s}</span></td>'
+            elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'): cells+=f'<td{ac}>{fmt_br(v)}</td>'
+            else: cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
         rc+=f"<tr>{cells}</tr>"
-    st.markdown(
-        f'<div class="cart-wrap"><table class="cart-table">'
-        f'<thead><tr>{hc}</tr></thead><tbody>{rc}</tbody></table></div>',
-        unsafe_allow_html=True)
+    st.markdown(f'<div class="cart-wrap"><table class="cart-table"><thead><tr>{hc}</tr></thead><tbody>{rc}</tbody></table></div>', unsafe_allow_html=True)
+
+    # ── SCROLL AUTOMATICO ─────────────────────────────────────────────────────
+    if st.session_state.get('scroll_needed', False):
+        components.html("""
+        <script>
+        setTimeout(function() {
+            try {
+                var el = window.parent.document.getElementById('carteira-anchor');
+                if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+            } catch(e) {}
+        }, 400);
+        </script>
+        """, height=0)
+        st.session_state.scroll_needed = False
