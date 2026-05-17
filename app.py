@@ -80,10 +80,7 @@ st.markdown("""
 .hbc-track { flex:1; height:18px; background:#EDF1F7; border-radius:4px; overflow:hidden; min-width:50px; }
 .hbc-fill { height:100%; border-radius:4px; }
 .hbc-cnt { font-size:10px; font-weight:700; color:#4B5568; width:72px; flex-shrink:0; text-align:left; padding-left:6px; white-space:nowrap; }
-.dl-row { display:flex; justify-content:center; gap:24px; margin-top:16px; }
 .dl-lbl { font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#4B5568; margin:0 0 4px 0; text-align:center; }
-
-/* BOTOES DOWNLOAD */
 [data-testid="stMarkdownContainer"]:has(.dlg) ~ [data-testid="stDownloadButton"] button {
     background:linear-gradient(135deg,#1A5C2A 0%,#2E8B47 100%) !important;
     color:#FFFFFF !important; border:none !important; border-radius:12px !important;
@@ -216,12 +213,14 @@ def gerar_excel(df_raw,fo,cc,vc,mc):
     return buf.getvalue()
 
 
-def gerar_pdf(df_sel,df_full,col_config,filters,metrics):
+def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
     if not REPORTLAB_OK: return None
     buf = BytesIO()
     clie_col=col_config['clie']; vend_col=col_config['vend']; meses_col=col_config['meses']
     last3=col_config['last3']; ultimo=col_config['ultimo']; penultimo=col_config['penultimo']; extra=col_config['extra']
-    clabel=filters['clabel']; cshort=filters['cshort']; contexto=filters['contexto']; sel_vend=filters['vend']
+    clabel=filters['clabel']; cshort=filters['cshort']; contexto=filters['contexto']
+    sel_vend=filters['vend']
+    filtro_carteira = filters.get('filtro_carteira', None)   # ← NOVO
     total=metrics['total']; n_a=metrics['n_a']; n_b=metrics['n_b']; n_c=metrics['n_c']
     rec_ult=metrics['rec_ult']; var_rec=metrics['var_rec']; meta_total=metrics['meta_total']
     risco_val=metrics['risco_val']; n_risco=metrics['n_risco']; ticket_ult=metrics['ticket_ult']
@@ -366,11 +365,16 @@ def gerar_pdf(df_sel,df_full,col_config,filters,metrics):
         ('BOTTOMPADDING',(0,0),(-1,-1),5),('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6)]))
     story.append(ana_t); story.append(PageBreak())
 
-    story.append(Paragraph(f'CARTEIRA DE CLIENTES — {clabel}',S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
+    # CARTEIRA DE CLIENTES — respeitando filtro_carteira
+    df_cart = df_sel[df_sel['STATUS']==filtro_carteira].copy() if filtro_carteira else df_sel.copy()
+    titulo_cart = f'CARTEIRA DE CLIENTES — {clabel}' if not filtro_carteira \
+                  else f'CARTEIRA DE CLIENTES — {clabel} — {filtro_carteira}'
+    story.append(Paragraph(titulo_cart, S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
+
     cd_pdf=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
     hdrs=['CRV','CLIENTE','VENDEDOR']+[c[:6] for c in extra]+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
     cart_data=[[Paragraph(h,S['th']) for h in hdrs]]
-    for _,row in df_sel[cd_pdf].iterrows():
+    for _,row in df_cart[cd_pdf].iterrows():
         row_data=[]
         for cn in cd_pdf:
             v=row[cn]
@@ -513,7 +517,6 @@ if uploaded_file:
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
     LBL = '<p class="dl-lbl">{}</p>'
 
-    # Linha 1: 3 filtros centralizados e equidistantes
     _, fc1, fc2, fc3, _ = st.columns([0.5, 2, 2, 2, 0.5])
     with fc1:
         st.markdown(LBL.format("VENDEDOR"), unsafe_allow_html=True)
@@ -533,7 +536,6 @@ if uploaded_file:
             placeholder="Selecione...",label_visibility="collapsed")
         if not sel_curvas: sel_curvas = curvas_disp
 
-    # Linha 2: botoes de download centralizados
     st.markdown('<div style="height:8px;"></div>', unsafe_allow_html=True)
     eb = gerar_excel(df_raw,fo,clie_col,vend_col,meses_col)
     _, dl1, dl2, _ = st.columns([1.5, 2, 2, 1.5])
@@ -568,17 +570,24 @@ if uploaded_file:
     var_ticket=(ticket_ult-ticket_pen)/ticket_pen*100 if ticket_pen>0 else 0
     contexto=sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
 
+    # ── FILTRO CARTEIRA PARA PDF (lido antes de gerar o PDF) ─────────────────
+    cart_status_val = st.session_state.get('cart_status', 'Todos os status')
+    filtro_pdf = None if cart_status_val == 'Todos os status' else cart_status_val
+
     # ── PDF ───────────────────────────────────────────────────────────────────
     if REPORTLAB_OK:
         col_config={'clie':clie_col,'vend':vend_col,'cida':cida_col,'meses':meses_col,
                     'last3':last3,'ultimo':ultimo_mes,'penultimo':penultimo,'extra':extra}
-        filters_pdf={'clabel':clabel,'cshort':cshort,'contexto':contexto,'vend':sel_vend,'curvas':sel_curvas}
+        filters_pdf={'clabel':clabel,'cshort':cshort,'contexto':contexto,'vend':sel_vend,
+                     'curvas':sel_curvas,'filtro_carteira':filtro_pdf}
         metrics_pdf={'total':total,'n_a':n_a_total,'n_b':n_b_total,'n_c':n_c_total,
                      'rec_ult':rec_ult,'var_rec':var_rec,'meta_total':meta_total,
                      'risco_val':risco_val,'n_risco':n_risco,'ticket_ult':ticket_ult,
                      'buyers_ult':buyers_ult,'idx_saude':idx_saude,'n_saudaveis':n_saudaveis}
         pdf_bytes=gerar_pdf(df_sel,df,col_config,filters_pdf,metrics_pdf)
-        nome_pdf=f"STAR_{contexto.replace(' ','_')}_{clabel.replace(' ','_').replace('+','')}.pdf"
+        # Nome reflete vendedor, curva e filtro de status se aplicado
+        sufixo_status = f"_{filtro_pdf.replace(' ','_')}" if filtro_pdf else ""
+        nome_pdf = f"RELATORIO_{contexto.replace(' ','_')}_{clabel.replace(' ','_').replace('+','')}{sufixo_status}.pdf"
         with pdf_container:
             st.markdown('<span class="dlb"></span>', unsafe_allow_html=True)
             st.download_button(label="BAIXAR RELATORIO PDF",data=pdf_bytes,
@@ -678,7 +687,6 @@ if uploaded_file:
     # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
     st.markdown('<div class="section-title">CARTEIRA DE CLIENTES</div>', unsafe_allow_html=True)
 
-    # Filtro de status na propria carteira
     status_opts = ['Todos os status'] + [s for s in STATUS_ORDER if s in df_sel['STATUS'].values]
     fcart1, fcart2 = st.columns([2, 5])
     with fcart1:
