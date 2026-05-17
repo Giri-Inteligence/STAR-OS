@@ -5,9 +5,45 @@ st.set_page_config(page_title="Giri | Inteligencia de Carteira", layout="wide")
 
 st.markdown("""
 <style>
-[data-testid="stSidebarNav"]      { display:none; }
-[data-testid="stAppViewContainer"]{ background:#EDF1F7; }
-[data-testid="stHeader"]          { background:transparent; }
+[data-testid="stSidebarNav"]       { display:none; }
+[data-testid="stAppViewContainer"] { background:#EDF1F7; }
+[data-testid="stHeader"]           { background:transparent; }
+
+/* ── LABELS DOS FILTROS ── */
+.stSelectbox label, .stMultiSelect label, .stTextInput label {
+    font-size:0.75rem !important; font-weight:700 !important;
+    text-transform:uppercase !important; letter-spacing:1.2px !important;
+    color:#1A2540 !important; display:block; text-align:center;
+    margin-bottom:4px !important;
+}
+
+/* ── SELECTBOX / MULTISELECT — FUNDO ESCURO ── */
+[data-testid="stSelectbox"] > div > div,
+[data-testid="stMultiSelect"] > div > div {
+    background:#1A2540 !important;
+    border:1px solid #374151 !important;
+    border-radius:8px !important;
+    color:#FFFFFF !important;
+}
+[data-testid="stSelectbox"] svg, [data-testid="stMultiSelect"] svg { fill:#FFFFFF !important; }
+
+/* ── MULTISELECT — TAGS VERMELHAS ── */
+[data-baseweb="tag"] {
+    background:#C00000 !important; border-radius:6px !important;
+}
+[data-baseweb="tag"] span { color:#FFFFFF !important; font-weight:700 !important; }
+[data-baseweb="tag"] button svg { fill:#FFFFFF !important; }
+
+/* ── DROPDOWN ── */
+[data-baseweb="menu"]    { background:#1A2540 !important; }
+[data-baseweb="option"]  { background:#1A2540 !important; color:#FFFFFF !important; }
+[data-baseweb="option"]:hover { background:#2D3F6B !important; }
+
+/* ── TEXT INPUT ── */
+[data-testid="stTextInput"] > div > div > input {
+    background:#1A2540 !important; color:#FFFFFF !important;
+    border:1px solid #374151 !important; border-radius:8px !important;
+}
 
 /* ── HEADER ── */
 .giri-header-int {
@@ -17,8 +53,7 @@ st.markdown("""
     display:flex; align-items:center; gap:18px;
 }
 .giri-header-dot {
-    width:48px; height:48px;
-    background:rgba(255,255,255,0.13);
+    width:48px; height:48px; background:rgba(255,255,255,0.13);
     border-radius:12px; display:flex; align-items:center;
     justify-content:center; font-size:22px; flex-shrink:0;
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);
@@ -41,10 +76,7 @@ st.markdown("""
     box-shadow:0 4px 24px rgba(7,31,18,0.10), 0 1px 4px rgba(0,0,0,0.04);
     position:relative; overflow:hidden; text-align:center;
 }
-.kpi-wrap::before {
-    content:""; position:absolute; top:0; left:0; right:0;
-    height:4px; border-radius:14px 14px 0 0;
-}
+.kpi-wrap::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; border-radius:14px 14px 0 0; }
 .kpi-wrap.green::before { background:linear-gradient(90deg,#0F4023,#1A6B3A,#22874A); }
 .kpi-wrap.dark::before  { background:linear-gradient(90deg,#071F12,#0F4023,#1A6B3A); }
 .kpi-lbl { font-size:0.70rem; font-weight:700; text-transform:uppercase; letter-spacing:1.3px; color:#4B5568; margin-bottom:8px; }
@@ -70,7 +102,7 @@ st.markdown("""
     font-size:0.70rem; text-transform:uppercase; letter-spacing:0.6px;
     border-bottom:1px solid #C8E6D0;
 }
-.eros-table th.left { text-align:left; }
+.eros-table th.left   { text-align:left; }
 .eros-table th.center { text-align:center; }
 .eros-table td { padding:10px 16px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; }
 .eros-table td.left { text-align:left; }
@@ -81,7 +113,7 @@ st.markdown("""
 .faixa-badge {
     font-weight:800; border-radius:8px; padding:4px 0;
     font-size:0.83rem; display:inline-block;
-    width:170px; text-align:center;
+    width:175px; text-align:center;
     box-shadow:0 1px 4px rgba(0,0,0,0.12);
 }
 .nivel-badge {
@@ -91,8 +123,8 @@ st.markdown("""
 }
 .star-badge {
     font-weight:800; border-radius:8px; padding:3px 0;
-    font-size:0.85rem; display:inline-block;
-    width:130px; text-align:center;
+    font-size:0.82rem; display:inline-block;
+    width:140px; text-align:center;
     box-shadow:0 1px 4px rgba(0,0,0,0.10);
 }
 
@@ -119,10 +151,17 @@ st.markdown("""
 .prio-table tr:last-child td { border-bottom:none; }
 .prio-table tr:hover td { background:#F4FBF6; }
 
-/* ── BOTAO VOLTAR ── */
-.voltar-link a {
-    font-size:0.80rem; font-weight:600;
-    color:#145A32 !important; text-decoration:none;
+/* ── FILTROS DA FILA ── */
+.filtros-fila-wrap {
+    background:#FFFFFF; border-radius:14px;
+    padding:18px 24px 14px 24px;
+    box-shadow:0 2px 12px rgba(7,31,18,0.08);
+    margin-bottom:16px;
+}
+.filtros-fila-title {
+    font-size:0.72rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:1.3px; color:#145A32; margin-bottom:14px;
+    border-bottom:1px solid #C8E6D0; padding-bottom:8px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -151,6 +190,13 @@ FAIXAS_EROSAO = [
     ('EROSAO STAR 4 A 5',  'ATENCAO',    '#FFEB9C', '#7A4F00', lambda s: 4 <= s <= 5),
     ('EROSAO STAR 1 A 3',  'BAIXA',      '#C6EFCE', '#375623', lambda s: s <= 3),
 ]
+
+NIVEL_EROSAO_MAP = {
+    'CRITICO':    lambda s: s >= 8,
+    'ALTO RISCO': lambda s: 6 <= s <= 7,
+    'ATENCAO':    lambda s: 4 <= s <= 5,
+    'BAIXA':      lambda s: s <= 3,
+}
 
 
 def calcular_erosao_star(lp, cp):
@@ -243,6 +289,7 @@ df.columns = [str(c).strip().upper() for c in df.columns]
 col_cli  = find_col(df, 'CLIENTE')
 col_vend = find_col(df, 'VENDEDOR')
 col_curv = find_col(df, 'CURVA')
+col_cid  = find_col(df, 'CIDADE')
 col_mlp  = find_col(df, 'MEDIA', 'LP')
 col_mcp  = find_col(df, 'MEDIA', 'CP')
 col_sta  = find_col(df, 'STATUS')
@@ -257,24 +304,37 @@ df['_SCORE']  = df.apply(lambda r: score_prioridade(
     r.get(col_curv, 'C') if col_curv else 'C',
     r.get(col_sta, ''), r['_EROSAO'], r.get(col_mlp, 0)
 ), axis=1)
-df['_RISCO']  = df.apply(lambda r: max(0.0, float(r.get(col_mlp, 0) or 0) - float(r.get(col_mcp, 0) or 0)), axis=1)
+df['_RISCO']  = df.apply(
+    lambda r: max(0.0, float(r.get(col_mlp, 0) or 0) - float(r.get(col_mcp, 0) or 0)), axis=1
+)
 df_sorted = df.sort_values('_SCORE', ascending=False).reset_index(drop=True)
 
-# ── FILTROS ──────────────────────────────────────────────────────────────
+# ── FILTROS GERAIS ────────────────────────────────────────────────────────
 st.markdown("<div class='section-title'>FILTROS</div>", unsafe_allow_html=True)
-c1, c2, c3 = st.columns(3)
-vends = (['Todos'] + sorted(df[col_vend].dropna().astype(str).unique().tolist())) if col_vend else ['Todos']
-with c1: sel_v = st.selectbox("VENDEDOR", vends)
-with c2: sel_c = st.selectbox("CURVA", ['Todas', 'A', 'B', 'C'])
-with c3: sel_e = st.selectbox("EROSAO STAR", ['Todos', 'EROSAO STAR 8 A 10  Critico', 'EROSAO STAR 6 A 7  Alto Risco', 'EROSAO STAR 4 A 5  Atencao', 'EROSAO STAR 1 A 3  Baixa'])
 
+vends   = sorted(df[col_vend].dropna().astype(str).unique().tolist()) if col_vend else []
+cidades = sorted(df[col_cid].dropna().astype(str).unique().tolist())  if col_cid  else []
+
+c1, c2, c3 = st.columns(3)
+with c1:
+    sel_v = st.selectbox("VENDEDOR", ['Todos'] + vends)
+with c2:
+    if cidades:
+        sel_cid = st.selectbox("CIDADE", ['Todas'] + cidades)
+    else:
+        sel_cid = 'Todas'
+        st.selectbox("CIDADE", ['Todas'], disabled=True)
+with c3:
+    sel_curva = st.multiselect("CURVA", ['A', 'B', 'C'], default=['A', 'B', 'C'])
+
+# Aplica filtros gerais
 df_f = df_sorted.copy()
-if sel_v != 'Todos' and col_vend:     df_f = df_f[df_f[col_vend].astype(str) == sel_v]
-if sel_c != 'Todas' and col_curv:     df_f = df_f[df_f[col_curv].astype(str).str.upper() == sel_c]
-if   '8 A 10' in sel_e: df_f = df_f[df_f['_EROSAO'] >= 8]
-elif '6 A 7'  in sel_e: df_f = df_f[df_f['_EROSAO'].between(6, 7)]
-elif '4 A 5'  in sel_e: df_f = df_f[df_f['_EROSAO'].between(4, 5)]
-elif '1 A 3'  in sel_e: df_f = df_f[df_f['_EROSAO'] <= 3]
+if sel_v != 'Todos' and col_vend:
+    df_f = df_f[df_f[col_vend].astype(str) == sel_v]
+if sel_cid != 'Todas' and col_cid:
+    df_f = df_f[df_f[col_cid].astype(str) == sel_cid]
+if sel_curva and col_curv:
+    df_f = df_f[df_f[col_curv].astype(str).str.upper().isin([c.upper() for c in sel_curva])]
 
 n_total = len(df_f)
 risco_t = df_f['_RISCO'].sum()
@@ -282,7 +342,6 @@ risco_t = df_f['_RISCO'].sum()
 # ── VISAO GERAL ──────────────────────────────────────────────────────────
 st.markdown("<div class='section-title'>VISAO GERAL — PRIORIZACAO</div>", unsafe_allow_html=True)
 
-# Linha 1 — dois KPIs lado a lado
 k1, k2 = st.columns(2)
 with k1:
     st.markdown(
@@ -301,7 +360,6 @@ with k2:
         f"</div>", unsafe_allow_html=True
     )
 
-# Linha 2 — bloco erosão largura total
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
 rows_eros = ""
 for faixa_lbl, nivel_lbl, bg, fg, fn in FAIXAS_EROSAO:
@@ -309,30 +367,23 @@ for faixa_lbl, nivel_lbl, bg, fg, fn in FAIXAS_EROSAO:
     pct_f = round(n_f / n_total * 100, 1) if n_total > 0 else 0.0
     rows_eros += (
         f"<tr>"
-        f"<td class='left'>"
-        f"<span class='faixa-badge' style='background:{bg};color:{fg};'>{faixa_lbl}</span>"
-        f"</td>"
-        f"<td>"
-        f"<span class='nivel-badge' style='background:{bg};color:{fg};'>{nivel_lbl}</span>"
-        f"</td>"
+        f"<td class='left'><span class='faixa-badge' style='background:{bg};color:{fg};'>{faixa_lbl}</span></td>"
+        f"<td><span class='nivel-badge' style='background:{bg};color:{fg};'>{nivel_lbl}</span></td>"
         f"<td><strong>{n_f}</strong></td>"
         f"<td><strong>{pct_f}%</strong></td>"
         f"</tr>"
     )
 rows_eros += (
     f"<tr><td class='left' colspan='2'><strong>TOTAL</strong></td>"
-    f"<td><strong>{n_total}</strong></td>"
-    f"<td><strong>100%</strong></td></tr>"
+    f"<td><strong>{n_total}</strong></td><td><strong>100%</strong></td></tr>"
 )
 st.markdown(
     f"<div class='erosao-bloco'>"
     f"<div class='erosao-bloco-title'>INDICE DE EROSAO STAR</div>"
     f"<table class='eros-table'>"
     f"<thead><tr>"
-    f"<th class='left'>FAIXA</th>"
-    f"<th class='center'>NIVEL</th>"
-    f"<th class='center'>CLIENTES</th>"
-    f"<th class='center'>%</th>"
+    f"<th class='left'>FAIXA</th><th class='center'>NIVEL</th>"
+    f"<th class='center'>CLIENTES</th><th class='center'>%</th>"
     f"</tr></thead>"
     f"<tbody>{rows_eros}</tbody>"
     f"</table></div>",
@@ -343,9 +394,52 @@ st.markdown("</div>", unsafe_allow_html=True)
 # ── FILA OPERACIONAL ─────────────────────────────────────────────────────
 st.markdown("<div class='section-title'>FILA OPERACIONAL DE PRIORIDADE</div>", unsafe_allow_html=True)
 
-if not df_f.empty:
+# Filtros da fila
+st.markdown("<div class='filtros-fila-wrap'><div class='filtros-fila-title'>FILTRAR FILA</div>", unsafe_allow_html=True)
+
+fa, fb, fc, fd = st.columns(4)
+
+status_opts = ['Todos os status'] + [
+    'QUEDA ACENTUADA', 'QUEDA', 'ESTAVEL',
+    'CRESCIMENTO', 'CRESCIMENTO ACENTUADO', 'INATIVO'
+]
+indice_opts = ['Todos', 'EROSAO STAR 8 A 10', 'EROSAO STAR 6 A 7', 'EROSAO STAR 4 A 5', 'EROSAO STAR 1 A 3']
+nivel_opts  = ['Todos', 'CRITICO', 'ALTO RISCO', 'ATENCAO', 'BAIXA']
+
+with fa:
+    busca_cli = st.text_input("POR CLIENTE", placeholder="Digite o nome...")
+with fb:
+    sel_sta   = st.selectbox("POR STATUS", status_opts)
+with fc:
+    sel_ind   = st.selectbox("POR INDICE DE EROSAO STAR", indice_opts)
+with fd:
+    sel_niv   = st.selectbox("POR NIVEL", nivel_opts)
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Aplica filtros da fila
+df_fila = df_f.copy()
+
+if busca_cli.strip():
+    df_fila = df_fila[df_fila[col_cli].astype(str).str.upper().str.contains(busca_cli.strip().upper(), na=False)]
+
+if sel_sta != 'Todos os status':
+    df_fila = df_fila[df_fila[col_sta].astype(str).str.upper() == sel_sta]
+
+if sel_ind != 'Todos':
+    if   '8 A 10' in sel_ind: df_fila = df_fila[df_fila['_EROSAO'] >= 8]
+    elif '6 A 7'  in sel_ind: df_fila = df_fila[df_fila['_EROSAO'].between(6, 7)]
+    elif '4 A 5'  in sel_ind: df_fila = df_fila[df_fila['_EROSAO'].between(4, 5)]
+    elif '1 A 3'  in sel_ind: df_fila = df_fila[df_fila['_EROSAO'] <= 3]
+
+if sel_niv != 'Todos' and sel_niv in NIVEL_EROSAO_MAP:
+    fn_niv  = NIVEL_EROSAO_MAP[sel_niv]
+    df_fila = df_fila[df_fila['_EROSAO'].apply(fn_niv)]
+
+# Tabela
+if not df_fila.empty:
     rows_html = ""
-    for i, (_, r) in enumerate(df_f.iterrows(), 1):
+    for i, (_, r) in enumerate(df_fila.iterrows(), 1):
         en             = int(r['_EROSAO'])
         ebg, efg, elbl = erosao_display(en)
         sta            = str(r.get(col_sta, '')).strip().upper()
@@ -364,10 +458,8 @@ if not df_f.empty:
             f"<td>{vend}</td>"
             f"<td><strong>{curv}</strong></td>"
             f"<td><span style='{scss}'>{sta}</span></td>"
-            f"<td><span class='star-badge' style='background:{ebg};color:{efg};'>"
-            f"EROSAO STAR {en}</span></td>"
-            f"<td><span class='nivel-badge' style='background:{ebg};color:{efg};'>"
-            f"{elbl}</span></td>"
+            f"<td><span class='star-badge' style='background:{ebg};color:{efg};'>EROSAO STAR {en}</span></td>"
+            f"<td><span class='nivel-badge' style='background:{ebg};color:{efg};'>{elbl}</span></td>"
             f"<td>{mlp}</td><td>{mcp}</td>"
             f"<td style='color:#C00000;font-weight:700;'>{risk}</td>"
             f"<td class='left' style='font-size:0.78rem;color:#4B5568;'>{acao}</td>"
