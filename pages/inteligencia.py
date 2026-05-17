@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import re
 
-st.set_page_config(page_title="Giri | Inteligência de Carteira", layout="wide")
+st.set_page_config(page_title="Giri | INTELIGÊNCIA STAR", layout="wide")
 
 st.markdown("""
 <style>
