@@ -39,24 +39,13 @@ st.markdown("""
     box-shadow:0 12px 48px rgba(7,31,18,0.45),0 2px 8px rgba(34,135,74,0.20);
     display:flex; align-items:center; gap:18px;
 }
-.giri-header-dot {
-    width:48px; height:48px; background:rgba(255,255,255,0.13);
-    border-radius:12px; display:flex; align-items:center;
-    justify-content:center; font-size:22px; flex-shrink:0;
-}
+.giri-header-dot { width:48px; height:48px; background:rgba(255,255,255,0.13); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
 .giri-header-int h1 { color:#FFFFFF; font-size:1.45rem; font-weight:800; letter-spacing:1.2px; margin:0 0 3px 0; }
 .giri-header-int p  { color:rgba(255,255,255,0.60); font-size:0.80rem; margin:0; letter-spacing:0.5px; }
 
-.section-title {
-    font-size:0.95rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:2px; color:#071F12; margin:32px 0 14px 0;
-    padding-bottom:8px; border-bottom:2px solid #1A6B3A;
-}
-.kpi-wrap {
-    background:#FFFFFF; border-radius:14px; padding:14px 22px 12px 22px;
-    box-shadow:0 4px 24px rgba(7,31,18,0.10),0 1px 4px rgba(0,0,0,0.04);
-    position:relative; overflow:hidden; text-align:center;
-}
+.section-title { font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:2px; color:#071F12; margin:32px 0 14px 0; padding-bottom:8px; border-bottom:2px solid #1A6B3A; }
+
+.kpi-wrap { background:#FFFFFF; border-radius:14px; padding:14px 22px 12px 22px; box-shadow:0 4px 24px rgba(7,31,18,0.10),0 1px 4px rgba(0,0,0,0.04); position:relative; overflow:hidden; text-align:center; }
 .kpi-wrap::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; border-radius:14px 14px 0 0; }
 .kpi-wrap.green::before { background:linear-gradient(90deg,#0F4023,#1A6B3A,#22874A); }
 .kpi-wrap.dark::before  { background:linear-gradient(90deg,#071F12,#0F4023,#1A6B3A); }
@@ -76,12 +65,12 @@ st.markdown("""
 
 .faixa-badge { font-weight:800; border-radius:8px; padding:4px 0; font-size:0.83rem; display:inline-block; width:175px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.12); }
 .nivel-badge { font-weight:700; border-radius:6px; padding:3px 0; font-size:0.78rem; display:inline-block; width:95px; text-align:center; }
-.star-badge  { font-weight:800; border-radius:8px; padding:3px 0; font-size:0.82rem; display:inline-block; width:140px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.10); }
+.star-badge  { font-weight:800; border-radius:8px; padding:2px 0; font-size:0.75rem; display:inline-block; width:120px; text-align:center; }
 
-.prio-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 4px 24px rgba(7,31,18,0.10),0 1px 4px rgba(0,0,0,0.04); overflow:auto; max-height:580px; }
-.prio-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.83rem; }
-.prio-table th { background:linear-gradient(90deg,#071F12 0%,#145A32 60%,#1A6B3A 100%); color:#FFFFFF; font-weight:700; padding:10px 12px; text-align:center; letter-spacing:0.6px; font-size:0.70rem; text-transform:uppercase; white-space:nowrap; vertical-align:middle; }
-.prio-table td { padding:9px 12px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; vertical-align:middle; }
+.prio-wrap { background:#FFFFFF; border-radius:14px; box-shadow:0 4px 24px rgba(7,31,18,0.10),0 1px 4px rgba(0,0,0,0.04); overflow:auto; }
+.prio-table { width:100%; border-collapse:collapse; font-family:Arial; font-size:0.75rem; }
+.prio-table th { background:linear-gradient(90deg,#071F12 0%,#145A32 60%,#1A6B3A 100%); color:#FFFFFF; font-weight:700; padding:9px 10px; text-align:center; letter-spacing:0.5px; font-size:0.65rem; text-transform:uppercase; white-space:nowrap; vertical-align:middle; }
+.prio-table td { padding:7px 10px; text-align:center; color:#1A2540; border-bottom:1px solid #E5EAF2; font-weight:500; vertical-align:middle; font-size:0.75rem; }
 .prio-table td.left { text-align:left; }
 .prio-table tr:last-child td { border-bottom:none; }
 .prio-table tr:hover td { background:#F4FBF6; }
@@ -89,22 +78,16 @@ st.markdown("""
 .filtros-fila-wrap { background:#FFFFFF; border-radius:14px; padding:18px 24px 14px 24px; box-shadow:0 2px 12px rgba(7,31,18,0.08); margin-bottom:16px; }
 .filtros-fila-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.3px; color:#145A32; margin-bottom:14px; border-bottom:1px solid #C8E6D0; padding-bottom:8px; }
 
+.top10-label { font-size:0.72rem; font-weight:700; color:#145A32; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+
 /* ── RAIO-X ── */
-.raio-header {
-    background:linear-gradient(120deg,#071F12 0%,#0F4023 50%,#1A6B3A 100%);
-    border-radius:16px; padding:24px 30px;
-    box-shadow:0 8px 36px rgba(7,31,18,0.35),0 2px 8px rgba(34,135,74,0.15);
-    margin-bottom:20px;
-}
+.raio-header { background:linear-gradient(120deg,#071F12 0%,#0F4023 50%,#1A6B3A 100%); border-radius:16px; padding:24px 30px; box-shadow:0 8px 36px rgba(7,31,18,0.35),0 2px 8px rgba(34,135,74,0.15); margin-bottom:20px; }
 .raio-nome { color:#FFFFFF; font-size:1.25rem; font-weight:800; letter-spacing:0.8px; margin-bottom:10px; }
 .raio-meta { display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
 .raio-tag  { font-size:0.80rem; font-weight:600; color:rgba(255,255,255,0.75); }
 .raio-tag strong { color:#FFFFFF; }
 
-.raio-kpi-wrap {
-    background:#FFFFFF; border-radius:12px; padding:14px 18px 12px 18px;
-    box-shadow:0 3px 16px rgba(7,31,18,0.10); position:relative; overflow:hidden; text-align:center;
-}
+.raio-kpi-wrap { background:#FFFFFF; border-radius:12px; padding:14px 18px 12px 18px; box-shadow:0 3px 16px rgba(7,31,18,0.10); position:relative; overflow:hidden; text-align:center; }
 .raio-kpi-wrap::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; border-radius:12px 12px 0 0; background:linear-gradient(90deg,#0F4023,#22874A); }
 .raio-kpi-lbl { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:#4B5568; margin-bottom:6px; }
 .raio-kpi-val { font-size:1.45rem; font-weight:800; color:#071F12; line-height:1; margin-bottom:4px; }
@@ -112,9 +95,7 @@ st.markdown("""
 
 .raio-bloco { background:#FFFFFF; border-radius:14px; padding:20px 22px; box-shadow:0 3px 16px rgba(7,31,18,0.08); height:100%; }
 .raio-bloco-titulo { font-size:0.70rem; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; color:#071F12; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid #C8E6D0; }
-
 .hip-item { background:#F4FBF6; border-left:3px solid #1A6B3A; border-radius:0 8px 8px 0; padding:8px 12px; margin-bottom:7px; font-size:0.82rem; color:#1A2540; line-height:1.4; }
-
 .missao-row { display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; }
 .missao-lbl { font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:#145A32; min-width:110px; padding-top:3px; flex-shrink:0; }
 .missao-val { font-size:0.82rem; color:#1A2540; line-height:1.5; }
@@ -134,21 +115,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 STATUS_CSS = {
-    'QUEDA ACENTUADA':       'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 8px;white-space:nowrap;display:inline-block;',
+    'QUEDA ACENTUADA':       'background:#FFC7CE;color:#C00000;font-weight:700;border-radius:6px;padding:2px 7px;white-space:nowrap;display:inline-block;font-size:0.73rem;',
     'QUEDA':                 'color:#C00000;font-weight:700;',
-    'CRESCIMENTO ACENTUADO': 'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 8px;white-space:nowrap;display:inline-block;',
+    'CRESCIMENTO ACENTUADO': 'background:#C6EFCE;color:#375623;font-weight:700;border-radius:6px;padding:2px 7px;white-space:nowrap;display:inline-block;font-size:0.73rem;',
     'CRESCIMENTO':           'color:#375623;font-weight:700;',
     'ESTAVEL':               'color:#0070C0;font-weight:700;',
     'INATIVO':               'color:#6B7280;font-weight:700;',
-}
-
-ACAO_MAP = {
-    'QUEDA ACENTUADA':       'Diagnostico — contato em ate 48h',
-    'QUEDA':                 'Acao preventiva — contato em 5 dias uteis',
-    'INATIVO':               'Validar recuperabilidade antes de ofertar',
-    'ESTAVEL':               'Blindagem relacional — ciclo mensal',
-    'CRESCIMENTO':           'Consolidacao — entender driver e proteger conta',
-    'CRESCIMENTO ACENTUADO': 'Consolidacao urgente — crescimento atrai concorrencia',
 }
 
 FAIXAS_EROSAO = [
@@ -158,7 +130,12 @@ FAIXAS_EROSAO = [
     ('EROSAO STAR 1 A 3',  'BAIXA',      '#C6EFCE', '#375623', lambda s: s <= 3),
 ]
 
-NIVEL_MAP = {'CRITICO': lambda s: s >= 8, 'ALTO RISCO': lambda s: 6 <= s <= 7, 'ATENCAO': lambda s: 4 <= s <= 5, 'BAIXA': lambda s: s <= 3}
+NIVEL_MAP = {
+    'CRITICO':    lambda s: s >= 8,
+    'ALTO RISCO': lambda s: 6 <= s <= 7,
+    'ATENCAO':    lambda s: 4 <= s <= 5,
+    'BAIXA':      lambda s: s <= 3,
+}
 
 HIPOTESES = {
     'QUEDA ACENTUADA': ['Perda parcial ou total de share para concorrente', 'Retracao do mercado ou queda de demanda final', 'Estoque elevado no cliente', 'Problema comercial: preco, prazo, entrega ou atendimento', 'Mudanca interna no cliente (gestor, mix, operacao)', 'Sazonalidade pontual', 'Causa ainda nao identificada'],
@@ -273,11 +250,6 @@ def score_prioridade(curva, status, erosao, media_lp):
     return cp + sp + ep + rp
 
 
-def fmt_br(v):
-    try: return 'R$ ' + f"{int(float(v)):,}".replace(',', '.')
-    except: return 'R$ 0'
-
-
 def fmt_num(v):
     try: return f"{int(float(v)):,}".replace(',', '.')
     except: return '0'
@@ -334,7 +306,9 @@ if not all([col_cli, col_mlp, col_mcp, col_sta]):
 
 # ── CALCULO ──────────────────────────────────────────────────────────────
 df['_EROSAO'] = df.apply(lambda r: calcular_erosao_star(r.get(col_mlp, 0), r.get(col_mcp, 0)), axis=1)
-df['_SCORE']  = df.apply(lambda r: score_prioridade(r.get(col_curv, 'C') if col_curv else 'C', r.get(col_sta, ''), r['_EROSAO'], r.get(col_mlp, 0)), axis=1)
+df['_SCORE']  = df.apply(lambda r: score_prioridade(
+    r.get(col_curv, 'C') if col_curv else 'C',
+    r.get(col_sta, ''), r['_EROSAO'], r.get(col_mlp, 0)), axis=1)
 df['_RISCO']  = df.apply(lambda r: max(0.0, float(r.get(col_mlp, 0) or 0) - float(r.get(col_mcp, 0) or 0)), axis=1)
 df_sorted = df.sort_values('_SCORE', ascending=False).reset_index(drop=True)
 
@@ -343,7 +317,7 @@ st.markdown("<div class='section-title'>FILTROS</div>", unsafe_allow_html=True)
 vends   = sorted(df[col_vend].dropna().astype(str).unique().tolist()) if col_vend else []
 cidades = sorted(df[col_cid].dropna().astype(str).unique().tolist())  if col_cid  else []
 c1, c2, c3 = st.columns(3)
-with c1: sel_v   = st.selectbox("VENDEDOR", ['Todos'] + vends)
+with c1: sel_v     = st.selectbox("VENDEDOR", ['Todos'] + vends)
 with c2:
     if cidades: sel_cid = st.selectbox("CIDADE", ['Todas'] + cidades)
     else:
@@ -352,9 +326,9 @@ with c2:
 with c3: sel_curva = st.multiselect("CURVA", ['A','B','C'], default=['A','B','C'])
 
 df_f = df_sorted.copy()
-if sel_v != 'Todos' and col_vend:   df_f = df_f[df_f[col_vend].astype(str) == sel_v]
-if sel_cid != 'Todas' and col_cid:  df_f = df_f[df_f[col_cid].astype(str) == sel_cid]
-if sel_curva and col_curv:          df_f = df_f[df_f[col_curv].astype(str).str.upper().isin([c.upper() for c in sel_curva])]
+if sel_v != 'Todos' and col_vend:  df_f = df_f[df_f[col_vend].astype(str) == sel_v]
+if sel_cid != 'Todas' and col_cid: df_f = df_f[df_f[col_cid].astype(str) == sel_cid]
+if sel_curva and col_curv:         df_f = df_f[df_f[col_curv].astype(str).str.upper().isin([c.upper() for c in sel_curva])]
 
 n_total = len(df_f)
 risco_t = df_f['_RISCO'].sum()
@@ -365,7 +339,7 @@ k1, k2 = st.columns(2)
 with k1:
     st.markdown(f"<div class='kpi-wrap green'><div class='kpi-lbl'>CLIENTES NA SELECAO</div><div class='kpi-val'>{n_total}</div><div class='kpi-sub'>na fila de priorizacao</div></div>", unsafe_allow_html=True)
 with k2:
-    st.markdown(f"<div class='kpi-wrap dark'><div class='kpi-lbl'>RECEITA EM RISCO</div><div class='kpi-val'>{fmt_br(risco_t)}</div><div class='kpi-sub'>diferenca LP vs CP acumulada</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='kpi-wrap dark'><div class='kpi-lbl'>RECEITA EM RISCO</div><div class='kpi-val'>{fmt_num(risco_t)}</div><div class='kpi-sub'>diferenca LP vs CP acumulada</div></div>", unsafe_allow_html=True)
 
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
 rows_eros = ""
@@ -377,49 +351,74 @@ rows_eros += f"<tr><td class='left' colspan='2'><strong>TOTAL</strong></td><td><
 st.markdown(f"<div class='erosao-bloco'><div class='erosao-bloco-title'>INDICE DE EROSAO STAR</div><table class='eros-table'><thead><tr><th class='left'>FAIXA</th><th class='center'>NIVEL</th><th class='center'>CLIENTES</th><th class='center'>%</th></tr></thead><tbody>{rows_eros}</tbody></table></div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ── FILA OPERACIONAL ─────────────────────────────────────────────────────
+# ── FILA OPERACIONAL — TOP 10 ─────────────────────────────────────────────
 st.markdown("<div class='section-title'>FILA OPERACIONAL DE PRIORIDADE</div>", unsafe_allow_html=True)
+
 st.markdown("<div class='filtros-fila-wrap'><div class='filtros-fila-title'>FILTRAR FILA</div>", unsafe_allow_html=True)
 fa, fb, fc, fd = st.columns(4)
 s_opts = ['Todos os status', 'QUEDA ACENTUADA', 'QUEDA', 'ESTAVEL', 'CRESCIMENTO', 'CRESCIMENTO ACENTUADO', 'INATIVO']
 i_opts = ['Todos', 'EROSAO STAR 8 A 10', 'EROSAO STAR 6 A 7', 'EROSAO STAR 4 A 5', 'EROSAO STAR 1 A 3']
 n_opts = ['Todos', 'CRITICO', 'ALTO RISCO', 'ATENCAO', 'BAIXA']
-with fa: busca = st.text_input("POR CLIENTE", placeholder="Digite o nome...")
+with fa: busca   = st.text_input("POR CLIENTE", placeholder="Digite o nome...")
 with fb: sel_sta = st.selectbox("POR STATUS", s_opts)
 with fc: sel_ind = st.selectbox("POR INDICE DE EROSAO STAR", i_opts)
 with fd: sel_niv = st.selectbox("POR NIVEL", n_opts)
 st.markdown("</div>", unsafe_allow_html=True)
 
 df_fila = df_f.copy()
-if busca.strip():        df_fila = df_fila[df_fila[col_cli].astype(str).str.upper().str.contains(busca.strip().upper(), na=False)]
+if busca.strip():            df_fila = df_fila[df_fila[col_cli].astype(str).str.upper().str.contains(busca.strip().upper(), na=False)]
 if sel_sta != 'Todos os status': df_fila = df_fila[df_fila[col_sta].astype(str).str.upper() == sel_sta]
-if '8 A 10' in sel_ind:  df_fila = df_fila[df_fila['_EROSAO'] >= 8]
-elif '6 A 7' in sel_ind: df_fila = df_fila[df_fila['_EROSAO'].between(6, 7)]
-elif '4 A 5' in sel_ind: df_fila = df_fila[df_fila['_EROSAO'].between(4, 5)]
-elif '1 A 3' in sel_ind: df_fila = df_fila[df_fila['_EROSAO'] <= 3]
-if sel_niv != 'Todos' and sel_niv in NIVEL_MAP: df_fila = df_fila[df_fila['_EROSAO'].apply(NIVEL_MAP[sel_niv])]
+if '8 A 10' in sel_ind:     df_fila = df_fila[df_fila['_EROSAO'] >= 8]
+elif '6 A 7' in sel_ind:    df_fila = df_fila[df_fila['_EROSAO'].between(6, 7)]
+elif '4 A 5' in sel_ind:    df_fila = df_fila[df_fila['_EROSAO'].between(4, 5)]
+elif '1 A 3' in sel_ind:    df_fila = df_fila[df_fila['_EROSAO'] <= 3]
+if sel_niv != 'Todos' and sel_niv in NIVEL_MAP:
+    df_fila = df_fila[df_fila['_EROSAO'].apply(NIVEL_MAP[sel_niv])]
 
-if not df_fila.empty:
+df_top10 = df_fila.head(10)
+n_fila   = len(df_fila)
+
+st.markdown(
+    f"<div class='top10-label'>EXIBINDO TOP 10 DE {n_fila} CLIENTES PRIORIZADOS</div>",
+    unsafe_allow_html=True
+)
+
+if not df_top10.empty:
     rows_html = ""
-    for i, (_, r) in enumerate(df_fila.iterrows(), 1):
-        en = int(r['_EROSAO']); ebg, efg, elbl = erosao_display(en)
+    for i, (_, r) in enumerate(df_top10.iterrows(), 1):
+        en   = int(r['_EROSAO'])
+        ebg, efg, elbl = erosao_display(en)
         sta  = str(r.get(col_sta, '')).strip().upper()
         scss = STATUS_CSS.get(sta, 'color:#1A2540;font-weight:600;')
+        curv = str(r.get(col_curv, '')) if col_curv else ''
+        nome = str(r.get(col_cli, ''))
+        vend = str(r.get(col_vend, '')) if col_vend else ''
+        mlp  = fmt_num(r.get(col_mlp, 0))
+        mcp  = fmt_num(r.get(col_mcp, 0))
+        risk = fmt_num(r['_RISCO'])
         rows_html += (
             f"<tr>"
             f"<td><strong>#{i}</strong></td>"
-            f"<td class='left'><strong>{str(r.get(col_cli,''))}</strong></td>"
-            f"<td>{str(r.get(col_vend,'')) if col_vend else ''}</td>"
-            f"<td><strong>{str(r.get(col_curv,'')) if col_curv else ''}</strong></td>"
+            f"<td class='left'><strong>{nome}</strong></td>"
+            f"<td>{vend}</td>"
+            f"<td><strong>{curv}</strong></td>"
             f"<td><span style='{scss}'>{sta}</span></td>"
             f"<td><span class='star-badge' style='background:{ebg};color:{efg};'>EROSAO STAR {en}</span></td>"
             f"<td><span class='nivel-badge' style='background:{ebg};color:{efg};'>{elbl}</span></td>"
-            f"<td>{fmt_br(r.get(col_mlp,0))}</td><td>{fmt_br(r.get(col_mcp,0))}</td>"
-            f"<td style='color:#C00000;font-weight:700;'>{fmt_br(r['_RISCO'])}</td>"
-            f"<td class='left' style='font-size:0.78rem;color:#4B5568;'>{ACAO_MAP.get(sta,'Monitorar')}</td>"
+            f"<td>{mlp}</td>"
+            f"<td>{mcp}</td>"
+            f"<td style='color:#C00000;font-weight:700;'>{risk}</td>"
             f"</tr>"
         )
-    st.markdown(f"<div class='prio-wrap'><table class='prio-table'><thead><tr><th>#</th><th>CLIENTE</th><th>VENDEDOR</th><th>CURVA</th><th>STATUS</th><th>INDICE EROSAO</th><th>NIVEL</th><th>MEDIA LP</th><th>MEDIA CP</th><th>RISCO</th><th>ACAO PRESCRITA</th></tr></thead><tbody>{rows_html}</tbody></table></div>", unsafe_allow_html=True)
+    st.markdown(
+        f"<div class='prio-wrap'><table class='prio-table'>"
+        f"<thead><tr>"
+        f"<th>#</th><th>CLIENTE</th><th>VENDEDOR</th><th>CURVA</th><th>STATUS</th>"
+        f"<th>INDICE EROSAO</th><th>NIVEL</th><th>MEDIA LP</th><th>MEDIA CP</th><th>RISCO</th>"
+        f"</tr></thead>"
+        f"<tbody>{rows_html}</tbody></table></div>",
+        unsafe_allow_html=True
+    )
 else:
     st.info("Nenhum cliente encontrado para os filtros selecionados.")
 
@@ -429,11 +428,11 @@ else:
 st.markdown("<div class='section-title'>RAIO-X DO CLIENTE</div>", unsafe_allow_html=True)
 
 if df_fila.empty:
-    st.info("Aplique filtros acima para visualizar clientes disponíveis para o Raio-X.")
+    st.info("Aplique os filtros acima para visualizar clientes disponiveis para o Raio-X.")
     st.stop()
 
-nomes_lista = ['Selecione um cliente...'] + df_fila[col_cli].astype(str).tolist()
-sel_cliente = st.selectbox("SELECIONAR CLIENTE", nomes_lista, label_visibility="visible")
+nomes_lista  = ['Selecione um cliente...'] + df_fila[col_cli].astype(str).tolist()
+sel_cliente  = st.selectbox("SELECIONAR CLIENTE", nomes_lista)
 
 if sel_cliente == 'Selecione um cliente...':
     st.stop()
@@ -450,84 +449,68 @@ r_eros  = int(row['_EROSAO'])
 r_risco = float(row['_RISCO'])
 r_diff  = round(((r_mlp - r_mcp) / r_mlp * 100), 1) if r_mlp > 0 else 0.0
 
-ebg, efg, elbl     = erosao_display(r_eros)
-p_lbl, p_bg, p_fg  = sinal_prioridade(r_curv, r_sta)
-sta_css             = STATUS_CSS.get(r_sta, '')
+ebg, efg, elbl    = erosao_display(r_eros)
+p_lbl, p_bg, p_fg = sinal_prioridade(r_curv, r_sta)
+sta_css            = STATUS_CSS.get(r_sta, '')
 
-# ── CABECALHO DO RAIO-X ──────────────────────────────────────────────────
+# ── CABECALHO ────────────────────────────────────────────────────────────
 st.markdown(f"""
 <div class='raio-header'>
   <div class='raio-nome'>{r_nome}</div>
   <div class='raio-meta'>
     <div class='raio-tag'>Vendedor: <strong>{r_vend}</strong></div>
     <div class='raio-tag'>Curva: <strong>{r_curv}</strong></div>
-    <div class='raio-tag'>
-      <span style='{sta_css}'>{r_sta}</span>
-    </div>
-    <div class='raio-tag'>
-      <span style='background:{ebg};color:{efg};font-weight:800;border-radius:8px;padding:3px 12px;font-size:0.85rem;'>EROSAO STAR {r_eros}</span>
-    </div>
-    <div class='raio-tag'>
-      <span style='background:{p_bg};color:{p_fg};font-weight:700;border-radius:6px;padding:3px 12px;font-size:0.80rem;'>{p_lbl}</span>
-    </div>
+    <div class='raio-tag'><span style='{sta_css}'>{r_sta}</span></div>
+    <div class='raio-tag'><span style='background:{ebg};color:{efg};font-weight:800;border-radius:8px;padding:3px 12px;font-size:0.85rem;'>EROSAO STAR {r_eros}</span></div>
+    <div class='raio-tag'><span style='background:{p_bg};color:{p_fg};font-weight:700;border-radius:6px;padding:3px 12px;font-size:0.80rem;'>{p_lbl}</span></div>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── KPIs DO RAIO-X ───────────────────────────────────────────────────────
+# ── KPIs ─────────────────────────────────────────────────────────────────
 rk1, rk2, rk3, rk4 = st.columns(4)
 with rk1:
     st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>INDICE DE EROSAO STAR</div><div class='raio-kpi-val'><span style='background:{ebg};color:{efg};border-radius:8px;padding:2px 14px;'>STAR {r_eros}</span></div><div class='raio-kpi-sub'>{elbl}</div></div>", unsafe_allow_html=True)
 with rk2:
-    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>MEDIA LP</div><div class='raio-kpi-val'>{fmt_br(r_mlp)}</div><div class='raio-kpi-sub'>referencia historica</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>MEDIA LP</div><div class='raio-kpi-val'>{fmt_num(r_mlp)}</div><div class='raio-kpi-sub'>referencia historica</div></div>", unsafe_allow_html=True)
 with rk3:
     cor_cp = '#C00000' if r_mcp < r_mlp * 0.98 else '#1A6B3A'
-    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>MEDIA CP</div><div class='raio-kpi-val' style='color:{cor_cp};'>{fmt_br(r_mcp)}</div><div class='raio-kpi-sub'>comportamento recente</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>MEDIA CP</div><div class='raio-kpi-val' style='color:{cor_cp};'>{fmt_num(r_mcp)}</div><div class='raio-kpi-sub'>comportamento recente</div></div>", unsafe_allow_html=True)
 with rk4:
     sinal = f"▼ {r_diff}% abaixo da media" if r_diff > 0 else f"▲ {abs(r_diff)}% acima da media"
     cor_r = '#C00000' if r_diff > 0 else '#1A6B3A'
-    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>RECEITA EM RISCO</div><div class='raio-kpi-val' style='color:{cor_r};'>{fmt_br(r_risco)}</div><div class='raio-kpi-sub'>{sinal}</div></div>", unsafe_allow_html=True)
-
-st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
+    st.markdown(f"<div class='raio-kpi-wrap'><div class='raio-kpi-lbl'>RECEITA EM RISCO</div><div class='raio-kpi-val' style='color:{cor_r};'>{fmt_num(r_risco)}</div><div class='raio-kpi-sub'>{sinal}</div></div>", unsafe_allow_html=True)
 
 # ── HISTORICO MENSAL ─────────────────────────────────────────────────────
 if meses_cols:
     valores_meses = [float(row.get(m, 0) or 0) for m in meses_cols]
     cores_barras  = ['#C00000' if v < r_mlp * 0.98 else '#1A6B3A' for v in valores_meses]
-
     fig = go.Figure()
     fig.add_trace(go.Bar(
-        x=meses_cols, y=valores_meses,
-        marker_color=cores_barras,
+        x=meses_cols, y=valores_meses, marker_color=cores_barras,
         text=[fmt_num(v) for v in valores_meses],
-        textposition='outside',
-        textfont=dict(size=10, color='#1A2540'),
+        textposition='outside', textfont=dict(size=10, color='#1A2540'),
     ))
     if r_mlp > 0:
-        fig.add_hline(
-            y=r_mlp, line_dash='dash', line_color='#145A32', line_width=2,
+        fig.add_hline(y=r_mlp, line_dash='dash', line_color='#145A32', line_width=2,
             annotation_text=f'Media LP: {fmt_num(r_mlp)}',
-            annotation_font_color='#145A32', annotation_font_size=11,
-        )
+            annotation_font_color='#145A32', annotation_font_size=11)
     fig.update_layout(
-        plot_bgcolor='white', paper_bgcolor='white',
-        height=250, margin=dict(t=30, b=10, l=10, r=10),
-        showlegend=False,
+        plot_bgcolor='white', paper_bgcolor='white', height=250,
+        margin=dict(t=30, b=10, l=10, r=10), showlegend=False,
         yaxis=dict(showgrid=True, gridcolor='#E5EAF2', tickfont=dict(size=10)),
         xaxis=dict(tickfont=dict(size=11, color='#1A2540', family='Arial')),
     )
+    st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
     st.markdown("<div class='chart-wrap'><div class='chart-lbl'>HISTORICO MENSAL DE COMPRAS</div>", unsafe_allow_html=True)
     st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
-st.markdown("</div>", unsafe_allow_html=True)
+# ── HIPOTESES + MISSAO ────────────────────────────────────────────────────
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
-
-# ── DIAGNOSTICO + MISSAO ─────────────────────────────────────────────────
+hips = HIPOTESES.get(r_sta, HIPOTESES.get('ESTAVEL', []))
+miss = MISSAO.get(r_sta, MISSAO.get('ESTAVEL', {}))
 col_diag, col_miss = st.columns(2)
-
-hips  = HIPOTESES.get(r_sta, HIPOTESES.get('ESTAVEL', []))
-miss  = MISSAO.get(r_sta, MISSAO.get('ESTAVEL', {}))
 
 with col_diag:
     hips_html = "".join([f"<div class='hip-item'>{h}</div>" for h in hips])
@@ -535,42 +518,31 @@ with col_diag:
 
 with col_miss:
     campos = [
-        ('OBJETIVO',          miss.get('objetivo',  '—')),
-        ('MISSAO',            miss.get('missao',    '—')),
-        ('PRAZO',             miss.get('prazo',     '—')),
-        ('REAVALIACAO',       miss.get('reavaliacao','—')),
-        ('CRITERIO SUCESSO',  miss.get('sucesso',   '—')),
-        ('CRITERIO ESCALA',   miss.get('escala',    '—')),
+        ('OBJETIVO',         miss.get('objetivo',   '—')),
+        ('MISSAO',           miss.get('missao',     '—')),
+        ('PRAZO',            miss.get('prazo',      '—')),
+        ('REAVALIACAO',      miss.get('reavaliacao','—')),
+        ('CRITERIO SUCESSO', miss.get('sucesso',    '—')),
+        ('CRITERIO ESCALA',  miss.get('escala',     '—')),
     ]
     rows_miss = "".join([f"<div class='missao-row'><div class='missao-lbl'>{lbl}</div><div class='missao-val'>{val}</div></div>" for lbl, val in campos])
     st.markdown(f"<div class='raio-bloco'><div class='raio-bloco-titulo'>MISSAO DO CONTATO</div>{rows_miss}</div>", unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ── PERGUNTAS DE DIAGNOSTICO ─────────────────────────────────────────────
+# ── PERGUNTAS ─────────────────────────────────────────────────────────────
 st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
-pergs = PERGUNTAS.get(r_sta, PERGUNTAS.get('ESTAVEL', []))
-
+pergs  = PERGUNTAS.get(r_sta, PERGUNTAS.get('ESTAVEL', []))
 p_html = ""
 for i, pq in enumerate(pergs, 1):
     opcoes_html = "".join([f"<span class='opcao-pill'>{o}</span>" for o in pq['o']])
     p_html += f"<div class='perg-bloco'><div class='perg-num'>Pergunta {i}</div><div class='perg-txt'>{pq['p']}</div><div>{opcoes_html}</div></div>"
-
-st.markdown(
-    f"<div class='raio-bloco'><div class='raio-bloco-titulo'>PERGUNTAS DE DIAGNOSTICO — {r_sta}</div>{p_html}</div>",
-    unsafe_allow_html=True
-)
+st.markdown(f"<div class='raio-bloco'><div class='raio-bloco-titulo'>PERGUNTAS DE DIAGNOSTICO — {r_sta}</div>{p_html}</div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ── ABORDAGEM SUGERIDA ───────────────────────────────────────────────────
-st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
+# ── ABORDAGEM ─────────────────────────────────────────────────────────────
 abord = miss.get('abordagem', '')
 if abord:
-    st.markdown(
-        f"<div class='abordagem-bloco'>"
-        f"<div class='abordagem-lbl'>LINHA DE ABORDAGEM SUGERIDA</div>"
-        f"<div class='abordagem-txt'>{abord}</div>"
-        f"</div>",
-        unsafe_allow_html=True
-    )
-st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:16px;'>", unsafe_allow_html=True)
+    st.markdown(f"<div class='abordagem-bloco'><div class='abordagem-lbl'>LINHA DE ABORDAGEM SUGERIDA</div><div class='abordagem-txt'>{abord}</div></div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
