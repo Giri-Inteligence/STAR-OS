@@ -97,10 +97,14 @@ st.markdown("""
     filter:brightness(0.86) !important; opacity:1 !important;
 }
 
-/* Botões ocultos para filtro de status */
-[data-testid="stMarkdownContainer"]:has(.sfh) + [data-testid="stButton"] button {
-    position:fixed !important; left:-9999px !important; top:50px !important;
-    opacity:0 !important; width:80px !important; height:36px !important;
+/* INPUT OCULTO */
+[data-testid="stTextInput"]:has(input[placeholder="__sf_filter__"]) {
+    position:fixed !important; left:-9999px !important; top:-9999px !important;
+    width:200px !important; height:50px !important; overflow:visible !important;
+}
+input[placeholder="__sf_filter__"] {
+    position:fixed !important; left:-9999px !important; top:-9999px !important;
+    opacity:0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -119,6 +123,7 @@ STATUS_CSS     = {
 
 if 'status_filtro' not in st.session_state:
     st.session_state.status_filtro = None
+
 
 # ── HELPERS ───────────────────────────────────────────────────────────────────
 def fmt_br(v):
@@ -216,6 +221,7 @@ def gerar_excel(df_raw, fo, cc, vc, mc):
             tab = tn[vend]; dv[fo].to_excel(w, index=False, sheet_name=tab)
             write_sheet(w.sheets[tab], dv, fo, cc, vc, mc, fmts)
     return buf.getvalue()
+
 
 # ── PDF ───────────────────────────────────────────────────────────────────────
 def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
@@ -441,6 +447,7 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
         leftMargin=MARGIN, rightMargin=MARGIN).build(story, onFirstPage=footer, onLaterPages=footer)
     return buf.getvalue()
 
+
 # ── APP ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="giri-header">
@@ -452,18 +459,15 @@ st.markdown("""
 uploaded_file = st.file_uploader("Faca upload da base (XLSX ou CSV)", type=['xlsx','csv'])
 
 if uploaded_file:
-    # ── BOTOES OCULTOS PARA FILTRO DE STATUS ───────────────────────────────────
-    # Estes botões são clicados pelo JavaScript no iframe. Precisam ser
-    # declarados ANTES de qualquer outro elemento que possa causar um rerun precoce.
-    # O placeholder (span com classe .sfh) é usado pelo CSS para esconder os botões.
-    st.markdown('<div class="sfh-placeholder" style="display:none;"></div>', unsafe_allow_html=True)
-    # Os botões são criados dinamicamente com base nos status presentes no df_sel.
-    # Como df_sel ainda não foi definido, vamos criar um container vazio e preenchê-lo depois.
-    # Uma maneira mais segura é criar os botões dentro do bloco onde df_sel é conhecido,
-    # mas ANTES do iframe que irá clicá-los. Para isso, movemos a criação para depois do processamento,
-    # mas garantimos que os botões existam no DOM antes do iframe.
-    # Vamos criar um placeholder para os botões.
-    button_placeholder = st.empty()
+
+    # ── INPUT OCULTO PARA FILTRO DE STATUS ───────────────────────────────────
+    # Sem value= para nao sobrescrever o que o JS escreve
+    sf_raw = st.text_input("SF_HIDDEN", key="sf_inp",
+                           label_visibility="collapsed",
+                           placeholder="__sf_filter__")
+    if sf_raw != (st.session_state.status_filtro or ''):
+        st.session_state.status_filtro = sf_raw if sf_raw else None
+        st.rerun()
 
     # ── LEITURA DO ARQUIVO ────────────────────────────────────────────────────
     def detectar_header(file):
@@ -623,25 +627,6 @@ if uploaded_file:
         with pdf_container:
             st.caption("Instale reportlab para PDF")
 
-    # ── CRIAR BOTOES OCULTOS PARA FILTRO DE STATUS ────────────────────────────
-    # Agora que df_sel está definido, criamos os botões dentro do placeholder.
-    with button_placeholder.container():
-        st.markdown('<div class="sfh"></div>', unsafe_allow_html=True) # Marcador para o CSS esconder os botoes
-        # Botão para cada status presente na seleção atual
-        for status in STATUS_ORDER:
-            if status in df_sel['STATUS'].values:
-                safe = status.replace(' ', '_')
-                # O texto do botão será usado como identificador pelo JavaScript
-                if st.button(f'__SF_{safe}__', key=f'sfb_{safe}'):
-                    # Alterna o filtro: se já estiver selecionado, limpa; senão, seleciona
-                    st.session_state.status_filtro = None if st.session_state.status_filtro == status else status
-                    st.rerun()
-        # Botão para limpar o filtro ("Toda a carteira")
-        st.markdown('<div class="sfh"></div>', unsafe_allow_html=True)
-        if st.button('__SF_TODOS__', key='sfb_todos'):
-            st.session_state.status_filtro = None
-            st.rerun()
-
     # ── KPI CARDS ─────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">VISAO GERAL DA CARTEIRA</div>', unsafe_allow_html=True)
     k1,k2,k3,k4 = st.columns(4)
@@ -709,7 +694,7 @@ if uploaded_file:
         + '<table class="ana-table"><thead><tr>'
         + '<th>MES</th><th>CLIENTES TOTAIS</th><th>COMPRARAM NO MES</th>'
         + '<th>FATURAMENTO</th><th>VAR. FAT.</th><th>TICKET MEDIO</th><th>VAR. TICKET</th>'
-        + '</td></thead>'
+        + '</tr></thead>'
         + '<tbody>' + rows_unified + '</tbody>'
         + '</table></div>',
         unsafe_allow_html=True)
@@ -780,7 +765,6 @@ if uploaded_file:
         btx_t = '#FFFFFF'   if is_todos else '#4B5568'
         bll_t = 'LIMPAR'    if is_todos else 'VER'
 
-        # JavaScript atualizado para clicar nos botões Streamlit ocultos
         iframe_html = (
             '<!DOCTYPE html><html><head><meta charset="utf-8"><style>'
             '*{box-sizing:border-box;margin:0;padding:0;}'
@@ -807,18 +791,20 @@ if uploaded_file:
             + '</div>'
             + '<script>'
             + 'function setSF(val){'
+            + 'try{'
             + 'var doc=window.parent.document;'
-            + 'var label=val===""?"__SF_TODOS__":"__SF_"+val.replace(/ /g,"_")+"__";'
-            + 'var btns=doc.querySelectorAll("button");'
-            + 'for(var i=0;i<btns.length;i++){'
-            + 'if(btns[i].textContent.trim()===label){'
-            + 'btns[i].click();'
+            + 'var inp=doc.querySelector(\'input[placeholder="__sf_filter__"]\');'
+            + 'if(!inp)inp=doc.querySelector(\'input[aria-label="SF_HIDDEN"]\');'
+            + 'if(inp){'
+            + 'var s=Object.getOwnPropertyDescriptor(window.parent.HTMLInputElement.prototype,"value").set;'
+            + 's.call(inp,val);'
+            + 'inp.dispatchEvent(new window.parent.Event("input",{bubbles:true}));'
             + 'setTimeout(function(){'
             + 'var el=doc.getElementById("carteira-anchor");'
             + 'if(el)el.scrollIntoView({behavior:"smooth",block:"start"});'
             + '},700);'
-            + 'return;}}'
-            + 'console.error("Botao nao encontrado:",label);}'
+            + '}'
+            + '}catch(e){console.error(e);}}'
             + '</script></body></html>'
         )
 
@@ -873,7 +859,7 @@ if uploaded_file:
             for k in cv2]) + "</tr>"
         st.markdown(
             f'<div class="vend-wrap"><table class="vend-table">'
-            f'<thead><tr>{hh}</table></thead><tbody>{rh}</tbody></table></div>',
+            f'<thead><tr>{hh}</tr></thead><tbody>{rh}</tbody></table></div>',
             unsafe_allow_html=True)
 
     # ── CARTEIRA DE CLIENTES ──────────────────────────────────────────────────
