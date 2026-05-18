@@ -186,54 +186,12 @@ HIPOTESES = {
 }
 
 MISSAO = {
-    'QUEDA ACENTUADA': {
-        'objetivo':    'Diagnosticar a causa da queda e tentar recuperar volume prioritário no menor prazo possível.',
-        'missao':      'Não tente vender nessa ligação. Primeiro entenda o que aconteceu.',
-        'reavaliacao': '7 dias após o primeiro contato',
-        'sucesso':     'Retomada parcial, causa identificada ou próximo passo definido.',
-        'escala':      'O cliente citar concorrente como causa da queda; a queda for superior a 30%; não houver avanço concreto após 7 dias.',
-        'abordagem':   '"Oi [nome], tudo bem? Analisando o sistema vi que as compras caíram bastante nos últimos meses. Antes de qualquer coisa, queria entender se algo mudou e como estão as coisas atualmente. Pode me contar um pouco?"',
-    },
-    'QUEDA': {
-        'objetivo':    'Detectar e corrigir erosão silenciosa antes que o cliente evolua para Queda Acentuada.',
-        'missao':      'Identifique o que começou a mudar antes que piore. Não espere a situação se agravar.',
-        'reavaliacao': '15 dias após o contato',
-        'sucesso':     'Cliente estabilizou, causa identificada ou plano preventivo definido.',
-        'escala':      'A queda aumentar no próximo ciclo; o cliente mencionar outro fornecedor; um problema comercial for identificado.',
-        'abordagem':   '"Oi [nome]! Vi que as compras estão um pouco menores que o normal. Aconteceu alguma coisa? Quero entender o momento atual de vocês."',
-    },
-    'ESTAVEL': {
-        'objetivo':    'Blindar a conta, validar a qualidade do vínculo e impedir erosão futura.',
-        'missao':      'Confirme que está tudo bem e aproveite para identificar alguma oportunidade nova.',
-        'reavaliacao': '30 dias',
-        'sucesso':     'Vínculo preservado, risco oculto descartado, cliente mantido no patamar.',
-        'escala':      'O cliente mencionar concorrente ou sinalizar insatisfação; houver redução de mix ou frequência no próximo ciclo.',
-        'abordagem':   '"Oi [nome], tudo bem? Queria saber se está tudo certo por aí e se tem alguma coisa que a gente pode fazer melhor para facilitar as coisas para vocês."',
-    },
-    'CRESCIMENTO': {
-        'objetivo':    'Consolidar o avanço, proteger a conta e transformar o crescimento em novo patamar sustentável.',
-        'missao':      'Entenda o que está puxando o crescimento e garanta que vai continuar.',
-        'reavaliacao': '30 dias',
-        'sucesso':     'Cliente mantém novo patamar, amplia mix ou confirma recorrência.',
-        'escala':      'O crescimento indicar oportunidade estratégica maior; houver risco concreto de retomada pela concorrência.',
-        'abordagem':   '"Oi [nome]! Vi que as compras aumentaram bastante nos últimos meses. Que ótimo! Queria entender o que está acontecendo por aí. Esse crescimento deve continuar?"',
-    },
-    'CRESCIMENTO ACENTUADO': {
-        'objetivo':    'Consolidar o avanço com urgência, proteger a conta e identificar oportunidade estratégica.',
-        'missao':      'Entenda o que causou esse crescimento e aja rápido antes que a concorrência reaja.',
-        'reavaliacao': '15 a 30 dias',
-        'sucesso':     'Cliente mantém patamar, confirma recorrência, oportunidade consolidada.',
-        'escala':      'O crescimento indicar possibilidade de contrato ou volume maior; houver sinal de retomada da concorrência.',
-        'abordagem':   '"Oi [nome], que notícia boa! As compras subiram muito nos últimos meses. Queria entender o que mudou por aí para garantir que a gente consiga acompanhar vocês."',
-    },
-    'INATIVO': {
-        'objetivo':    'Validar possibilidade real de recuperação antes de qualquer ação comercial.',
-        'missao':      'Não tente vender. Primeiro descubra o que aconteceu e se ainda há interesse.',
-        'reavaliacao': '15 a 30 dias',
-        'sucesso':     'Cliente demonstra intenção real de retomada.',
-        'escala':      'O cliente for Curva A estratégico; houver sinal claro de recuperabilidade com obstáculo comercial identificado.',
-        'abordagem':   '"Oi [nome], tudo bem? Faz um tempo que não recebemos pedido de vocês. Queria entender o que aconteceu e se ainda podemos ajudar."',
-    },
+    'QUEDA ACENTUADA': {'objetivo': 'Diagnosticar a causa da queda e tentar recuperar volume prioritário no menor prazo possível.', 'missao': 'Não tente vender nessa ligação. Primeiro entenda o que aconteceu.', 'reavaliacao': '7 dias após o primeiro contato', 'sucesso': 'Retomada parcial, causa identificada ou próximo passo definido.', 'escala': 'O cliente citar concorrente como causa da queda; a queda for superior a 30%; não houver avanço concreto após 7 dias.', 'abordagem': '"Oi [nome], tudo bem? Analisando o sistema vi que as compras caíram bastante nos últimos meses. Antes de qualquer coisa, queria entender se algo mudou e como estão as coisas atualmente. Pode me contar um pouco?"'},
+    'QUEDA':           {'objetivo': 'Detectar e corrigir erosão silenciosa antes que o cliente evolua para Queda Acentuada.', 'missao': 'Identifique o que começou a mudar antes que piore. Não espere a situação se agravar.', 'reavaliacao': '15 dias após o contato', 'sucesso': 'Cliente estabilizou, causa identificada ou plano preventivo definido.', 'escala': 'A queda aumentar no próximo ciclo; o cliente mencionar outro fornecedor; um problema comercial for identificado.', 'abordagem': '"Oi [nome]! Vi que as compras estão um pouco menores que o normal. Aconteceu alguma coisa? Quero entender o momento atual de vocês."'},
+    'ESTAVEL':         {'objetivo': 'Blindar a conta, validar a qualidade do vínculo e impedir erosão futura.', 'missao': 'Confirme que está tudo bem e aproveite para identificar alguma oportunidade nova.', 'reavaliacao': '30 dias', 'sucesso': 'Vínculo preservado, risco oculto descartado, cliente mantido no patamar.', 'escala': 'O cliente mencionar concorrente ou sinalizar insatisfação; houver redução de mix ou frequência no próximo ciclo.', 'abordagem': '"Oi [nome], tudo bem? Queria saber se está tudo certo por aí e se tem alguma coisa que a gente pode fazer melhor para facilitar as coisas para vocês."'},
+    'CRESCIMENTO':     {'objetivo': 'Consolidar o avanço, proteger a conta e transformar o crescimento em novo patamar sustentável.', 'missao': 'Entenda o que está puxando o crescimento e garanta que vai continuar.', 'reavaliacao': '30 dias', 'sucesso': 'Cliente mantém novo patamar, amplia mix ou confirma recorrência.', 'escala': 'O crescimento indicar oportunidade estratégica maior; houver risco concreto de retomada pela concorrência.', 'abordagem': '"Oi [nome]! Vi que as compras aumentaram bastante nos últimos meses. Que ótimo! Queria entender o que está acontecendo por aí. Esse crescimento deve continuar?"'},
+    'CRESCIMENTO ACENTUADO': {'objetivo': 'Consolidar o avanço com urgência, proteger a conta e identificar oportunidade estratégica.', 'missao': 'Entenda o que causou esse crescimento e aja rápido antes que a concorrência reaja.', 'reavaliacao': '15 a 30 dias', 'sucesso': 'Cliente mantém patamar, confirma recorrência, oportunidade consolidada.', 'escala': 'O crescimento indicar possibilidade de contrato ou volume maior; houver sinal de retomada da concorrência.', 'abordagem': '"Oi [nome], que notícia boa! As compras subiram muito nos últimos meses. Queria entender o que mudou por aí para garantir que a gente consiga acompanhar vocês."'},
+    'INATIVO':         {'objetivo': 'Validar possibilidade real de recuperação antes de qualquer ação comercial.', 'missao': 'Não tente vender. Primeiro descubra o que aconteceu e se ainda há interesse.', 'reavaliacao': '15 a 30 dias', 'sucesso': 'Cliente demonstra intenção real de retomada.', 'escala': 'O cliente for Curva A estratégico; houver sinal claro de recuperabilidade com obstáculo comercial identificado.', 'abordagem': '"Oi [nome], tudo bem? Faz um tempo que não recebemos pedido de vocês. Queria entender o que aconteceu e se ainda podemos ajudar."'},
 }
 
 PRAZOS = {
@@ -250,425 +208,144 @@ def _d(nome, acao, pa, pb, pc, escalar=False):
     return {'tipo': 'diagnostico', 'nome': nome, 'acao': acao,
             'prazo': {'A': pa, 'B': pb, 'C': pc}, 'escalar': escalar}
 
-
 def _q(texto, *opcoes):
     return {'tipo': 'pergunta', 'texto': texto,
             'opcoes': [{'texto': t, 'proximo': p} for t, p in opcoes]}
 
-
 ARVORE = {
     'QUEDA ACENTUADA': {
-        'A': _q(
-            "O movimento da empresa caiu nos últimos meses?",
-            ("Sim, caiu",
-             _q("Essa queda é do mercado todo ou é só com os produtos da gente?",
-                ("É do mercado — todo mundo está vendendo menos",
-                 _q("Vocês acreditam que isso vai melhorar em breve ou deve continuar assim por um tempo?",
-                    ("Deve melhorar em breve",
-                     _d("Retração temporária / Sazonalidade",
-                        "Ajustar expectativa de volume, manter contato ativo e reavaliar no próximo ciclo.",
-                        "15 dias", "30 dias", "Próximo ciclo")),
-                    ("Deve continuar assim por um tempo",
-                     _d("Retração estrutural",
-                        "Redefinir mix, ajustar meta e monitorar recuperação do mercado.",
-                        "15 dias", "30 dias", "Próximo ciclo")))),
-                ("É só com os produtos de vocês",
-                 _q("Os produtos pararam de vender ou vocês passaram a comprar de outro fornecedor?",
-                    ("Os produtos pararam de vender",
-                     _d("Redução de demanda",
-                        "Revisar mix, identificar categorias com giro e propor reposicionamento.",
-                        "7 dias", "15 dias", "Próximo ciclo")),
-                    ("Passamos a comprar de outro fornecedor",
-                     _d("Perda para concorrente",
-                        "Levantar itens perdidos, revisar proposta comercial e acionar gestor.",
-                        "7 dias", "15 dias", "Próximo contato", True)))))),
-            ("Não, está normal",
-             _q("Vocês passaram a comprar isso de outro fornecedor?",
-                ("Sim, compramos de outro",
-                 _q("Por que mudaram? Foi o preço, o atendimento ou faltou produto?",
-                    ("Foi o preço ou o prazo",
-                     _d("Problema comercial",
-                        "Avaliar proposta com contrapartida de volume e acionar gestor.",
-                        "7 dias", "15 dias", "Próximo contato", True)),
-                    ("Foi o atendimento ou a entrega",
-                     _d("Problema operacional",
-                        "Acionar gestor imediatamente e corrigir falha antes de nova oferta.",
-                        "48 horas", "5 dias úteis", "Próximo contato", True)),
-                    ("Faltou produto ou variedade",
-                     _d("Perda para concorrente",
-                        "Revisar portfólio, levantar itens perdidos e acionar gestor.",
-                        "7 dias", "15 dias", "Próximo contato", True)))),
-                ("Não consigo identificar o motivo",
-                 _q("Tem alguma coisa da nossa parte que está dificultando comprar da gente?",
-                    ("Sim, existe algo",
-                     _d("Problema operacional",
-                        "Identificar e corrigir o ponto crítico antes de retomar abordagem comercial.",
-                        "48 horas", "5 dias úteis", "Próximo contato", True)),
-                    ("Não, não é isso",
-                     _d("Erosão relacional",
-                        "Reposicionar conversa, aumentar frequência de contato e validar qualidade do vínculo.",
-                        "15 dias", "30 dias", "Próximo ciclo"))))))),
-        'B': _q(
-            "Houve alguma mudança importante na demanda ou na operação nos últimos meses?",
-            ("Sim, a demanda ou o movimento caiu",
-             _q("Essa queda vem do mercado todo ou é da operação interna de vocês?",
-                ("Vem do mercado",
-                 _d("Retração de demanda",
-                    "Manter contato ativo e reavaliar quando o mercado mostrar sinais de recuperação.",
-                    "15 dias", "30 dias", "Próximo ciclo")),
-                ("É da operação interna",
-                 _d("Mudança operacional",
-                    "Mapear mudança interna e identificar novo decisor se necessário.",
-                    "15 dias", "30 dias", "Próximo ciclo")))),
-            ("Passamos a comprar de outro fornecedor",
-             _q("O motivo principal foi preço, atendimento ou disponibilidade?",
-                ("Foi o preço",
-                 _d("Problema comercial",
-                    "Avaliar proposta e acionar gestor se a conta justificar.",
-                    "15 dias", "30 dias", "Próximo contato")),
-                ("Foi o atendimento ou a disponibilidade",
-                 _d("Problema operacional",
-                    "Identificar falha e corrigir antes de retomar oferta.",
-                    "15 dias", "30 dias", "Próximo contato")))),
-            ("Não consigo identificar o motivo",
-             _d("Erosão relacional",
-                "Reaproximar relacionamento antes de qualquer ação comercial.",
-                "15 dias", "30 dias", "Próximo ciclo"))),
-        'C': _q(
-            "Qual é o principal motivo para a redução recente das compras?",
-            ("Estamos com estoque alto",
-             _d("Estoque elevado",
-                "Aguardar giro do estoque. Agendar contato em 15 dias.",
-                "15 dias", "30 dias", "Próximo ciclo")),
-            ("Passamos a comprar de outro fornecedor",
-             _d("Perda para concorrente",
-                "Registrar e monitorar. Escalonar apenas se houver potencial relevante.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo")),
-            ("A demanda caiu",
-             _d("Redução de demanda",
-                "Monitorar mercado e reavaliar no próximo ciclo.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo")),
-            ("Teve algum problema com a nossa empresa",
-             _d("Problema comercial",
-                "Identificar ponto específico e avaliar se vale ação imediata.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo"))),
+        'A': _q("O movimento da empresa caiu nos últimos meses?",
+            ("Sim, caiu", _q("Essa queda é do mercado todo ou é só com os produtos da gente?",
+                ("É do mercado — todo mundo está vendendo menos", _q("Vocês acreditam que isso vai melhorar em breve ou deve continuar assim por um tempo?",
+                    ("Deve melhorar em breve", _d("Retração temporária / Sazonalidade","Ajustar expectativa de volume, manter contato ativo e reavaliar no próximo ciclo.","15 dias","30 dias","Próximo ciclo")),
+                    ("Deve continuar assim por um tempo", _d("Retração estrutural","Redefinir mix, ajustar meta e monitorar recuperação do mercado.","15 dias","30 dias","Próximo ciclo")))),
+                ("É só com os produtos de vocês", _q("Os produtos pararam de vender ou vocês passaram a comprar de outro fornecedor?",
+                    ("Os produtos pararam de vender", _d("Redução de demanda","Revisar mix, identificar categorias com giro e propor reposicionamento.","7 dias","15 dias","Próximo ciclo")),
+                    ("Passamos a comprar de outro fornecedor", _d("Perda para concorrente","Levantar itens perdidos, revisar proposta comercial e acionar gestor.","7 dias","15 dias","Próximo contato",True)))))),
+            ("Não, está normal", _q("Vocês passaram a comprar isso de outro fornecedor?",
+                ("Sim, compramos de outro", _q("Por que mudaram? Foi o preço, o atendimento ou faltou produto?",
+                    ("Foi o preço ou o prazo", _d("Problema comercial","Avaliar proposta com contrapartida de volume e acionar gestor.","7 dias","15 dias","Próximo contato",True)),
+                    ("Foi o atendimento ou a entrega", _d("Problema operacional","Acionar gestor imediatamente e corrigir falha antes de nova oferta.","48 horas","5 dias úteis","Próximo contato",True)),
+                    ("Faltou produto ou variedade", _d("Perda para concorrente","Revisar portfólio, levantar itens perdidos e acionar gestor.","7 dias","15 dias","Próximo contato",True)))),
+                ("Não consigo identificar o motivo", _q("Tem alguma coisa da nossa parte que está dificultando comprar da gente?",
+                    ("Sim, existe algo", _d("Problema operacional","Identificar e corrigir o ponto crítico antes de retomar abordagem comercial.","48 horas","5 dias úteis","Próximo contato",True)),
+                    ("Não, não é isso", _d("Erosão relacional","Reposicionar conversa, aumentar frequência de contato e validar qualidade do vínculo.","15 dias","30 dias","Próximo ciclo"))))))),
+        'B': _q("Houve alguma mudança importante na demanda ou na operação nos últimos meses?",
+            ("Sim, a demanda ou o movimento caiu", _q("Essa queda vem do mercado todo ou é da operação interna de vocês?",
+                ("Vem do mercado", _d("Retração de demanda","Manter contato ativo e reavaliar quando o mercado mostrar sinais de recuperação.","15 dias","30 dias","Próximo ciclo")),
+                ("É da operação interna", _d("Mudança operacional","Mapear mudança interna e identificar novo decisor se necessário.","15 dias","30 dias","Próximo ciclo")))),
+            ("Passamos a comprar de outro fornecedor", _q("O motivo principal foi preço, atendimento ou disponibilidade?",
+                ("Foi o preço", _d("Problema comercial","Avaliar proposta e acionar gestor se a conta justificar.","15 dias","30 dias","Próximo contato")),
+                ("Foi o atendimento ou a disponibilidade", _d("Problema operacional","Identificar falha e corrigir antes de retomar oferta.","15 dias","30 dias","Próximo contato")))),
+            ("Não consigo identificar o motivo", _d("Erosão relacional","Reaproximar relacionamento antes de qualquer ação comercial.","15 dias","30 dias","Próximo ciclo"))),
+        'C': _q("Qual é o principal motivo para a redução recente das compras?",
+            ("Estamos com estoque alto", _d("Estoque elevado","Aguardar giro do estoque. Agendar contato em 15 dias.","15 dias","30 dias","Próximo ciclo")),
+            ("Passamos a comprar de outro fornecedor", _d("Perda para concorrente","Registrar e monitorar. Escalonar apenas se houver potencial relevante.","Próximo ciclo","Próximo ciclo","Próximo ciclo")),
+            ("A demanda caiu", _d("Redução de demanda","Monitorar mercado e reavaliar no próximo ciclo.","Próximo ciclo","Próximo ciclo","Próximo ciclo")),
+            ("Teve algum problema com a nossa empresa", _d("Problema comercial","Identificar ponto específico e avaliar se vale ação imediata.","Próximo ciclo","Próximo ciclo","Próximo ciclo"))),
     },
-
     'QUEDA': {
-        'A': _q(
-            "Você percebeu alguma mudança no volume ou na frequência das compras recentes?",
-            ("Sim, houve mudança",
-             _q("Essa mudança está mais relacionada à frequência de compra ou aos produtos que vocês compram?",
-                ("À frequência de compra",
-                 _q("Vocês estão trabalhando com mais estoque ou o ciclo de compra mudou?",
-                    ("Estamos com mais estoque",
-                     _d("Estoque elevado",
-                        "Não forçar pedido. Agendar retorno após o prazo de giro.",
-                        "15 dias", "30 dias", "Próximo ciclo")),
-                    ("O ciclo de compra mudou",
-                     _d("Mudança operacional",
-                        "Ajustar cadência de contato ao novo ciclo do cliente.",
-                        "15 dias", "30 dias", "Próximo ciclo")))),
-                ("Aos produtos comprados",
-                 _q("Algum produto específico deixou de fazer sentido ou pode ter entrado outro fornecedor?",
-                    ("Sim, um produto específico perdeu relevância",
-                     _d("Redução de mix",
-                        "Revisar categorias e levantar oportunidades complementares.",
-                        "7 dias", "15 dias", "Próximo ciclo")),
-                    ("Pode ter entrado outro fornecedor",
-                     _d("Perda inicial de share",
-                        "Investigar itens deslocados, reforçar relacionamento e monitorar.",
-                        "7 dias", "15 dias", "Próximo ciclo", True)))),
-                ("Não consigo identificar",
-                 _d("Erosão silenciosa",
-                    "Aprofundar investigação no próximo contato. Validar qualidade do vínculo.",
-                    "7 dias", "15 dias", "Próximo ciclo")))),
-            ("Não percebi nada diferente",
-             _q("Existe algum outro fornecedor tentando ganhar mais espaço com vocês nessa linha?",
-                ("Sim, apareceu outro fornecedor",
-                 _d("Pressão concorrencial",
-                    "Reforçar relacionamento, revisar posicionamento e monitorar share.",
-                    "7 dias", "15 dias", "Próximo ciclo", True)),
-                ("Não que eu saiba",
-                 _d("Erosão relacional",
-                    "Reposicionar conversa e validar qualidade do vínculo no próximo contato.",
-                    "15 dias", "30 dias", "Próximo ciclo"))))),
-        'B': _q(
-            "Você notou alguma mudança importante nas compras recentes?",
-            ("Sim, o volume ou a frequência caiu",
-             _q("A causa parece ser estoque alto, mudança nos produtos ou outro fornecedor?",
-                ("Estoque alto",
-                 _d("Estoque elevado",
-                    "Aguardar giro. Retornar em 15 a 30 dias.",
-                    "15 dias", "30 dias", "Próximo ciclo")),
-                ("Mudamos os produtos comprados",
-                 _d("Redução de mix",
-                    "Revisar categorias e identificar oportunidade de reposicionamento.",
-                    "15 dias", "30 dias", "Próximo ciclo")),
-                ("Outro fornecedor apareceu",
-                 _d("Perda inicial de share",
-                    "Investigar itens deslocados e reforçar relacionamento.",
-                    "15 dias", "30 dias", "Próximo ciclo")))),
-            ("Não sei identificar o motivo",
-             _d("Erosão relacional",
-                "Reaproximar relacionamento e validar vínculo no próximo contato.",
-                "15 dias", "30 dias", "Próximo ciclo"))),
-        'C': _q(
-            "Existe algum motivo específico para a redução recente das compras?",
-            ("Estoque alto",
-             _d("Estoque elevado",
-                "Aguardar giro e retornar no próximo ciclo.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo")),
-            ("Compramos de outro fornecedor",
-             _d("Perda inicial de share",
-                "Registrar e monitorar.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo")),
-            ("Não sei identificar",
-             _d("Erosão relacional",
-                "Monitorar no próximo ciclo.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo"))),
+        'A': _q("Você percebeu alguma mudança no volume ou na frequência das compras recentes?",
+            ("Sim, houve mudança", _q("Essa mudança está mais relacionada à frequência de compra ou aos produtos que vocês compram?",
+                ("À frequência de compra", _q("Vocês estão trabalhando com mais estoque ou o ciclo de compra mudou?",
+                    ("Estamos com mais estoque", _d("Estoque elevado","Não forçar pedido. Agendar retorno após o prazo de giro.","15 dias","30 dias","Próximo ciclo")),
+                    ("O ciclo de compra mudou", _d("Mudança operacional","Ajustar cadência de contato ao novo ciclo do cliente.","15 dias","30 dias","Próximo ciclo")))),
+                ("Aos produtos comprados", _q("Algum produto específico deixou de fazer sentido ou pode ter entrado outro fornecedor?",
+                    ("Sim, um produto específico perdeu relevância", _d("Redução de mix","Revisar categorias e levantar oportunidades complementares.","7 dias","15 dias","Próximo ciclo")),
+                    ("Pode ter entrado outro fornecedor", _d("Perda inicial de share","Investigar itens deslocados, reforçar relacionamento e monitorar.","7 dias","15 dias","Próximo ciclo",True)))),
+                ("Não consigo identificar", _d("Erosão silenciosa","Aprofundar investigação no próximo contato. Validar qualidade do vínculo.","7 dias","15 dias","Próximo ciclo")))),
+            ("Não percebi nada diferente", _q("Existe algum outro fornecedor tentando ganhar mais espaço com vocês nessa linha?",
+                ("Sim, apareceu outro fornecedor", _d("Pressão concorrencial","Reforçar relacionamento, revisar posicionamento e monitorar share.","7 dias","15 dias","Próximo ciclo",True)),
+                ("Não que eu saiba", _d("Erosão relacional","Reposicionar conversa e validar qualidade do vínculo no próximo contato.","15 dias","30 dias","Próximo ciclo"))))),
+        'B': _q("Você notou alguma mudança importante nas compras recentes?",
+            ("Sim, o volume ou a frequência caiu", _q("A causa parece ser estoque alto, mudança nos produtos ou outro fornecedor?",
+                ("Estoque alto", _d("Estoque elevado","Aguardar giro. Retornar em 15 a 30 dias.","15 dias","30 dias","Próximo ciclo")),
+                ("Mudamos os produtos comprados", _d("Redução de mix","Revisar categorias e identificar oportunidade de reposicionamento.","15 dias","30 dias","Próximo ciclo")),
+                ("Outro fornecedor apareceu", _d("Perda inicial de share","Investigar itens deslocados e reforçar relacionamento.","15 dias","30 dias","Próximo ciclo")))),
+            ("Não sei identificar o motivo", _d("Erosão relacional","Reaproximar relacionamento e validar vínculo no próximo contato.","15 dias","30 dias","Próximo ciclo"))),
+        'C': _q("Existe algum motivo específico para a redução recente das compras?",
+            ("Estoque alto", _d("Estoque elevado","Aguardar giro e retornar no próximo ciclo.","Próximo ciclo","Próximo ciclo","Próximo ciclo")),
+            ("Compramos de outro fornecedor", _d("Perda inicial de share","Registrar e monitorar.","Próximo ciclo","Próximo ciclo","Próximo ciclo")),
+            ("Não sei identificar", _d("Erosão relacional","Monitorar no próximo ciclo.","Próximo ciclo","Próximo ciclo","Próximo ciclo"))),
     },
-
     'ESTAVEL': {
-        'A': _q(
-            "O volume atual de compras continua adequado ou existe algo que pode mudar nos próximos meses?",
-            ("Pode mudar em breve",
-             _q("Esse risco está mais relacionado ao mercado, à operação de vocês ou ao relacionamento com fornecedores?",
-                ("Ao relacionamento com fornecedores",
-                 _q("Existe algum ponto nosso que deveria melhorar para continuarmos trabalhando bem juntos?",
-                    ("Sim, tem um ponto específico",
-                     _d("Satisfação sensível",
-                        "Corrigir atrito identificado antes que se transforme em queda.",
-                        "7 dias", "15 dias", "Próximo ciclo", True)),
-                    ("Não, está tudo bem",
-                     _d("Erosão relacional",
-                        "Reposicionar conversa, aumentar proximidade e validar confiança.",
-                        "15 dias", "30 dias", "Próximo ciclo")))),
-                ("Ao mercado ou à nossa operação",
-                 _d("Conta vulnerável",
-                    "Registrar alerta e antecipar plano preventivo. Monitorar com atenção.",
-                    "15 dias", "30 dias", "Próximo ciclo", True)))),
-            ("Está tudo bem por enquanto",
-             _q("Existe espaço para ampliarmos alguma linha ou categoria de produtos com vocês?",
-                ("Sim, pode ter espaço",
-                 _d("Oportunidade incremental",
-                    "Mapear linha complementar e propor teste controlado.",
-                    "7 dias", "15 dias", "Próximo ciclo")),
-                ("Não por enquanto",
-                 _d("Conta protegida",
-                    "Manter ciclo de acompanhamento mensal e preservar vínculo.",
-                    "Ciclo mensal", "Ciclo mensal", "Próximo ciclo"))))),
-        'B': _q(
-            "Está tudo bem ou existe algo que pode mudar nos próximos meses?",
-            ("Existe algo que pode mudar",
-             _q("Esse risco tem a ver com outro fornecedor, com a operação interna ou com o relacionamento com a gente?",
-                ("Outro fornecedor apareceu",
-                 _d("Pressão concorrencial",
-                    "Reforçar relacionamento e monitorar share.",
-                    "15 dias", "30 dias", "Próximo ciclo")),
-                ("É da operação ou do relacionamento com vocês",
-                 _d("Conta vulnerável",
-                    "Registrar alerta e reavaliar em 30 dias.",
-                    "15 dias", "30 dias", "Próximo ciclo")))),
-            ("Está tudo bem",
-             _d("Conta protegida",
-                "Manter ciclo mensal de acompanhamento.",
-                "Ciclo mensal", "Ciclo mensal", "Próximo ciclo"))),
-        'C': _q(
-            "As compras estão acontecendo normalmente?",
-            ("Sim, está normal",
-             _d("Conta protegida",
-                "Manutenção padronizada. Monitorar no próximo ciclo.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo")),
-            ("Pode haver mudanças em breve",
-             _d("Conta vulnerável",
-                "Registrar e monitorar com atenção.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo"))),
+        'A': _q("O volume atual de compras continua adequado ou existe algo que pode mudar nos próximos meses?",
+            ("Pode mudar em breve", _q("Esse risco está mais relacionado ao mercado, à operação de vocês ou ao relacionamento com fornecedores?",
+                ("Ao relacionamento com fornecedores", _q("Existe algum ponto nosso que deveria melhorar para continuarmos trabalhando bem juntos?",
+                    ("Sim, tem um ponto específico", _d("Satisfação sensível","Corrigir atrito identificado antes que se transforme em queda.","7 dias","15 dias","Próximo ciclo",True)),
+                    ("Não, está tudo bem", _d("Erosão relacional","Reposicionar conversa, aumentar proximidade e validar confiança.","15 dias","30 dias","Próximo ciclo")))),
+                ("Ao mercado ou à nossa operação", _d("Conta vulnerável","Registrar alerta e antecipar plano preventivo. Monitorar com atenção.","15 dias","30 dias","Próximo ciclo",True)))),
+            ("Está tudo bem por enquanto", _q("Existe espaço para ampliarmos alguma linha ou categoria de produtos com vocês?",
+                ("Sim, pode ter espaço", _d("Oportunidade incremental","Mapear linha complementar e propor teste controlado.","7 dias","15 dias","Próximo ciclo")),
+                ("Não por enquanto", _d("Conta protegida","Manter ciclo de acompanhamento mensal e preservar vínculo.","Ciclo mensal","Ciclo mensal","Próximo ciclo"))))),
+        'B': _q("Está tudo bem ou existe algo que pode mudar nos próximos meses?",
+            ("Existe algo que pode mudar", _q("Esse risco tem a ver com outro fornecedor, com a operação interna ou com o relacionamento com a gente?",
+                ("Outro fornecedor apareceu", _d("Pressão concorrencial","Reforçar relacionamento e monitorar share.","15 dias","30 dias","Próximo ciclo")),
+                ("É da operação ou do relacionamento com vocês", _d("Conta vulnerável","Registrar alerta e reavaliar em 30 dias.","15 dias","30 dias","Próximo ciclo")))),
+            ("Está tudo bem", _d("Conta protegida","Manter ciclo mensal de acompanhamento.","Ciclo mensal","Ciclo mensal","Próximo ciclo"))),
+        'C': _q("As compras estão acontecendo normalmente?",
+            ("Sim, está normal", _d("Conta protegida","Manutenção padronizada. Monitorar no próximo ciclo.","Próximo ciclo","Próximo ciclo","Próximo ciclo")),
+            ("Pode haver mudanças em breve", _d("Conta vulnerável","Registrar e monitorar com atenção.","Próximo ciclo","Próximo ciclo","Próximo ciclo"))),
     },
-
     'CRESCIMENTO': {
-        'A': _q(
-            "O que está puxando o aumento das compras nos últimos meses?",
-            ("A demanda da nossa empresa cresceu",
-             _q("Esse crescimento deve continuar?",
-                ("Sim, deve continuar",
-                 _q("Existe espaço para ampliarmos mais alguma linha ou categoria?",
-                    ("Sim, há espaço",
-                     _d("Oportunidade estratégica",
-                        "Consolidar novo patamar, ajustar metas e planejar expansão.",
-                        "7 dias", "15 dias", "Próximo ciclo")),
-                    ("Não por enquanto",
-                     _d("Crescimento recorrente",
-                        "Consolidar novo patamar e acompanhar recorrência.",
-                        "Ciclo mensal", "Ciclo mensal", "Próximo ciclo")))),
-                ("Não, foi pontual",
-                 _d("Crescimento pontual",
-                    "Registrar evento e não inflar expectativa futura.",
-                    "Ciclo mensal", "Ciclo mensal", "Próximo ciclo")))),
-            ("Um concorrente teve problemas e ganhamos mais espaço",
-             _q("Existe risco do concorrente recuperar esse espaço?",
-                ("Sim, pode voltar",
-                 _d("Crescimento vulnerável",
-                    "Blindar relacionamento, revisar condições e garantir abastecimento.",
-                    "7 dias", "15 dias", "Próximo ciclo", True)),
-                ("Não, conquistamos a conta",
-                 _d("Crescimento recorrente",
-                    "Consolidar novo patamar e acompanhar recorrência.",
-                    "Ciclo mensal", "Ciclo mensal", "Próximo ciclo")))),
-            ("Foi uma compra pontual",
-             _d("Crescimento pontual",
-                "Registrar evento e não inflar expectativa futura.",
-                "Ciclo mensal", "Ciclo mensal", "Próximo ciclo"))),
-        'B': _q(
-            "O aumento recente deve continuar ou foi uma situação específica?",
-            ("Deve continuar",
-             _q("O crescimento veio do aumento da nossa demanda ou de problema do concorrente?",
-                ("Nossa demanda cresceu",
-                 _d("Crescimento recorrente",
-                    "Acompanhar novo patamar e ajustar cadência.",
-                    "Ciclo mensal", "Ciclo mensal", "Próximo ciclo")),
-                ("O concorrente teve problema",
-                 _d("Crescimento vulnerável",
-                    "Blindar relacionamento antes que o concorrente retorne.",
-                    "15 dias", "30 dias", "Próximo ciclo")))),
-            ("Foi pontual",
-             _d("Crescimento pontual",
-                "Registrar e não inflar expectativa futura.",
-                "Ciclo mensal", "Ciclo mensal", "Próximo ciclo"))),
-        'C': _q(
-            "O aumento das compras deve continuar?",
-            ("Sim, deve continuar",
-             _d("Crescimento recorrente",
-                "Monitorar recorrência no próximo ciclo.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo")),
-            ("Não, foi pontual",
-             _d("Crescimento pontual",
-                "Registrar e acompanhar no próximo ciclo.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo"))),
+        'A': _q("O que está puxando o aumento das compras nos últimos meses?",
+            ("A demanda da nossa empresa cresceu", _q("Esse crescimento deve continuar?",
+                ("Sim, deve continuar", _q("Existe espaço para ampliarmos mais alguma linha ou categoria?",
+                    ("Sim, há espaço", _d("Oportunidade estratégica","Consolidar novo patamar, ajustar metas e planejar expansão.","7 dias","15 dias","Próximo ciclo")),
+                    ("Não por enquanto", _d("Crescimento recorrente","Consolidar novo patamar e acompanhar recorrência.","Ciclo mensal","Ciclo mensal","Próximo ciclo")))),
+                ("Não, foi pontual", _d("Crescimento pontual","Registrar evento e não inflar expectativa futura.","Ciclo mensal","Ciclo mensal","Próximo ciclo")))),
+            ("Um concorrente teve problemas e ganhamos mais espaço", _q("Existe risco do concorrente recuperar esse espaço?",
+                ("Sim, pode voltar", _d("Crescimento vulnerável","Blindar relacionamento, revisar condições e garantir abastecimento.","7 dias","15 dias","Próximo ciclo",True)),
+                ("Não, conquistamos a conta", _d("Crescimento recorrente","Consolidar novo patamar e acompanhar recorrência.","Ciclo mensal","Ciclo mensal","Próximo ciclo")))),
+            ("Foi uma compra pontual", _d("Crescimento pontual","Registrar evento e não inflar expectativa futura.","Ciclo mensal","Ciclo mensal","Próximo ciclo"))),
+        'B': _q("O aumento recente deve continuar ou foi uma situação específica?",
+            ("Deve continuar", _q("O crescimento veio do aumento da nossa demanda ou de problema do concorrente?",
+                ("Nossa demanda cresceu", _d("Crescimento recorrente","Acompanhar novo patamar e ajustar cadência.","Ciclo mensal","Ciclo mensal","Próximo ciclo")),
+                ("O concorrente teve problema", _d("Crescimento vulnerável","Blindar relacionamento antes que o concorrente retorne.","15 dias","30 dias","Próximo ciclo")))),
+            ("Foi pontual", _d("Crescimento pontual","Registrar e não inflar expectativa futura.","Ciclo mensal","Ciclo mensal","Próximo ciclo"))),
+        'C': _q("O aumento das compras deve continuar?",
+            ("Sim, deve continuar", _d("Crescimento recorrente","Monitorar recorrência no próximo ciclo.","Próximo ciclo","Próximo ciclo","Próximo ciclo")),
+            ("Não, foi pontual", _d("Crescimento pontual","Registrar e acompanhar no próximo ciclo.","Próximo ciclo","Próximo ciclo","Próximo ciclo"))),
     },
-
     'CRESCIMENTO ACENTUADO': {
-        'A': _q(
-            "O que explica o crescimento tão expressivo nos últimos meses?",
-            ("A empresa está crescendo — novas unidades ou mais demanda",
-             _q("Esse crescimento é estrutural ou pode ser temporário?",
-                ("É estrutural — deve continuar",
-                 _q("Existe espaço para construirmos um plano maior para acompanhar esse crescimento?",
-                    ("Sim, temos interesse",
-                     _d("Oportunidade estratégica",
-                        "Acionar gestor, construir plano dedicado e revisar metas e abastecimento.",
-                        "48 horas", "5 dias úteis", "Ciclo mensal", True)),
-                    ("Ainda não, vamos ver como evolui",
-                     _d("Crescimento recorrente",
-                        "Consolidar novo patamar e monitorar evolução.",
-                        "7 dias", "15 dias", "Próximo ciclo")))),
-                ("Pode ser temporário",
-                 _d("Crescimento vulnerável",
-                    "Blindar relacionamento e monitorar recorrência antes de ajustar metas.",
-                    "7 dias", "15 dias", "Próximo ciclo")))),
-            ("Um concorrente saiu e ganhamos mais espaço",
-             _d("Crescimento vulnerável",
-                "Blindar relacionamento e garantir abastecimento antes que o concorrente retorne.",
-                "48 horas", "5 dias úteis", "Próximo ciclo", True)),
-            ("Foi uma compra pontual ou antecipação de estoque",
-             _d("Crescimento pontual",
-                "Ajustar expectativa e monitorar recorrência no próximo ciclo.",
-                "Ciclo mensal", "Ciclo mensal", "Próximo ciclo"))),
-        'B': _q(
-            "O crescimento recente deve continuar ou foi um movimento específico?",
-            ("Deve continuar",
-             _q("Existe risco de perder esse espaço para um concorrente?",
-                ("Sim, pode acontecer",
-                 _d("Crescimento vulnerável",
-                    "Blindar relacionamento antes que o concorrente reaja.",
-                    "7 dias", "15 dias", "Próximo ciclo")),
-                ("Não, está garantido",
-                 _d("Crescimento recorrente",
-                    "Consolidar novo patamar e avaliar potencial de evolução para Curva A.",
-                    "Ciclo mensal", "Ciclo mensal", "Próximo ciclo")))),
-            ("Foi algo específico",
-             _d("Crescimento pontual",
-                "Registrar e não inflar expectativa futura.",
-                "Ciclo mensal", "Ciclo mensal", "Próximo ciclo"))),
-        'C': _q(
-            "O aumento recente das compras deve continuar?",
-            ("Sim, deve continuar",
-             _d("Crescimento recorrente",
-                "Monitorar recorrência no próximo ciclo.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo")),
-            ("Não, foi pontual",
-             _d("Crescimento pontual",
-                "Registrar e acompanhar no próximo ciclo.",
-                "Próximo ciclo", "Próximo ciclo", "Próximo ciclo"))),
+        'A': _q("O que explica o crescimento tão expressivo nos últimos meses?",
+            ("A empresa está crescendo — novas unidades ou mais demanda", _q("Esse crescimento é estrutural ou pode ser temporário?",
+                ("É estrutural — deve continuar", _q("Existe espaço para construirmos um plano maior para acompanhar esse crescimento?",
+                    ("Sim, temos interesse", _d("Oportunidade estratégica","Acionar gestor, construir plano dedicado e revisar metas e abastecimento.","48 horas","5 dias úteis","Ciclo mensal",True)),
+                    ("Ainda não, vamos ver como evolui", _d("Crescimento recorrente","Consolidar novo patamar e monitorar evolução.","7 dias","15 dias","Próximo ciclo")))),
+                ("Pode ser temporário", _d("Crescimento vulnerável","Blindar relacionamento e monitorar recorrência antes de ajustar metas.","7 dias","15 dias","Próximo ciclo")))),
+            ("Um concorrente saiu e ganhamos mais espaço", _d("Crescimento vulnerável","Blindar relacionamento e garantir abastecimento antes que o concorrente retorne.","48 horas","5 dias úteis","Próximo ciclo",True)),
+            ("Foi uma compra pontual ou antecipação de estoque", _d("Crescimento pontual","Ajustar expectativa e monitorar recorrência no próximo ciclo.","Ciclo mensal","Ciclo mensal","Próximo ciclo"))),
+        'B': _q("O crescimento recente deve continuar ou foi um movimento específico?",
+            ("Deve continuar", _q("Existe risco de perder esse espaço para um concorrente?",
+                ("Sim, pode acontecer", _d("Crescimento vulnerável","Blindar relacionamento antes que o concorrente reaja.","7 dias","15 dias","Próximo ciclo")),
+                ("Não, está garantido", _d("Crescimento recorrente","Consolidar novo patamar e avaliar potencial de evolução para Curva A.","Ciclo mensal","Ciclo mensal","Próximo ciclo")))),
+            ("Foi algo específico", _d("Crescimento pontual","Registrar e não inflar expectativa futura.","Ciclo mensal","Ciclo mensal","Próximo ciclo"))),
+        'C': _q("O aumento recente das compras deve continuar?",
+            ("Sim, deve continuar", _d("Crescimento recorrente","Monitorar recorrência no próximo ciclo.","Próximo ciclo","Próximo ciclo","Próximo ciclo")),
+            ("Não, foi pontual", _d("Crescimento pontual","Registrar e acompanhar no próximo ciclo.","Próximo ciclo","Próximo ciclo","Próximo ciclo"))),
     },
-
     'INATIVO': {
-        'A': _q(
-            "O que levou à interrupção das compras nos últimos meses?",
-            ("Passamos a comprar de outro fornecedor",
-             _q("O principal motivo da mudança foi preço, atendimento ou relacionamento?",
-                ("Preço ou condição comercial",
-                 _d("Inativo recuperável",
-                    "Avaliar proposta de retomada e acionar gestor para definir condição.",
-                    "48 horas", "10 dias úteis", "Análise de recuperabilidade", True)),
-                ("Atendimento ou entrega",
-                 _d("Inativo recuperável",
-                    "Identificar falha, corrigir e reaproximar antes de ofertar.",
-                    "48 horas", "10 dias úteis", "Análise de recuperabilidade", True)),
-                ("Relacionamento",
-                 _q("Existe abertura para retomarmos essa conversa?",
-                    ("Sim, há abertura",
-                     _d("Inativo recuperável",
-                        "Reaproximar antes de vender. Construir plano de retomada gradual.",
-                        "48 horas", "10 dias úteis", "Análise de recuperabilidade")),
-                    ("Não há interesse no momento",
-                     _d("Perda estrutural",
-                        "Reduzir prioridade operacional. Manter monitoramento leve.",
-                        "Próximo trimestre", "Próximo trimestre", "Baixa prioridade")))))),
-            ("A demanda acabou ou mudou",
-             _q("Essa redução é temporária ou permanente?",
-                ("É temporária",
-                 _d("Inativo recuperável",
-                    "Aguardar recuperação da demanda e manter contato leve.",
-                    "15 dias", "30 dias", "Análise de recuperabilidade")),
-                ("É permanente",
-                 _d("Perda estrutural",
-                    "Reduzir prioridade operacional e encerrar ciclo ativo.",
-                    "Próximo trimestre", "Próximo trimestre", "Baixa prioridade")))),
-            ("Foi uma mudança interna nossa",
-             _d("Mudança operacional",
-                "Mapear mudança, identificar novo decisor e reapresentar portfólio.",
-                "7 dias", "15 dias", "Análise de recuperabilidade"))),
-        'B': _q(
-            "O que levou à interrupção das compras?",
-            ("Passamos para outro fornecedor",
-             _q("O motivo principal foi preço ou atendimento?",
-                ("Foi o preço",
-                 _d("Inativo recuperável",
-                    "Avaliar possibilidade de proposta e validar recuperabilidade.",
-                    "7 dias", "10 dias úteis", "Análise de recuperabilidade")),
-                ("Foi o atendimento",
-                 _d("Inativo recuperável",
-                    "Corrigir falha antes de retomar oferta.",
-                    "7 dias", "10 dias úteis", "Análise de recuperabilidade")))),
-            ("A demanda acabou",
-             _d("Perda estrutural",
-                "Reduzir prioridade e manter monitoramento leve.",
-                "Próximo trimestre", "Próximo trimestre", "Baixa prioridade")),
-            ("Foi uma mudança interna nossa",
-             _d("Mudança operacional",
-                "Mapear mudança e avaliar se ainda há potencial de retomada.",
-                "15 dias", "30 dias", "Análise de recuperabilidade"))),
-        'C': _q(
-            "Ainda existe demanda para os produtos que vocês compravam da gente?",
-            ("Sim, a demanda existe",
-             _d("Inativo recuperável",
-                "Validar possibilidade de retomada. Contato leve sem pressão comercial.",
-                "Próximo ciclo", "Próximo ciclo", "Baixa prioridade")),
-            ("Não, a demanda acabou",
-             _d("Perda estrutural",
-                "Encerrar ciclo ativo. Monitoramento mínimo.",
-                "Baixa prioridade", "Baixa prioridade", "Baixa prioridade"))),
+        'A': _q("O que levou à interrupção das compras nos últimos meses?",
+            ("Passamos a comprar de outro fornecedor", _q("O principal motivo da mudança foi preço, atendimento ou relacionamento?",
+                ("Preço ou condição comercial", _d("Inativo recuperável","Avaliar proposta de retomada e acionar gestor para definir condição.","48 horas","10 dias úteis","Análise de recuperabilidade",True)),
+                ("Atendimento ou entrega", _d("Inativo recuperável","Identificar falha, corrigir e reaproximar antes de ofertar.","48 horas","10 dias úteis","Análise de recuperabilidade",True)),
+                ("Relacionamento", _q("Existe abertura para retomarmos essa conversa?",
+                    ("Sim, há abertura", _d("Inativo recuperável","Reaproximar antes de vender. Construir plano de retomada gradual.","48 horas","10 dias úteis","Análise de recuperabilidade")),
+                    ("Não há interesse no momento", _d("Perda estrutural","Reduzir prioridade operacional. Manter monitoramento leve.","Próximo trimestre","Próximo trimestre","Baixa prioridade")))))),
+            ("A demanda acabou ou mudou", _q("Essa redução é temporária ou permanente?",
+                ("É temporária", _d("Inativo recuperável","Aguardar recuperação da demanda e manter contato leve.","15 dias","30 dias","Análise de recuperabilidade")),
+                ("É permanente", _d("Perda estrutural","Reduzir prioridade operacional e encerrar ciclo ativo.","Próximo trimestre","Próximo trimestre","Baixa prioridade")))),
+            ("Foi uma mudança interna nossa", _d("Mudança operacional","Mapear mudança, identificar novo decisor e reapresentar portfólio.","7 dias","15 dias","Análise de recuperabilidade"))),
+        'B': _q("O que levou à interrupção das compras?",
+            ("Passamos para outro fornecedor", _q("O motivo principal foi preço ou atendimento?",
+                ("Foi o preço", _d("Inativo recuperável","Avaliar possibilidade de proposta e validar recuperabilidade.","7 dias","10 dias úteis","Análise de recuperabilidade")),
+                ("Foi o atendimento", _d("Inativo recuperável","Corrigir falha antes de retomar oferta.","7 dias","10 dias úteis","Análise de recuperabilidade")))),
+            ("A demanda acabou", _d("Perda estrutural","Reduzir prioridade e manter monitoramento leve.","Próximo trimestre","Próximo trimestre","Baixa prioridade")),
+            ("Foi uma mudança interna nossa", _d("Mudança operacional","Mapear mudança e avaliar se ainda há potencial de retomada.","15 dias","30 dias","Análise de recuperabilidade"))),
+        'C': _q("Ainda existe demanda para os produtos que vocês compravam da gente?",
+            ("Sim, a demanda existe", _d("Inativo recuperável","Validar possibilidade de retomada. Contato leve sem pressão comercial.","Próximo ciclo","Próximo ciclo","Baixa prioridade")),
+            ("Não, a demanda acabou", _d("Perda estrutural","Encerrar ciclo ativo. Monitoramento mínimo.","Baixa prioridade","Baixa prioridade","Baixa prioridade"))),
     },
 }
 
@@ -703,29 +380,69 @@ def get_prazo(status, curva):
     return PRAZOS.get(str(status).strip().upper(), {}).get(str(curva).strip().upper(), 'a definir')
 
 
-def calcular_prioridade(curva, status, erosao, risco):
-    c = str(curva).strip().upper(); s = str(status).strip().upper()
-    e = int(erosao); r = float(risco or 0)
-    cp = {'A': 25, 'B': 15, 'C': 5}.get(c, 5)
-    rp = 15 if r > 20000 else 12 if r > 10000 else 9 if r > 5000 else 6 if r > 1000 else 3 if r > 0 else 0
-    p2 = 40 if e >= 8 else 32 if e >= 6 else 22 if e >= 4 else 12 if e >= 2 else 5
-    p3 = {'QUEDA ACENTUADA': 20, 'INATIVO': 16, 'QUEDA': 14, 'ESTAVEL': 8, 'CRESCIMENTO': 4, 'CRESCIMENTO ACENTUADO': 2}.get(s, 5)
-    t = cp + rp + p2 + p3
+def score_ranking(curva, status, erosao, media_lp, risco):
+    """
+    Score separado para INATIVO: usa curva + media_lp histórica, sem componente de erosão.
+    Para demais status: três pilares — impacto econômico, intensidade do risco, contexto operacional.
+    """
+    c = str(curva).strip().upper()
+    s = str(status).strip().upper()
+    e = int(erosao)
+    r = float(risco or 0)
+    lp = float(media_lp or 0)
+
+    if s == 'INATIVO':
+        curva_pts = {'A': 300, 'B': 180, 'C': 60}.get(c, 60)
+        if lp > 20000: lp_pts = 200
+        elif lp > 10000: lp_pts = 160
+        elif lp > 5000:  lp_pts = 120
+        elif lp > 1000:  lp_pts = 80
+        elif lp > 0:     lp_pts = 40
+        else:            lp_pts = 0
+        contexto = 160
+        return curva_pts + lp_pts + contexto
+
+    curva_pts = {'A': 250, 'B': 150, 'C': 50}.get(c, 50)
+    rp = 150 if r > 20000 else 120 if r > 10000 else 90 if r > 5000 else 60 if r > 1000 else 30 if r > 0 else 0
+    p1 = curva_pts + rp
+    p2 = 400 if e >= 8 else 320 if e >= 6 else 220 if e >= 4 else 120 if e >= 2 else 50
+    p3 = {'QUEDA ACENTUADA': 200, 'QUEDA': 140, 'ESTAVEL': 80,
+          'CRESCIMENTO': 40, 'CRESCIMENTO ACENTUADO': 20}.get(s, 50)
+    return p1 + p2 + p3
+
+
+def calcular_prioridade(curva, status, erosao, risco, media_lp):
+    """
+    Badge de prioridade com mesma lógica separada para INATIVO.
+    """
+    c = str(curva).strip().upper()
+    s = str(status).strip().upper()
+    e = int(erosao)
+    r = float(risco or 0)
+    lp = float(media_lp or 0)
+
+    if s == 'INATIVO':
+        curva_pts = {'A': 25, 'B': 15, 'C': 5}.get(c, 5)
+        if lp > 20000: lp_pts = 15
+        elif lp > 10000: lp_pts = 12
+        elif lp > 5000:  lp_pts = 9
+        elif lp > 1000:  lp_pts = 6
+        elif lp > 0:     lp_pts = 3
+        else:            lp_pts = 0
+        t = curva_pts + lp_pts + 16
+    else:
+        cp = {'A': 25, 'B': 15, 'C': 5}.get(c, 5)
+        rp = 15 if r > 20000 else 12 if r > 10000 else 9 if r > 5000 else 6 if r > 1000 else 3 if r > 0 else 0
+        p2 = 40 if e >= 8 else 32 if e >= 6 else 22 if e >= 4 else 12 if e >= 2 else 5
+        p3 = {'QUEDA ACENTUADA': 20, 'QUEDA': 14, 'ESTAVEL': 8,
+              'CRESCIMENTO': 4, 'CRESCIMENTO ACENTUADO': 2}.get(s, 5)
+        t = cp + rp + p2 + p3
+
     if t >= 70:   return 'PRIORIDADE MÁXIMA',  '#C00000', '#FFFFFF', t
     elif t >= 50: return 'PRIORIDADE ALTA',     '#D44000', '#FFFFFF', t
     elif t >= 30: return 'PRIORIDADE MÉDIA',    '#0056b3', '#FFFFFF', t
     elif t >= 15: return 'PRIORIDADE SELETIVA', '#4B5568', '#FFFFFF', t
     else:         return 'GESTÃO PADRÃO',        '#6B7280', '#FFFFFF', t
-
-
-def score_ranking(curva, status, erosao, risco):
-    c = str(curva).strip().upper(); s = str(status).strip().upper()
-    e = int(erosao); r = float(risco or 0)
-    cp = {'A': 250, 'B': 150, 'C': 50}.get(c, 50)
-    rp = 150 if r > 20000 else 120 if r > 10000 else 90 if r > 5000 else 60 if r > 1000 else 30 if r > 0 else 0
-    p2 = 400 if e >= 8 else 320 if e >= 6 else 220 if e >= 4 else 120 if e >= 2 else 50
-    p3 = {'QUEDA ACENTUADA': 200, 'INATIVO': 160, 'QUEDA': 140, 'ESTAVEL': 80, 'CRESCIMENTO': 40, 'CRESCIMENTO ACENTUADO': 20}.get(s, 50)
-    return cp + rp + p2 + p3
 
 
 def fmt_num(v):
@@ -767,19 +484,22 @@ try:
 except Exception as e:
     st.error(f"Erro ao ler arquivo: {e}"); st.stop()
 
-df.columns  = [str(c).strip().upper() for c in df.columns]
-col_cli     = find_col(df,'CLIENTE');  col_vend = find_col(df,'VENDEDOR')
-col_curv    = find_col(df,'CURVA');    col_cid  = find_col(df,'CIDADE')
-col_mlp     = find_col(df,'MEDIA','LP'); col_mcp = find_col(df,'MEDIA','CP')
-col_sta     = find_col(df,'STATUS')
-meses_cols  = [c for c in df.columns if re.match(r'^[A-Z]{3}/\d{2}$', c)]
+df.columns = [str(c).strip().upper() for c in df.columns]
+col_cli  = find_col(df,'CLIENTE');  col_vend = find_col(df,'VENDEDOR')
+col_curv = find_col(df,'CURVA');    col_cid  = find_col(df,'CIDADE')
+col_mlp  = find_col(df,'MEDIA','LP'); col_mcp = find_col(df,'MEDIA','CP')
+col_sta  = find_col(df,'STATUS')
+meses_cols = [c for c in df.columns if re.match(r'^[A-Z]{3}/\d{2}$', c)]
 
 if not all([col_cli, col_mlp, col_mcp, col_sta]):
     st.error("Arquivo não reconhecido. Faça o download da Matriz STAR pelo dashboard e suba esse arquivo aqui."); st.stop()
 
 df['_EROSAO'] = df.apply(lambda r: calcular_erosao_star(r.get(col_mlp,0), r.get(col_mcp,0)), axis=1)
 df['_RISCO']  = df.apply(lambda r: max(0.0, float(r.get(col_mlp,0) or 0) - float(r.get(col_mcp,0) or 0)), axis=1)
-df['_SCORE']  = df.apply(lambda r: score_ranking(r.get(col_curv,'C') if col_curv else 'C', r.get(col_sta,''), r['_EROSAO'], r['_RISCO']), axis=1)
+df['_SCORE']  = df.apply(lambda r: score_ranking(
+    r.get(col_curv,'C') if col_curv else 'C',
+    r.get(col_sta,''), r['_EROSAO'],
+    r.get(col_mlp,0), r['_RISCO']), axis=1)
 df_sorted = df.sort_values('_SCORE', ascending=False).reset_index(drop=True)
 
 st.markdown("<div class='section-title'>FILTROS</div>", unsafe_allow_html=True)
@@ -846,7 +566,10 @@ if not df_top10.empty:
         sta=str(r.get(col_sta,'')).strip().upper()
         scss=STATUS_CSS.get(sta,'color:#1A2540;font-weight:600;')
         nome=str(r.get(col_cli,''))
-        p_lbl,p_bg,p_fg,_=calcular_prioridade(r.get(col_curv,'C') if col_curv else 'C',sta,en,r['_RISCO'])
+        mlp_val=r.get(col_mlp,0)
+        p_lbl,p_bg,p_fg,_=calcular_prioridade(
+            r.get(col_curv,'C') if col_curv else 'C',
+            sta, en, r['_RISCO'], mlp_val)
         rows_html+=(f"<tr><td><strong>#{i}</strong></td><td class='left'><strong>{nome}</strong></td>"
             f"<td><span style='{scss}'>{sta}</span></td>"
             f"<td><span class='star-badge' style='background:{ebg};color:{efg};'>EROSÃO STAR {en}</span></td>"
@@ -876,10 +599,10 @@ r_mlp=float(row.get(col_mlp,0) or 0); r_mcp=float(row.get(col_mcp,0) or 0)
 r_eros=int(row['_EROSAO']); r_risco=float(row['_RISCO'])
 r_diff=round(((r_mlp-r_mcp)/r_mlp*100),1) if r_mlp>0 else 0.0
 
-ebg,efg,elbl              =erosao_display(r_eros)
-p_lbl,p_bg,p_fg,p_score  =calcular_prioridade(r_curv,r_sta,r_eros,r_risco)
-sta_css                   =STATUS_CSS.get(r_sta,'')
-prazo_dinamico            =get_prazo(r_sta,r_curv)
+ebg,efg,elbl             =erosao_display(r_eros)
+p_lbl,p_bg,p_fg,p_score =calcular_prioridade(r_curv,r_sta,r_eros,r_risco,r_mlp)
+sta_css                  =STATUS_CSS.get(r_sta,'')
+prazo_dinamico           =get_prazo(r_sta,r_curv)
 
 st.markdown(f"""
 <div class='raio-header'>
