@@ -116,6 +116,35 @@ STATUS_CSS     = {
 }
 
 
+def calcular_erosao_star(lp, cp):
+    try: lp_v, cp_v = float(lp), float(cp)
+    except: return 1
+    if lp_v <= 0: return 1
+    if cp_v <= 0: return 10
+    diff = ((lp_v - cp_v) / lp_v) * 100
+    if diff <= 0:  return 1
+    if diff <= 5:  return 1
+    if diff <= 10: return 2
+    if diff <= 15: return 3
+    if diff <= 20: return 4
+    if diff <= 30: return 5
+    if diff <= 40: return 6
+    if diff <= 50: return 7
+    if diff <= 60: return 8
+    if diff <= 70: return 9
+    return 10
+
+
+def erosao_badge_html(n):
+    if n >= 8:   bg, fg = '#C00000', '#FFFFFF'
+    elif n >= 6: bg, fg = '#FFC7CE', '#C00000'
+    elif n >= 4: bg, fg = '#FFEB9C', '#7A4F00'
+    else:        bg, fg = '#C6EFCE', '#375623'
+    return (f'<span style="background:{bg};color:{fg};font-weight:800;border-radius:6px;'
+            f'padding:2px 8px;font-size:0.72rem;white-space:nowrap;display:inline-block;">'
+            f'STAR {n}</span>')
+
+
 def fmt_br(v):
     try: return f"{int(v):,}".replace(",", ".")
     except: return "0"
@@ -184,7 +213,7 @@ def get_excel_formats(wb):
     }
 
 def write_sheet(ws, df, fo, cc, vc, mc, fmts):
-    larg = {'CURVA':7,cc:30,vc:22,'TOTAL LP':13,'MEDIA LP':13,'MEDIA CP':13,'STATUS':24,'META':12,'ACAO':88}
+    larg = {'CURVA':7,cc:30,vc:22,'TOTAL LP':13,'MEDIA LP':13,'MEDIA CP':13,'STATUS':24,'EROSAO STAR':12,'META':12,'ACAO':88}
     ws.set_default_row(125); ws.set_row(0,40)
     sf2 = {'QUEDA ACENTUADA':fmts['qa'],'QUEDA':fmts['q'],'CRESCIMENTO ACENTUADO':fmts['ca'],'CRESCIMENTO':fmts['c'],'ESTAVEL':fmts['e'],'INATIVO':fmts['i']}
     for i,col in enumerate(fo):
@@ -195,6 +224,7 @@ def write_sheet(ws, df, fo, cc, vc, mc, fmts):
             v = row[cn]
             if cn=='STATUS': ws.write_string(xl,ci,str(v),sf2.get(str(v),fmts['txt']))
             elif cn=='TOTAL LP': ws.write_number(xl,ci,int(v),fmts['total'])
+            elif cn=='EROSAO STAR': ws.write_number(xl,ci,int(v),fmts['num'])
             elif cn in('MEDIA LP','MEDIA CP','META') or cn in mc: ws.write_number(xl,ci,int(v),fmts['num'])
             else: ws.write_string(xl,ci,str(v),fmts['txt'])
 
@@ -220,7 +250,7 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
     last3=col_config['last3']; ultimo=col_config['ultimo']; penultimo=col_config['penultimo']; extra=col_config['extra']
     clabel=filters['clabel']; cshort=filters['cshort']; contexto=filters['contexto']
     sel_vend=filters['vend']
-    filtro_carteira = filters.get('filtro_carteira', None)   # ← NOVO
+    filtro_carteira = filters.get('filtro_carteira', None)
     total=metrics['total']; n_a=metrics['n_a']; n_b=metrics['n_b']; n_c=metrics['n_c']
     rec_ult=metrics['rec_ult']; var_rec=metrics['var_rec']; meta_total=metrics['meta_total']
     risco_val=metrics['risco_val']; n_risco=metrics['n_risco']; ticket_ult=metrics['ticket_ult']
@@ -233,6 +263,12 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
     GRAY=rlc.Color(75/255,85/255,104/255); LGRAY=rlc.Color(237/255,241/255,247/255)
     LGRAY2=rlc.Color(248/255,249/255,252/255); W=rlc.white
     SC_MAP={'QUEDA ACENTUADA':RED,'QUEDA':ORG,'CRESCIMENTO ACENTUADO':GRN,'CRESCIMENTO':GRN2,'ESTAVEL':BLUE,'INATIVO':GRAY}
+    EROSAO_COLOR_MAP = {
+        10: RED, 9: RED, 8: RED,
+        7: rlc.Color(0.75,0,0), 6: rlc.Color(0.75,0,0),
+        5: rlc.Color(0.7,0.5,0), 4: rlc.Color(0.7,0.5,0),
+        3: GRN2, 2: GRN2, 1: GRN2,
+    }
 
     def ps(name,**kw):
         d=dict(fontName='Helvetica',fontSize=9,textColor=rlc.Color(26/255,37/255,64/255),leading=13,spaceAfter=0)
@@ -365,14 +401,13 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
         ('BOTTOMPADDING',(0,0),(-1,-1),5),('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6)]))
     story.append(ana_t); story.append(PageBreak())
 
-    # CARTEIRA DE CLIENTES — respeitando filtro_carteira
     df_cart = df_sel[df_sel['STATUS']==filtro_carteira].copy() if filtro_carteira else df_sel.copy()
     titulo_cart = f'CARTEIRA DE CLIENTES — {clabel}' if not filtro_carteira \
                   else f'CARTEIRA DE CLIENTES — {clabel} — {filtro_carteira}'
-    story.append(Paragraph(titulo_cart, S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
+    story.append(Paragraph(titulo_cart,S['h2'])); story.append(hr_line()); story.append(Spacer(1,0.2*cm))
 
-    cd_pdf=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
-    hdrs=['CRV','CLIENTE','VENDEDOR']+[c[:6] for c in extra]+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
+    cd_pdf=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','EROSAO STAR','META']
+    hdrs=['CRV','CLIENTE','VENDEDOR']+[c[:6] for c in extra]+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','EROSAO','META']
     cart_data=[[Paragraph(h,S['th']) for h in hdrs]]
     for _,row in df_cart[cd_pdf].iterrows():
         row_data=[]
@@ -381,13 +416,16 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
             if cn=='STATUS':
                 sc4=SC_MAP.get(str(v),GRAY)
                 row_data.append(Paragraph(str(v),ps(f'sp2{v}',fontName='Helvetica-Bold',fontSize=7,textColor=sc4,alignment=TA_CENTER,leading=9)))
+            elif cn=='EROSAO STAR':
+                en=int(v); ec=EROSAO_COLOR_MAP.get(en,GRN2)
+                row_data.append(Paragraph(f'STAR {en}',ps(f'es{en}',fontName='Helvetica-Bold',fontSize=7,textColor=ec,alignment=TA_CENTER,leading=9)))
             elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'): row_data.append(Paragraph(fmt_br(v),S['tds']))
             elif cn==clie_col: row_data.append(Paragraph(str(v)[:32],S['tdls']))
             else: row_data.append(Paragraph(str(v)[:14],S['tds']))
         cart_data.append(row_data)
     n_e=len(extra)
-    cw2=[CW*0.04,CW*0.24,CW*0.12,CW*0.10,CW*0.09,CW*0.09,CW*0.18,CW*0.08] if n_e==0 \
-        else [CW*0.04,CW*0.20,CW*0.11,CW*0.08,CW*0.10,CW*0.09,CW*0.09,CW*0.18,CW*0.07]
+    cw2=[CW*0.04,CW*0.21,CW*0.11,CW*0.09,CW*0.08,CW*0.08,CW*0.16,CW*0.07,CW*0.07] if n_e==0 \
+        else [CW*0.04,CW*0.18,CW*0.10,CW*0.07,CW*0.08,CW*0.08,CW*0.08,CW*0.14,CW*0.06,CW*0.07]
     tw=sum(cw2); cw2=[w*CW/tw for w in cw2]
     cart_t=Table(cart_data,colWidths=cw2,repeatRows=1)
     cart_t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-1),[W,LGRAY2]),
@@ -510,8 +548,12 @@ if uploaded_file:
         return len(meses_col)
     df_raw['MESES_SEM_COMPRA'] = df_raw.apply(calc_rec,axis=1)
 
+    # CALCULO EROSAO STAR
+    df_raw['EROSAO STAR'] = df_raw.apply(
+        lambda r: calcular_erosao_star(r['MEDIA LP'], r['MEDIA CP']), axis=1)
+
     extra = [cida_col] if cida_col else []
-    fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META','ACAO']
+    fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','EROSAO STAR','META','ACAO']
 
     # ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
@@ -570,7 +612,7 @@ if uploaded_file:
     var_ticket=(ticket_ult-ticket_pen)/ticket_pen*100 if ticket_pen>0 else 0
     contexto=sel_vend if sel_vend!="Todos" else "TODA A CARTEIRA"
 
-    # ── FILTRO CARTEIRA PARA PDF (lido antes de gerar o PDF) ─────────────────
+    # ── FILTRO CARTEIRA PARA PDF ──────────────────────────────────────────────
     cart_status_val = st.session_state.get('cart_status', 'Todos os status')
     filtro_pdf = None if cart_status_val == 'Todos os status' else cart_status_val
 
@@ -585,7 +627,6 @@ if uploaded_file:
                      'risco_val':risco_val,'n_risco':n_risco,'ticket_ult':ticket_ult,
                      'buyers_ult':buyers_ult,'idx_saude':idx_saude,'n_saudaveis':n_saudaveis}
         pdf_bytes=gerar_pdf(df_sel,df,col_config,filters_pdf,metrics_pdf)
-        # Nome reflete vendedor, curva e filtro de status se aplicado
         sufixo_status = f"_{filtro_pdf.replace(' ','_')}" if filtro_pdf else ""
         nome_pdf = f"RELATORIO_{contexto.replace(' ','_')}_{clabel.replace(' ','_').replace('+','')}{sufixo_status}.pdf"
         with pdf_container:
@@ -703,7 +744,7 @@ if uploaded_file:
             f'Exibindo: {filtro_ativo} — {len(df_sel[df_sel["STATUS"]==filtro_ativo])} clientes</p>',
             unsafe_allow_html=True)
 
-    cd=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','META']
+    cd=['CURVA',clie_col,vend_col]+extra+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','EROSAO STAR','META']
     dd=df_sel[df_sel['STATUS']==filtro_ativo].copy() if filtro_ativo else df_sel.copy()
     dd=dd[cd].reset_index(drop=True)
     hc="".join([f"<th>{c}</th>" for c in cd]); rc=""
@@ -711,8 +752,13 @@ if uploaded_file:
         cells=""
         for cn in cd:
             v=row[cn]; ac=' class="left"' if cn==clie_col else ''
-            if cn=='STATUS': s=str(v); css5=STATUS_CSS.get(s,''); cells+=f'<td><span style="{css5}">{s}</span></td>'
-            elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'): cells+=f'<td{ac}>{fmt_br(v)}</td>'
-            else: cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
+            if cn=='STATUS':
+                s=str(v); css5=STATUS_CSS.get(s,''); cells+=f'<td><span style="{css5}">{s}</span></td>'
+            elif cn=='EROSAO STAR':
+                cells+=f'<td>{erosao_badge_html(int(v))}</td>'
+            elif cn in('TOTAL LP','MEDIA LP','MEDIA CP','META'):
+                cells+=f'<td{ac}>{fmt_br(v)}</td>'
+            else:
+                cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
         rc+=f"<tr>{cells}</tr>"
     st.markdown(f'<div class="cart-wrap"><table class="cart-table"><thead><tr>{hc}</tr></thead><tbody>{rc}</tbody></table></div>', unsafe_allow_html=True)
