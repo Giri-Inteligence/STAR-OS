@@ -458,7 +458,7 @@ if uploaded_file:
     df_raw.columns = [str(c).strip().upper() for c in df_raw.columns]
     cols = df_raw.columns.tolist()
 
-        sugestoes = gerar_sugestoes_mapeamento(df_raw)
+    sugestoes = gerar_sugestoes_mapeamento(df_raw)
 
     st.markdown('<div class="section-title">MAPEAMENTO DA BASE</div>', unsafe_allow_html=True)
     st.caption("Confirme como o STAR OS deve interpretar a planilha enviada antes de processar a Matriz STAR.")
