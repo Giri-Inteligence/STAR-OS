@@ -459,28 +459,28 @@ def detectar_header(file, sheet_name=0):
 if uploaded_file:
     fn = uploaded_file.name
 
-    if fn.endswith('xlsx'):
+    if fn.lower().endswith('xlsx'):
         abas = listar_abas_excel(uploaded_file)
         aba_padrao = escolher_aba_padrao(abas)
 
-        st.markdown('<div class="section-title">ORGANIZAÇÃO DA PLANILHA</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">ORGANIZACAO DA PLANILHA</div>', unsafe_allow_html=True)
         st.caption("Informe como as abas do arquivo devem ser interpretadas antes do mapeamento da base.")
 
         if len(abas) > 1:
             tipo_organizacao_abas = st.selectbox(
-                "Como esta planilha está organizada?",
+                "Como esta planilha esta organizada?",
                 [
-                    "Usar uma única aba",
+                    "Usar uma unica aba",
                     "Abas por vendedor",
                     "Abas por segmento",
-                    "Abas por região",
+                    "Abas por regiao",
                     "Abas por cidade",
                     "Abas por filial"
                 ],
                 index=0
             )
 
-            if tipo_organizacao_abas == "Usar uma única aba":
+            if tipo_organizacao_abas == "Usar uma unica aba":
                 aba_index = abas.index(aba_padrao) if aba_padrao in abas else 0
 
                 aba_escolhida = st.selectbox(
@@ -493,7 +493,7 @@ if uploaded_file:
 
             else:
                 abas_selecionadas = st.multiselect(
-                    "Abas que devem entrar na análise",
+                    "Abas que devem entrar na analise",
                     options=abas,
                     default=abas
                 )
@@ -527,36 +527,41 @@ if uploaded_file:
         "Esta planilha representa:",
         [
             "Carteira completa da empresa",
-            "Carteira de um vendedor específico",
-            "Carteira de uma filial ou região",
+            "Carteira de um vendedor especifico",
+            "Carteira de uma filial ou regiao",
             "Base parcial ou amostra",
-            "Não sei"
+            "Nao sei"
         ],
         index=0
     )
 
-    colunas_obrigatorias = cols
-    colunas_opcionais = ["Não usar"] + cols
+    opcoes_cliente = sugestoes.get("opcoes_cliente", cols)
+    opcoes_vendedor = sugestoes.get("opcoes_vendedor", ["Nao usar"] + cols)
+    opcoes_cidade = sugestoes.get("opcoes_cidade", ["Nao usar"] + cols)
+
+    if not opcoes_cliente:
+        st.error("Nao foi possivel identificar colunas candidatas para cliente. Ajuste a planilha conforme o modelo padrao.")
+        st.stop()
 
     cliente_sugerido = sugestoes.get("cliente")
-    cliente_index = colunas_obrigatorias.index(cliente_sugerido) if cliente_sugerido in colunas_obrigatorias else 0
+    cliente_index = opcoes_cliente.index(cliente_sugerido) if cliente_sugerido in opcoes_cliente else 0
 
     clie_col = st.selectbox(
         "Coluna de cliente",
-        colunas_obrigatorias,
+        opcoes_cliente,
         index=cliente_index
     )
 
     vendedor_sugerido = sugestoes.get("vendedor")
-    vendedor_index = colunas_opcionais.index(vendedor_sugerido) if vendedor_sugerido in colunas_opcionais else 0
+    vendedor_index = opcoes_vendedor.index(vendedor_sugerido) if vendedor_sugerido in opcoes_vendedor else 0
 
     vend_col_escolhida = st.selectbox(
         "Coluna de vendedor",
-        colunas_opcionais,
+        opcoes_vendedor,
         index=vendedor_index
     )
 
-    if vend_col_escolhida == "Não usar":
+    if str(vend_col_escolhida).strip().upper() in ("NAO USAR", "NÃO USAR") :
         vendedor_manual = st.text_input(
             "Nome do vendedor desta base",
             value=""
@@ -572,26 +577,39 @@ if uploaded_file:
         vend_col = vend_col_escolhida
 
     cidade_sugerida = sugestoes.get("cidade")
-    cidade_index = colunas_opcionais.index(cidade_sugerida) if cidade_sugerida in colunas_opcionais else 0
+    cidade_index = opcoes_cidade.index(cidade_sugerida) if cidade_sugerida in opcoes_cidade else 0
 
     cida_col_escolhida = st.selectbox(
         "Coluna de cidade",
-        colunas_opcionais,
+        opcoes_cidade,
         index=cidade_index
     )
 
-    cida_col = None if cida_col_escolhida == "Não usar" else cida_col_escolhida
+    cida_col = None if str(cida_col_escolhida).strip().upper() in ("NAO USAR", "NÃO USAR") else cida_col_escolhida
 
     meses_sugeridos = sugestoes.get("meses", [])
+    opcoes_meses = meses_sugeridos if meses_sugeridos else cols
 
     meses_col = st.multiselect(
         "Colunas de faturamento mensal",
-        options=cols,
+        options=opcoes_meses,
         default=meses_sugeridos
     )
 
     if not meses_col:
-        st.error("Nenhuma coluna de faturamento mensal foi selecionada. Selecione pelo menos uma coluna de mês para continuar.")
+        st.error("Nenhuma coluna de faturamento mensal foi selecionada. Selecione pelo menos uma coluna de mes para continuar.")
+        st.stop()
+
+    campos_estruturais = [clie_col, vend_col]
+    if cida_col:
+        campos_estruturais.append(cida_col)
+
+    if len(campos_estruturais) != len(set(campos_estruturais)):
+        st.error("Mapeamento invalido: cliente, vendedor e cidade nao podem usar a mesma coluna.")
+        st.stop()
+
+    if clie_col in meses_col or vend_col in meses_col or (cida_col and cida_col in meses_col):
+        st.error("Mapeamento invalido: cliente, vendedor e cidade nao podem ser colunas de faturamento mensal.")
         st.stop()
 
     for c in meses_col:
