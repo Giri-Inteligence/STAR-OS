@@ -438,7 +438,6 @@ st.markdown("""
 
 uploaded_file = st.file_uploader("Faca upload da base (XLSX ou CSV)", type=['xlsx','csv'])
 
-if uploaded_file:
 
 def detectar_header(file, sheet_name=0):
     kw = ("JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
@@ -456,7 +455,9 @@ def detectar_header(file, sheet_name=0):
 
     return 0
 
-        fn = uploaded_file.name
+
+if uploaded_file:
+    fn = uploaded_file.name
 
     if fn.endswith('xlsx'):
         abas = listar_abas_excel(uploaded_file)
