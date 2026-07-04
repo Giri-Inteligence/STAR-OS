@@ -120,7 +120,6 @@ STATUS_CSS     = {
 
 
 
-
 def erosao_badge_html(n):
     if n >= 8:   bg, fg = '#C00000', '#FFFFFF'
     elif n >= 6: bg, fg = '#FFC7CE', '#C00000'
@@ -129,7 +128,6 @@ def erosao_badge_html(n):
     return (f'<span style="background:{bg};color:{fg};font-weight:800;border-radius:6px;'
             f'padding:2px 8px;font-size:0.72rem;white-space:nowrap;display:inline-block;">'
             f'STAR {n}</span>')
-
 
 def fmt_br(v):
     try: return f"{int(v):,}".replace(",", ".")
@@ -140,7 +138,6 @@ def var_html(pct):
     c = "#1A6B2A" if pct >= 0 else "#C00000"
     s = "+" if pct >= 0 else ""
     return f'<span style="color:{c};font-weight:700">{s}{pct:.1f}%</span>'
-
 
 
 def get_tab_names(vendors):
@@ -201,7 +198,6 @@ def gerar_excel(df_raw,fo,cc,vc,mc):
             tab = tn[vend]; dv[fo].to_excel(w,index=False,sheet_name=tab)
             write_sheet(w.sheets[tab],dv,fo,cc,vc,mc,fmts)
     return buf.getvalue()
-
 
 def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
     if not REPORTLAB_OK: return None
@@ -430,7 +426,6 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
         leftMargin=MARGIN,rightMargin=MARGIN).build(story,onFirstPage=footer,onLaterPages=footer)
     return buf.getvalue()
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="giri-header">
@@ -479,51 +474,53 @@ if uploaded_file:
 
     import re
 
-curva_detectada = False
+    curva_detectada = False
 
-if 'CURVA' in cols:
-    vals = normalizar_curva_existente(df_raw['CURVA'])
+    if 'CURVA' in cols:
+        vals = normalizar_curva_existente(df_raw['CURVA'])
 
-    if vals.isin(['A', 'B', 'C']).sum() > 0:
-        df_raw['CURVA'] = vals
-        curva_detectada = True
-
-if not curva_detectada:
-    for col in cols:
-        col_vals = df_raw[col].astype(str).str.upper().str.strip()
-
-        if col_vals.str.match(r'^CURVA\s*[ABC]$').any():
-            cs2 = col_vals.where(
-                col_vals.str.match(r'^CURVA\s*[ABC]$'),
-                other=pd.NA
-            ).ffill()
-
-            df_raw['CURVA'] = normalizar_curva_existente(
-                cs2.str.replace(r'^CURVA\s*', '', regex=True).str.strip()
-            )
-
+        if vals.isin(['A', 'B', 'C']).sum() > 0:
+            df_raw['CURVA'] = vals
             curva_detectada = True
-            break
 
-if not curva_detectada:
-    df_raw = calcular_curva_abc_por_receita(df_raw, 'TOTAL LP')
-else:
-    df_raw = df_raw.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
+    if not curva_detectada:
+        for col in cols:
+            col_vals = df_raw[col].astype(str).str.upper().str.strip()
 
-    res = df_raw.apply(lambda r: engine_star(r['MEDIA LP'],r['MEDIA CP']),axis=1)
-    df_raw['STATUS'],df_raw['META'],df_raw['ACAO'] = zip(*res)
+            if col_vals.str.match(r'^CURVA\s*[ABC]$').any():
+                cs2 = col_vals.where(
+                    col_vals.str.match(r'^CURVA\s*[ABC]$'),
+                    other=pd.NA
+                ).ffill()
 
-df_raw['MESES_SEM_COMPRA'] = df_raw.apply(
-    lambda row: calcular_meses_sem_compra(row, meses_col),
-    axis=1
-)
+                df_raw['CURVA'] = normalizar_curva_existente(
+                    cs2.str.replace(r'^CURVA\s*', '', regex=True).str.strip()
+                )
 
-# CALCULO EROSAO STAR
-df_raw['EROSAO STAR'] = df_raw.apply(
-    lambda r: calcular_erosao_star(r['MEDIA LP'], r['MEDIA CP']), axis=1)
+                curva_detectada = True
+                break
 
-extra = [cida_col] if cida_col else []
-    fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','EROSAO STAR','META','ACAO']
+    if not curva_detectada:
+        df_raw = calcular_curva_abc_por_receita(df_raw, 'TOTAL LP')
+    else:
+        df_raw = df_raw.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
+
+    res = df_raw.apply(lambda r: engine_star(r['MEDIA LP'], r['MEDIA CP']), axis=1)
+    df_raw['STATUS'], df_raw['META'], df_raw['ACAO'] = zip(*res)
+
+    df_raw['MESES_SEM_COMPRA'] = df_raw.apply(
+        lambda row: calcular_meses_sem_compra(row, meses_col),
+        axis=1
+    )
+
+    # CALCULO EROSAO STAR
+    df_raw['EROSAO STAR'] = df_raw.apply(
+        lambda r: calcular_erosao_star(r['MEDIA LP'], r['MEDIA CP']),
+        axis=1
+    )
+
+    extra = [cida_col] if cida_col else []
+    fo = ['CURVA', clie_col, vend_col] + extra + meses_col + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'EROSAO STAR', 'META', 'ACAO']
 
     # ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
@@ -732,3 +729,4 @@ extra = [cida_col] if cida_col else []
                 cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
         rc+=f"<tr>{cells}</tr>"
     st.markdown(f'<div class="cart-wrap"><table class="cart-table"><thead><tr>{hc}</tr></thead><tbody>{rc}</tbody></table></div>', unsafe_allow_html=True)
+
