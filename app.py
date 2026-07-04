@@ -3,6 +3,7 @@ import pandas as pd
 import html as htmllib
 from star_core.calculos import calcular_erosao_star, engine_star
 from star_core.curva import curva_label_fmt, curva_short, calcular_curva_abc_por_receita, normalizar_curva_existente
+from star_core.recencia import calcular_meses_sem_compra
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -512,11 +513,10 @@ else:
     res = df_raw.apply(lambda r: engine_star(r['MEDIA LP'],r['MEDIA CP']),axis=1)
     df_raw['STATUS'],df_raw['META'],df_raw['ACAO'] = zip(*res)
 
-    def calc_rec(row):
-        for i in range(len(meses_col)-1,-1,-1):
-            if row[meses_col[i]]>0: return len(meses_col)-1-i
-        return len(meses_col)
-    df_raw['MESES_SEM_COMPRA'] = df_raw.apply(calc_rec,axis=1)
+df_raw['MESES_SEM_COMPRA'] = df_raw.apply(
+    lambda row: calcular_meses_sem_compra(row, meses_col),
+    axis=1
+)
 
     # CALCULO EROSAO STAR
     df_raw['EROSAO STAR'] = df_raw.apply(
