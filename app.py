@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import html as htmllib
+from star_core.calculos import calcular_erosao_star, engine_star
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -116,23 +117,6 @@ STATUS_CSS     = {
 }
 
 
-def calcular_erosao_star(lp, cp):
-    try: lp_v, cp_v = float(lp), float(cp)
-    except: return 1
-    if lp_v <= 0: return 1
-    if cp_v <= 0: return 10
-    diff = ((lp_v - cp_v) / lp_v) * 100
-    if diff <= 0:  return 1
-    if diff <= 5:  return 1
-    if diff <= 10: return 2
-    if diff <= 15: return 3
-    if diff <= 20: return 4
-    if diff <= 30: return 5
-    if diff <= 40: return 6
-    if diff <= 50: return 7
-    if diff <= 60: return 8
-    if diff <= 70: return 9
-    return 10
 
 
 def erosao_badge_html(n):
@@ -166,22 +150,7 @@ def curva_short(sel):
     if set(sel) == {'A','B','C'}: return "TOTAL"
     return "+".join(sorted(sel))
 
-def engine_star(lp, cp):
-    try: lp_v, cp_v = float(lp), float(cp)
-    except: lp_v, cp_v = 0.0, 0.0
-    txt_ina  = "OBJETIVO: Diagnostico de causa\nPRE-CONTATO: Revisar ultimo pedido.\nCONTATO: Contato de diagnostico sem pressao.\nORIENTACAO: Nao ofertar produto na primeira interacao."
-    txt_q_ac = "OBJETIVO: Recuperacao emergencial\nPRE-CONTATO: Revisar historico completo.\nCONTATO: Priorizar visita ou ligacao direta.\nORIENTACAO: Objetivo e entender, nao vender."
-    txt_q    = "OBJETIVO: Estabilizacao\nPRE-CONTATO: Revisar historico de mix.\nCONTATO: Diagnosticar contexto atual.\nORIENTACAO: Registrar causa e propor recomposicao de mix."
-    txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix. Mapear categorias nao compradas.\nCONTATO: Manter frequencia. Explorar expansao.\nORIENTACAO: Cliente estavel nao e cliente seguro."
-    txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar driver do crescimento.\nCONTATO: Reforcar relacionamento.\nORIENTACAO: Proteger o cliente."
-    txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar produtos que puxaram crescimento.\nCONTATO: Reforcar presenca.\nORIENTACAO: Crescimento acentuado atrai concorrencia."
-    if cp_v <= 0:         return "INATIVO", 0, txt_ina
-    if lp_v <= 0:         return "ESTAVEL", int(cp_v*1.05), txt_est
-    if cp_v < lp_v*0.90: return "QUEDA ACENTUADA", int(lp_v), txt_q_ac
-    if cp_v < lp_v*0.98: return "QUEDA", int(lp_v), txt_q
-    if cp_v > lp_v*1.10: return "CRESCIMENTO ACENTUADO", int(cp_v*1.05), txt_ca
-    if cp_v > lp_v*1.02: return "CRESCIMENTO", int(cp_v*1.05), txt_cre
-    return "ESTAVEL", int(lp_v*1.05), txt_est
+
 
 def get_tab_names(vendors):
     fm = {}
