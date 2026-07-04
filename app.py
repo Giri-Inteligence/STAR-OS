@@ -518,11 +518,11 @@ df_raw['MESES_SEM_COMPRA'] = df_raw.apply(
     axis=1
 )
 
-    # CALCULO EROSAO STAR
-    df_raw['EROSAO STAR'] = df_raw.apply(
-        lambda r: calcular_erosao_star(r['MEDIA LP'], r['MEDIA CP']), axis=1)
+# CALCULO EROSAO STAR
+df_raw['EROSAO STAR'] = df_raw.apply(
+    lambda r: calcular_erosao_star(r['MEDIA LP'], r['MEDIA CP']), axis=1)
 
-    extra = [cida_col] if cida_col else []
+extra = [cida_col] if cida_col else []
     fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','EROSAO STAR','META','ACAO']
 
     # ── FILTROS ───────────────────────────────────────────────────────────────
