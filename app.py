@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import html as htmllib
 from star_core.calculos import calcular_erosao_star, engine_star
+from star_core.curva import curva_label_fmt, curva_short, calcular_curva_abc_por_receita, normalizar_curva_existente
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -138,17 +139,6 @@ def var_html(pct):
     c = "#1A6B2A" if pct >= 0 else "#C00000"
     s = "+" if pct >= 0 else ""
     return f'<span style="color:{c};font-weight:700">{s}{pct:.1f}%</span>'
-
-def curva_label_fmt(sel):
-    if not sel: return "NENHUMA"
-    if set(sel) == {'A','B','C'}: return "TODA A CARTEIRA"
-    if len(sel) == 1: return f"CURVA {sel[0]}"
-    return "CURVAS " + " + ".join(sorted(sel))
-
-def curva_short(sel):
-    if not sel: return ""
-    if set(sel) == {'A','B','C'}: return "TOTAL"
-    return "+".join(sorted(sel))
 
 
 
