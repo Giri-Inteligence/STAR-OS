@@ -477,26 +477,37 @@ if uploaded_file:
     df_raw['MEDIA CP'] = df_raw[meses_col[-3:]].mean(axis=1).astype(int)
 
     import re
-    curva_detectada = False
-    if 'CURVA' in cols:
-        vals = df_raw['CURVA'].astype(str).str.upper().str.strip()
-        if vals.isin(['A','B','C']).sum()>0:
-            df_raw['CURVA'] = vals.where(vals.isin(['A','B','C']),other=pd.NA).ffill().fillna('C')
+
+curva_detectada = False
+
+if 'CURVA' in cols:
+    vals = normalizar_curva_existente(df_raw['CURVA'])
+
+    if vals.isin(['A', 'B', 'C']).sum() > 0:
+        df_raw['CURVA'] = vals
+        curva_detectada = True
+
+if not curva_detectada:
+    for col in cols:
+        col_vals = df_raw[col].astype(str).str.upper().str.strip()
+
+        if col_vals.str.match(r'^CURVA\s*[ABC]$').any():
+            cs2 = col_vals.where(
+                col_vals.str.match(r'^CURVA\s*[ABC]$'),
+                other=pd.NA
+            ).ffill()
+
+            df_raw['CURVA'] = normalizar_curva_existente(
+                cs2.str.replace(r'^CURVA\s*', '', regex=True).str.strip()
+            )
+
             curva_detectada = True
-    if not curva_detectada:
-        for col in cols:
-            col_vals = df_raw[col].astype(str).str.upper().str.strip()
-            if col_vals.str.match(r'^CURVA\s*[ABC]$').any():
-                cs2 = col_vals.where(col_vals.str.match(r'^CURVA\s*[ABC]$'),other=pd.NA).ffill()
-                df_raw['CURVA'] = cs2.str.replace(r'^CURVA\s*','',regex=True).str.strip()
-                df_raw['CURVA'] = df_raw['CURVA'].where(df_raw['CURVA'].isin(['A','B','C']),'C')
-                curva_detectada = True; break
-    if not curva_detectada:
-        df_raw = df_raw.sort_values('TOTAL LP',ascending=False).reset_index(drop=True)
-        cp2 = df_raw['TOTAL LP'].cumsum()/df_raw['TOTAL LP'].sum()
-        df_raw['CURVA'] = cp2.apply(lambda x: 'A' if x<=0.80 else ('B' if x<=0.95 else 'C'))
-    else:
-        df_raw = df_raw.sort_values('TOTAL LP',ascending=False).reset_index(drop=True)
+            break
+
+if not curva_detectada:
+    df_raw = calcular_curva_abc_por_receita(df_raw, 'TOTAL LP')
+else:
+    df_raw = df_raw.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
 
     res = df_raw.apply(lambda r: engine_star(r['MEDIA LP'],r['MEDIA CP']),axis=1)
     df_raw['STATUS'],df_raw['META'],df_raw['ACAO'] = zip(*res)
