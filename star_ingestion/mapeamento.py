@@ -8,6 +8,14 @@ MESES_PT = (
     "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"
 )
 
+# Termos usados para reconhecer cada campo estrutural. Propositalmente sem
+# palavras genericas como "NOME" isoladas, pois isso combinava com colunas
+# erradas (ex.: "NOME DA CIDADE" sendo sugerida como coluna de cliente).
+TERMOS_CLIENTE = ("CLIENTE", "RAZAO", "RAZÃO", "CONTA", "EMPRESA")
+TERMOS_VENDEDOR = ("VENDEDOR", "REPRESENTANTE", "CONSULTOR", "RESPONSAVEL", "RESPONSÁVEL")
+TERMOS_CIDADE = ("CIDADE", "MUNICIPIO", "MUNICÍPIO", "REGIAO", "REGIÃO", "LOCALIDADE")
+TERMOS_ESTRUTURAIS_EXTRA = ("SEGMENTO", "FILIAL")
+
 
 def normalizar_nome_coluna(coluna):
     return str(coluna).strip().upper()
@@ -44,158 +52,112 @@ def detectar_colunas_meses(colunas):
     return meses
 
 
+def _tem_termo(nome, termos):
+    return any(termo in nome for termo in termos)
+
+
+def _colunas_validas_para_cliente(colunas):
+    meses = set(detectar_colunas_meses(colunas))
+    termos_excluir = TERMOS_VENDEDOR + TERMOS_CIDADE + TERMOS_ESTRUTURAIS_EXTRA
+
+    return [
+        coluna for coluna in colunas
+        if coluna not in meses and not _tem_termo(normalizar_nome_coluna(coluna), termos_excluir)
+    ]
+
+
+def _colunas_validas_para_vendedor(colunas):
+    meses = set(detectar_colunas_meses(colunas))
+    termos_excluir = TERMOS_CLIENTE + TERMOS_CIDADE + TERMOS_ESTRUTURAIS_EXTRA
+
+    return [
+        coluna for coluna in colunas
+        if coluna not in meses and not _tem_termo(normalizar_nome_coluna(coluna), termos_excluir)
+    ]
+
+
+def _colunas_validas_para_cidade(colunas):
+    meses = set(detectar_colunas_meses(colunas))
+    termos_excluir = TERMOS_CLIENTE + TERMOS_VENDEDOR + TERMOS_ESTRUTURAIS_EXTRA
+
+    return [
+        coluna for coluna in colunas
+        if coluna not in meses and not _tem_termo(normalizar_nome_coluna(coluna), termos_excluir)
+    ]
+
+
 def sugerir_coluna_cliente(colunas):
-    palavras_chave = ("CLIENTE", "RAZAO", "RAZÃO", "NOME", "CONTA", "EMPRESA")
+    candidatas = _colunas_validas_para_cliente(colunas)
 
-    for coluna in colunas:
-        nome = normalizar_nome_coluna(coluna)
-
-        if any(palavra in nome for palavra in palavras_chave):
-            return coluna
+    for termo in TERMOS_CLIENTE:
+        for coluna in candidatas:
+            if termo in normalizar_nome_coluna(coluna):
+                return coluna
 
     return None
 
 
 def sugerir_coluna_vendedor(colunas):
-    palavras_chave = (
-        "VENDEDOR",
-        "VENDEDOR_STAR_ABA",
-        "REPRESENTANTE",
-        "REP",
-        "CONSULTOR",
-        "RESPONSAVEL",
-        "RESPONSÁVEL"
-    )
+    candidatas = _colunas_validas_para_vendedor(colunas)
 
-    for coluna in colunas:
-        nome = normalizar_nome_coluna(coluna)
-
-        if any(palavra in nome for palavra in palavras_chave):
-            return coluna
+    for termo in TERMOS_VENDEDOR:
+        for coluna in candidatas:
+            if termo in normalizar_nome_coluna(coluna):
+                return coluna
 
     return None
 
 
 def sugerir_coluna_cidade(colunas):
-    palavras_chave = (
-        "CIDADE",
-        "CIDADE_STAR_ABA",
-        "MUNICIPIO",
-        "MUNICÍPIO",
-        "LOCALIDADE",
-        "REGIAO",
-        "REGIÃO"
-    )
+    candidatas = _colunas_validas_para_cidade(colunas)
 
-    for coluna in colunas:
-        nome = normalizar_nome_coluna(coluna)
-
-        if any(palavra in nome for palavra in palavras_chave):
-            return coluna
+    for termo in TERMOS_CIDADE:
+        for coluna in candidatas:
+            if termo in normalizar_nome_coluna(coluna):
+                return coluna
 
     return None
 
 
 def montar_opcoes_cliente(colunas):
+    validas = _colunas_validas_para_cliente(colunas)
+
+    prioritarias = [c for c in validas if _tem_termo(normalizar_nome_coluna(c), TERMOS_CLIENTE)]
+    outras = [c for c in validas if c not in prioritarias]
+
+    opcoes = remover_duplicatas(prioritarias + outras)
+
+    if opcoes:
+        return opcoes
+
+    # Nunca deixar o campo obrigatorio de cliente sem nenhuma opcao: cai para
+    # todas as colunas que nao sejam de mes e, em ultimo caso, todas as colunas.
     meses = set(detectar_colunas_meses(colunas))
+    sem_meses = [c for c in colunas if c not in meses]
 
-    termos_excluir = (
-        "VENDEDOR", "VENDEDOR_STAR_ABA",
-        "REPRESENTANTE", "REP", "CONSULTOR", "RESPONSAVEL", "RESPONSÁVEL",
-        "CIDADE", "CIDADE_STAR_ABA",
-        "MUNICIPIO", "MUNICÍPIO", "LOCALIDADE", "REGIAO", "REGIÃO",
-        "SEGMENTO", "SEGMENTO_STAR",
-        "FILIAL", "FILIAL_STAR"
-    )
-
-    termos_cliente = ("CLIENTE", "RAZAO", "RAZÃO", "NOME", "CONTA", "EMPRESA")
-
-    candidatos = []
-    outros = []
-
-    for coluna in colunas:
-        nome = normalizar_nome_coluna(coluna)
-
-        if coluna in meses:
-            continue
-
-        if any(t in nome for t in termos_excluir):
-            continue
-
-        if any(t in nome for t in termos_cliente):
-            candidatos.append(coluna)
-        else:
-            outros.append(coluna)
-
-    opcoes = remover_duplicatas(candidatos + outros)
-
-    return opcoes if opcoes else list(colunas)
+    return sem_meses if sem_meses else list(colunas)
 
 
 def montar_opcoes_vendedor(colunas):
-    meses = set(detectar_colunas_meses(colunas))
+    validas = _colunas_validas_para_vendedor(colunas)
 
-    termos_vendedor = (
-        "VENDEDOR",
-        "VENDEDOR_STAR_ABA",
-        "REPRESENTANTE",
-        "REP",
-        "CONSULTOR",
-        "RESPONSAVEL",
-        "RESPONSÁVEL"
-    )
+    prioritarias = [c for c in validas if _tem_termo(normalizar_nome_coluna(c), TERMOS_VENDEDOR)]
+    outras = [c for c in validas if c not in prioritarias]
 
-    candidatos = []
-    fallback = []
+    opcoes = remover_duplicatas(prioritarias + outras)
 
-    for coluna in colunas:
-        nome = normalizar_nome_coluna(coluna)
-
-        if coluna in meses:
-            continue
-
-        if any(t in nome for t in termos_vendedor):
-            candidatos.append(coluna)
-        else:
-            fallback.append(coluna)
-
-    if candidatos:
-        return ["Não usar"] + remover_duplicatas(candidatos)
-
-    return ["Não usar"] + remover_duplicatas(fallback)
+    return ["Não usar"] + opcoes
 
 
 def montar_opcoes_cidade(colunas):
-    meses = set(detectar_colunas_meses(colunas))
+    validas = _colunas_validas_para_cidade(colunas)
 
-    termos_cidade = (
-        "CIDADE",
-        "CIDADE_STAR_ABA",
-        "MUNICIPIO",
-        "MUNICÍPIO",
-        "LOCALIDADE",
-        "REGIAO",
-        "REGIÃO"
-    )
+    prioritarias = [c for c in validas if _tem_termo(normalizar_nome_coluna(c), TERMOS_CIDADE)]
+    outras = [c for c in validas if c not in prioritarias]
 
-    candidatos = []
-    fallback = []
+    opcoes = remover_duplicatas(prioritarias + outras)
 
-    for coluna in colunas:
-        nome = normalizar_nome_coluna(coluna)
-
-        if coluna in meses:
-            continue
-
-        if any(t in nome for t in termos_cidade):
-            candidatos.append(coluna)
-        else:
-            fallback.append(coluna)
-
-    if candidatos:
-        return ["Não usar"] + remover_duplicatas(candidatos)
-
-    return ["Não usar"] + remover_duplicatas(fallback)
+    return ["Não usar"] + opcoes
 
 
 def gerar_sugestoes_mapeamento(df):

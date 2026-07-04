@@ -1,15 +1,22 @@
 import pandas as pd
 
 
+NOMES_ABA_CONSOLIDADA = ("CONSOLIDADO", "CONSOLIDADA", "GERAL", "BASE", "CARTEIRA")
+
+
 def listar_abas_excel(uploaded_file):
     uploaded_file.seek(0)
     excel_file = pd.ExcelFile(uploaded_file)
     return excel_file.sheet_names
 
 
+def eh_aba_consolidada(nome_aba):
+    return str(nome_aba).strip().upper() in NOMES_ABA_CONSOLIDADA
+
+
 def escolher_aba_padrao(abas):
     for aba in abas:
-        if str(aba).strip().upper() in ("CONSOLIDADO", "CONSOLIDADA", "GERAL", "BASE", "CARTEIRA"):
+        if eh_aba_consolidada(aba):
             return aba
 
     return abas[0] if abas else None

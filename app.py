@@ -5,7 +5,7 @@ from star_core.calculos import calcular_erosao_star, engine_star
 from star_core.curva import curva_label_fmt, curva_short, calcular_curva_abc_por_receita, normalizar_curva_existente
 from star_core.recencia import calcular_meses_sem_compra
 from star_ingestion.mapeamento import gerar_sugestoes_mapeamento
-from star_ingestion.abas import listar_abas_excel, escolher_aba_padrao, ler_aba_excel, consolidar_abas_excel
+from star_ingestion.abas import listar_abas_excel, escolher_aba_padrao, ler_aba_excel, consolidar_abas_excel, eh_aba_consolidada
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -500,6 +500,16 @@ if uploaded_file:
 
                 if not abas_selecionadas:
                     st.error("Selecione pelo menos uma aba para continuar.")
+                    st.stop()
+
+                abas_consolidadas_sel = [a for a in abas_selecionadas if eh_aba_consolidada(a)]
+
+                if abas_consolidadas_sel and len(abas_selecionadas) > len(abas_consolidadas_sel):
+                    st.error(
+                        "Nao e possivel combinar uma aba Consolidado com abas individuais "
+                        "(ex.: Joao, Maria, Pedro) nesta consolidacao, pois isso duplicaria os "
+                        "dados. Selecione apenas a aba Consolidado OU apenas as abas individuais."
+                    )
                     st.stop()
 
                 df_raw = consolidar_abas_excel(
