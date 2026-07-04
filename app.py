@@ -5,6 +5,7 @@ from star_core.calculos import calcular_erosao_star, engine_star
 from star_core.curva import curva_label_fmt, curva_short, calcular_curva_abc_por_receita, normalizar_curva_existente
 from star_core.recencia import calcular_meses_sem_compra
 from star_ingestion.mapeamento import gerar_sugestoes_mapeamento
+from star_ingestion.abas import listar_abas_excel, escolher_aba_padrao, ler_aba_excel, consolidar_abas_excel
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -439,21 +440,79 @@ uploaded_file = st.file_uploader("Faca upload da base (XLSX ou CSV)", type=['xls
 
 if uploaded_file:
 
-    def detectar_header(file):
-        kw = ("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")
-        for h in range(6):
-            try:
-                dt = pd.read_excel(file,header=h,nrows=3)
-                if any(any(m in str(c).upper() for m in kw) for c in dt.columns): return h
-            except: pass
-        return 0
+def detectar_header(file, sheet_name=0):
+    kw = ("JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
 
-    fn = uploaded_file.name
+    for h in range(6):
+        try:
+            file.seek(0)
+            dt = pd.read_excel(file, sheet_name=sheet_name, header=h, nrows=3)
+
+            if any(any(m in str(c).upper() for m in kw) for c in dt.columns):
+                return h
+
+        except:
+            pass
+
+    return 0
+
+        fn = uploaded_file.name
+
     if fn.endswith('xlsx'):
-        hr = detectar_header(uploaded_file); uploaded_file.seek(0)
-        df_raw = pd.read_excel(uploaded_file,header=hr)
+        abas = listar_abas_excel(uploaded_file)
+        aba_padrao = escolher_aba_padrao(abas)
+
+        st.markdown('<div class="section-title">ORGANIZAÇÃO DA PLANILHA</div>', unsafe_allow_html=True)
+        st.caption("Informe como as abas do arquivo devem ser interpretadas antes do mapeamento da base.")
+
+        if len(abas) > 1:
+            tipo_organizacao_abas = st.selectbox(
+                "Como esta planilha está organizada?",
+                [
+                    "Usar uma única aba",
+                    "Abas por vendedor",
+                    "Abas por segmento",
+                    "Abas por região",
+                    "Abas por cidade",
+                    "Abas por filial"
+                ],
+                index=0
+            )
+
+            if tipo_organizacao_abas == "Usar uma única aba":
+                aba_index = abas.index(aba_padrao) if aba_padrao in abas else 0
+
+                aba_escolhida = st.selectbox(
+                    "Aba que deve ser analisada",
+                    abas,
+                    index=aba_index
+                )
+
+                df_raw = ler_aba_excel(uploaded_file, aba_escolhida, detectar_header)
+
+            else:
+                abas_selecionadas = st.multiselect(
+                    "Abas que devem entrar na análise",
+                    options=abas,
+                    default=abas
+                )
+
+                if not abas_selecionadas:
+                    st.error("Selecione pelo menos uma aba para continuar.")
+                    st.stop()
+
+                df_raw = consolidar_abas_excel(
+                    uploaded_file,
+                    abas_selecionadas,
+                    tipo_organizacao_abas,
+                    detectar_header
+                )
+
+        else:
+            df_raw = ler_aba_excel(uploaded_file, abas[0], detectar_header)
+
     else:
-        df_raw = pd.read_csv(uploaded_file,sep=None,engine='python')
+        df_raw = pd.read_csv(uploaded_file, sep=None, engine='python')
 
     df_raw.columns = [str(c).strip().upper() for c in df_raw.columns]
     cols = df_raw.columns.tolist()
