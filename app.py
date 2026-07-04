@@ -4,6 +4,7 @@ import html as htmllib
 from star_core.calculos import calcular_erosao_star, engine_star
 from star_core.curva import curva_label_fmt, curva_short, calcular_curva_abc_por_receita, normalizar_curva_existente
 from star_core.recencia import calcular_meses_sem_compra
+from star_ingestion.mapeamento import gerar_sugestoes_mapeamento
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -457,10 +458,81 @@ if uploaded_file:
     df_raw.columns = [str(c).strip().upper() for c in df_raw.columns]
     cols = df_raw.columns.tolist()
 
-    meses_col = [c for c in cols if any(m in c for m in ("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"))]
-    clie_col  = next((c for c in cols if any(x in c for x in ("CLIENTE","NOME","RAZAO"))), cols[0])
-    vend_col  = next((c for c in cols if any(x in c for x in ("VENDEDOR","REP"))), cols[1] if len(cols)>1 else cols[0])
-    cida_col  = next((c for c in cols if any(x in c for x in ("CIDADE","MUNICIPIO","LOCALIDADE","REGIAO"))), None)
+        sugestoes = gerar_sugestoes_mapeamento(df_raw)
+
+    st.markdown('<div class="section-title">MAPEAMENTO DA BASE</div>', unsafe_allow_html=True)
+    st.caption("Confirme como o STAR OS deve interpretar a planilha enviada antes de processar a Matriz STAR.")
+
+    tipo_base = st.selectbox(
+        "Esta planilha representa:",
+        [
+            "Carteira completa da empresa",
+            "Carteira de um vendedor específico",
+            "Carteira de uma filial ou região",
+            "Base parcial ou amostra",
+            "Não sei"
+        ],
+        index=0
+    )
+
+    colunas_obrigatorias = cols
+    colunas_opcionais = ["Não usar"] + cols
+
+    cliente_sugerido = sugestoes.get("cliente")
+    cliente_index = colunas_obrigatorias.index(cliente_sugerido) if cliente_sugerido in colunas_obrigatorias else 0
+
+    clie_col = st.selectbox(
+        "Coluna de cliente",
+        colunas_obrigatorias,
+        index=cliente_index
+    )
+
+    vendedor_sugerido = sugestoes.get("vendedor")
+    vendedor_index = colunas_opcionais.index(vendedor_sugerido) if vendedor_sugerido in colunas_opcionais else 0
+
+    vend_col_escolhida = st.selectbox(
+        "Coluna de vendedor",
+        colunas_opcionais,
+        index=vendedor_index
+    )
+
+    if vend_col_escolhida == "Não usar":
+        vendedor_manual = st.text_input(
+            "Nome do vendedor desta base",
+            value=""
+        )
+
+        if not vendedor_manual.strip():
+            st.warning("Informe o nome do vendedor desta base ou selecione uma coluna de vendedor.")
+            st.stop()
+
+        df_raw["VENDEDOR_STAR"] = vendedor_manual.strip()
+        vend_col = "VENDEDOR_STAR"
+    else:
+        vend_col = vend_col_escolhida
+
+    cidade_sugerida = sugestoes.get("cidade")
+    cidade_index = colunas_opcionais.index(cidade_sugerida) if cidade_sugerida in colunas_opcionais else 0
+
+    cida_col_escolhida = st.selectbox(
+        "Coluna de cidade",
+        colunas_opcionais,
+        index=cidade_index
+    )
+
+    cida_col = None if cida_col_escolhida == "Não usar" else cida_col_escolhida
+
+    meses_sugeridos = sugestoes.get("meses", [])
+
+    meses_col = st.multiselect(
+        "Colunas de faturamento mensal",
+        options=cols,
+        default=meses_sugeridos
+    )
+
+    if not meses_col:
+        st.error("Nenhuma coluna de faturamento mensal foi selecionada. Selecione pelo menos uma coluna de mês para continuar.")
+        st.stop()
 
     for c in meses_col:
         df_raw[c] = pd.to_numeric(df_raw[c],errors='coerce').fillna(0)
