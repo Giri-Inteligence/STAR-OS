@@ -122,3 +122,7 @@ de listagem do `CICLO_LOOP` por cliente/sessão (Sprint 8.2, ver
 **Atualização:** a regressão passa a incluir teste estático da
 Governança no Streamlit (Sprint 8.3, ver
 `docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).
+
+**Atualização:** a regressão passa a incluir leitura operacional sem
+tarefas (Sprint 8.4, ver
+`docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).

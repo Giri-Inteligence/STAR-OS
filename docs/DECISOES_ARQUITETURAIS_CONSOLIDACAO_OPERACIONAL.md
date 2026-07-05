@@ -82,3 +82,8 @@ operacional (ver `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).
 A validação visual guiada preservou `app.py` sem alteração e as regras
 nos módulos especializados (ver
 `docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).
+
+## 13. Continuidade — Sprint 8.4
+
+A leitura operacional foi mantida separada de tarefa, agenda, CRM,
+dashboard e IA (ver `docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).

@@ -106,6 +106,11 @@ from star_persistence.configuracao_governanca import (
     gerar_resumo_configuracao_governanca,
     formatar_configuracao_governanca_texto,
 )
+from star_governance.leitura_operacional import (
+    gerar_leitura_operacional_governanca,
+    formatar_leitura_operacional_governanca_texto,
+    formatar_item_leitura_operacional_texto,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -1277,6 +1282,7 @@ if uploaded_file:
 
             if st.button("Consultar governança salva deste cliente", key=f"governanca_consultar_{cliente_raio_x}"):
                 if not os.path.exists(db_path_governanca):
+                    payloads_salvos_governanca = []
                     st.caption("Nenhum banco de governança encontrado ainda para consulta.")
                 else:
                     payloads_salvos_governanca = listar_payloads_governanca(
@@ -1301,6 +1307,24 @@ if uploaded_file:
                     with st.expander("Resumo técnico do repositório de governança", expanded=False):
                         for linha_resumo_governanca in formatar_resumo_repositorio_governanca(contagens_governanca):
                             st.caption(linha_resumo_governanca)
+
+                leitura_operacional_governanca = gerar_leitura_operacional_governanca(payloads_salvos_governanca)
+
+                st.markdown("**Leitura operacional da governança**")
+
+                for linha_leitura_operacional in formatar_leitura_operacional_governanca_texto(
+                    leitura_operacional_governanca
+                ):
+                    st.caption(linha_leitura_operacional)
+
+                if leitura_operacional_governanca["itens"]:
+                    with st.expander("Detalhamento da leitura operacional por payload", expanded=False):
+                        for item_leitura_operacional in leitura_operacional_governanca["itens"]:
+                            for linha_item_leitura in formatar_item_leitura_operacional_texto(
+                                item_leitura_operacional
+                            ):
+                                st.caption(linha_item_leitura)
+                            st.caption("---")
         else:
             st.caption("Nenhum cliente disponivel para Raio-X.")
 

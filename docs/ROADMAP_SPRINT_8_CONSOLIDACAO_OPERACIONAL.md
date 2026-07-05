@@ -11,8 +11,8 @@ visual e melhorar leitura operacional sem criar execução automática.
 - Sprint 8.1 — Arquitetura da Consolidação Operacional da Governança — **CONCLUÍDA**.
 - Sprint 8.2 — Correção Controlada de Identificadores do CICLO_LOOP — **CONCLUÍDA** (corrigido em `star_persistence/contrato_governanca.py`, sem alterar schema, `app.py`, `star_governance`, Motor STAR, PDF ou Excel — ver `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).
 - Sprint 8.3 — Validação Visual Guiada da Governança no Streamlit — **CONCLUÍDA** (validação estática aprovada; validação visual real pendente de execução local por ausência de Streamlit no ambiente — ver `docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).
-- Sprint 8.4 — Melhorias de Leitura Operacional sem Tarefas — próxima etapa recomendada.
-- Sprint 8.5 — Fechamento da Consolidação Operacional.
+- Sprint 8.4 — Melhorias de Leitura Operacional sem Tarefas — **CONCLUÍDA** (leitura operacional determinística sem tarefa, sem agenda, sem dashboard, sem CRM, sem IA e sem agente — ver `docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).
+- Sprint 8.5 — Fechamento da Consolidação Operacional — próxima etapa recomendada.
 
 ## 3. Objetivo de cada sub-sprint
 

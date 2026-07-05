@@ -229,3 +229,9 @@ executada na Sprint 8.2 (ver
 A Sprint 8.3 executou a etapa de validação guiada sem criar nova
 funcionalidade (ver
 `docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).
+
+## 13. Continuidade — Sprint 8.4
+
+A Sprint 8.4 executou a etapa de melhoria de leitura sem transformar
+governança em execução (ver
+`docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).

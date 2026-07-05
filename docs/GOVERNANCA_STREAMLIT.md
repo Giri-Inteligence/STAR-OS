@@ -137,3 +137,9 @@ correção controlada do `CICLO_LOOP` na Sprint 8.2 (ver
 A Sprint 8.3 validou estaticamente a seção e documentou roteiro de
 validação visual humana (ver
 `docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).
+
+## 13. Continuidade — Sprint 8.4
+
+A Sprint 8.4 passou a exibir leitura operacional não prescritiva após
+consulta de governança salva (ver
+`docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).

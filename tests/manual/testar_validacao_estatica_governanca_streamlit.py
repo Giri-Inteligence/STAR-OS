@@ -147,6 +147,20 @@ def testar_ausencia_chamadas_externas(bloco_governanca):
     print("9. Ausencia de chamadas de IA/API externa (requests/httpx/openai/anthropic) no bloco: OK")
 
 
+def testar_leitura_operacional_presente(bloco_governanca):
+    assert "Leitura operacional da governança" in bloco_governanca
+    assert "gerar_leitura_operacional_governanca" in bloco_governanca
+    assert "formatar_leitura_operacional_governanca_texto" in bloco_governanca
+
+    print("9.1. Leitura operacional da governanca presente no bloco (Sprint 8.4): OK")
+
+
+def testar_ausencia_metric_no_bloco_governanca(bloco_governanca):
+    assert "st.metric" not in bloco_governanca, "st.metric encontrado no bloco de governanca"
+
+    print("9.2. Ausencia de st.metric no bloco de governanca (Sprint 8.4): OK")
+
+
 def testar_arquivo_nao_alterado():
     tamanho_arquivo = os.path.getsize(CAMINHO_APP)
     assert tamanho_arquivo > 0
@@ -167,6 +181,8 @@ if __name__ == "__main__":
     testar_ausencia_graficos(bloco_governanca_extraido)
     testar_ausencia_download_novo(bloco_governanca_extraido)
     testar_ausencia_chamadas_externas(bloco_governanca_extraido)
+    testar_leitura_operacional_presente(bloco_governanca_extraido)
+    testar_ausencia_metric_no_bloco_governanca(bloco_governanca_extraido)
     testar_arquivo_nao_alterado()
 
     print("VALIDACAO_ESTATICA_GOVERNANCA_STREAMLIT_OK")

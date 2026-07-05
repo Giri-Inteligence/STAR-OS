@@ -79,3 +79,9 @@ como requisito pendente — deve ser executada localmente pelo usuário,
 seguindo `docs/ROTEIRO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`, antes
 de considerar a experiência da Governança Investigativa como
 totalmente validada de ponta a ponta.
+
+## 6. Continuidade — Sprint 8.4
+
+A Sprint 8.4 acrescentou leitura operacional como melhoria posterior à
+validação estática (ver
+`docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).

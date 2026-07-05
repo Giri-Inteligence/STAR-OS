@@ -100,3 +100,9 @@ A Sprint 8.3 valida:
 - Não cria IA.
 - Não cria agente.
 - Não cria integração externa.
+
+## 7. Continuidade — Sprint 8.4
+
+A validação visual futura deve confirmar a leitura operacional
+(Sprint 8.4) sem tarefa, sem agenda e sem recomendação de ação (ver
+`docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).

@@ -807,3 +807,36 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum Excel alterado.
 - [ ] Teste estático passa.
 - [ ] Testes manuais continuam passando.
+
+## 36. Leitura Operacional da Governança sem Tarefas
+
+- [ ] Módulo de leitura operacional criado.
+- [ ] Leitura aceita payload puro.
+- [ ] Leitura aceita linha do repositório.
+- [ ] Leitura identifica `REGISTRO_ACOMPANHAMENTO`.
+- [ ] Leitura identifica `SNAPSHOT_STATUS`.
+- [ ] Leitura identifica `ITEM_LOOP`.
+- [ ] Leitura identifica `CICLO_LOOP`.
+- [ ] Leitura identifica `GOVERNANCA_INTEGRADA`.
+- [ ] Leitura identifica status.
+- [ ] Leitura identifica classificação de loop.
+- [ ] Leitura identifica `CICLO_LOOP` com identidade.
+- [ ] Leitura identifica consulta completa para cliente/sessão.
+- [ ] Leitura vazia é válida com aviso.
+- [ ] Formatação textual não recomenda ação.
+- [ ] Formatação textual não cria tarefa.
+- [ ] `app.py` apenas exibe a leitura dentro da seção existente.
+- [ ] Nenhum botão novo é criado.
+- [ ] Nenhuma tela nova é criada.
+- [ ] Nenhum gráfico é criado.
+- [ ] Nenhum ranking é criado.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma agenda é criada.
+- [ ] Nenhum responsável automático é criado.
+- [ ] Nenhum prazo é criado.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum agente é acionado.
+- [ ] Nenhum PDF é alterado.
+- [ ] Nenhum Excel é alterado.
+- [ ] Testes manuais continuam passando.
