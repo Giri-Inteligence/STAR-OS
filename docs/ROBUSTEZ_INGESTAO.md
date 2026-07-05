@@ -123,3 +123,7 @@ O STAR OS pode avançar para a próxima fase apenas se:
 - O Motor STAR permanecer protegido.
 - A ingestão continuar tratando planilhas reais sem quebrar cálculo.
 - As falhas forem documentadas antes de qualquer correção.
+
+A robustez de ingestão é pré-condição para a Inteligência de Carteira,
+porque a interpretação operacional depende de dados saneados, normalizados
+e validados (ver `docs/INTELIGENCIA_CARTEIRA_INTEGRADA.md`).

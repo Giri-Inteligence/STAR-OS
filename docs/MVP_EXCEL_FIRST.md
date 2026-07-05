@@ -80,6 +80,11 @@ valores e qualidade de linhas) foi formalmente documentada em
 `docs/DECISOES_ARQUITETURAIS_INGESTAO.md`, fechando a Sprint 2 antes de
 avançar para a Inteligência de Carteira.
 
+Após o fechamento da robustez de ingestão, o próximo ciclo evolutivo do
+STAR OS é a Inteligência de Carteira Integrada, que deve usar a Matriz STAR
+como entrada e preservar o Motor STAR (ver
+`docs/INTELIGENCIA_CARTEIRA_INTEGRADA.md`).
+
 ## 5. Decisões de arquitetura preservadas
 
 - Excel-first.

@@ -100,3 +100,12 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] PDF baixa.
 - [ ] Nenhum arquivo `star_core` foi alterado.
 - [ ] Nenhuma regra STAR foi alterada.
+
+## 8. Preparação para Inteligência de Carteira
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Campos calculados continuam presentes.
+- [ ] Relatório de ingestão continua funcionando.
+- [ ] Downloads continuam funcionando.
+- [ ] Nenhuma regra STAR foi alterada.
+- [ ] Nenhum arquivo `star_core` foi alterado.
