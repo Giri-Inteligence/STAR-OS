@@ -142,3 +142,9 @@ modelo de governança estiver maduro.
 - Agente não deve alterar histórico sem rastreabilidade.
 - Agente não deve transformar recomendação em execução sem validação.
 - Agente futuro deve operar sobre regras e trilhas já definidas.
+
+## 10. Continuidade — Sprint 6.2
+
+O Registro de Acompanhamento Operacional (`star_governance/acompanhamento.py`)
+é a primeira entidade funcional do loop, ainda sem persistência (ver
+`docs/REGISTRO_ACOMPANHAMENTO_OPERACIONAL.md`).

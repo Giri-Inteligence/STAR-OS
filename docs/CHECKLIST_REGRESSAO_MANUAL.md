@@ -433,3 +433,30 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA chamada.
 - [ ] Nenhum token consumido.
 - [ ] Testes manuais continuam passando.
+
+## 24. Registro de Acompanhamento Operacional
+
+- [ ] Pacote `star_governance` criado.
+- [ ] Contrato de acompanhamento criado.
+- [ ] Registro de acompanhamento é gerado em memória.
+- [ ] Registro é serializável com `json.dumps`.
+- [ ] Tipos de acompanhamento são normalizados.
+- [ ] Status de acompanhamento são normalizados.
+- [ ] Contexto do payload histórico é extraído.
+- [ ] Registro não altera payload histórico original.
+- [ ] Validação estrutural funciona.
+- [ ] Pacote de acompanhamento operacional é gerado.
+- [ ] Nenhum banco é criado.
+- [ ] Nenhuma tabela é criada.
+- [ ] Nenhum JSON funcional é criado.
+- [ ] Nenhum `app.py` é alterado.
+- [ ] Nenhum arquivo `star_core` é alterado.
+- [ ] Nenhum arquivo `star_ingestion` é alterado.
+- [ ] Nenhum arquivo `star_intelligence` é alterado.
+- [ ] Nenhum arquivo `star_persistence` é alterado.
+- [ ] Nenhuma regra STAR é alterada.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Testes manuais continuam passando.

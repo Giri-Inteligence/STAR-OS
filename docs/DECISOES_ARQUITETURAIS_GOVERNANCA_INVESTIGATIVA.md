@@ -76,3 +76,10 @@ A Governança Investigativa deve evitar virar dashboard paralelo.
 - Sprint 6.3 — Status de Acompanhamento da Investigação.
 - Sprint 6.4 — Loop Semanal de Governança.
 - Sprint 6.5 — Fechamento da Governança Inicial.
+
+## 10. Continuidade — Sprint 6.2
+
+A Sprint 6.2 preservou a separação entre acompanhamento e execução: o
+Registro de Acompanhamento Operacional registra evolução, pendência e
+decisão humana, mas não executa tarefa, não envia mensagem e não aciona
+agente (ver `docs/REGISTRO_ACOMPANHAMENTO_OPERACIONAL.md`).

@@ -147,3 +147,10 @@ porque cria base para:
 - Não integra ERP.
 - Não integra WhatsApp.
 - Não altera Motor STAR.
+
+## 10. Continuidade — Sprint 6.2
+
+A Sprint 6.2 criou o contrato de Registro de Acompanhamento Operacional
+em memória (`star_governance/acompanhamento.py`), ainda sem persistência
+e sem integração com o Streamlit (ver
+`docs/REGISTRO_ACOMPANHAMENTO_OPERACIONAL.md`).
