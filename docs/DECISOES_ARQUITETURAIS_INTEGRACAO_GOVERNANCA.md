@@ -75,3 +75,8 @@ regras de governança, persistência ou transições.
 - Haverá trilha de auditoria?
 - Haverá usuário responsável?
 - Quando agentes poderão operar?
+
+## 12. Continuidade — Sprint 7.2
+
+A Sprint 7.2 preservou a decisão de contrato antes de persistência (ver
+`docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).

@@ -56,3 +56,7 @@ sprints próprias:
 **Atualização:** a Sprint 7.1 iniciou a Arquitetura da Integração
 Controlada da Governança (ver
 `docs/ARQUITETURA_INTEGRACAO_CONTROLADA_GOVERNANCA.md`).
+
+**Atualização:** a Sprint 7.2 avançou para o contrato de persistência da
+governança, ainda sem salvar dados (ver
+`docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).

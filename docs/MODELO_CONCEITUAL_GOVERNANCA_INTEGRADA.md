@@ -169,3 +169,8 @@ Agentes futuros:
 - Sprint 7.1 não cria IA.
 - Sprint 7.1 não cria tarefa.
 - Sprint 7.1 não cria plano de ação.
+
+## 10. Continuidade — Sprint 7.2
+
+A Sprint 7.2 materializou o contrato canônico dos payloads de governança
+integrada (ver `docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).

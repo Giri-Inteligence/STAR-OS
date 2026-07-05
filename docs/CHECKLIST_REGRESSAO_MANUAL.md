@@ -584,3 +584,37 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA chamada.
 - [ ] Nenhum token consumido.
 - [ ] Testes manuais continuam passando.
+
+## 29. Contrato de Persistência da Governança
+
+- [ ] Contrato de persistência da governança criado.
+- [ ] Tipos de payload de governança são normalizados.
+- [ ] Metadados de persistência são criados com `persistido=False`.
+- [ ] Metadados de persistência são criados com `persistencia_habilitada=False`.
+- [ ] Payload de Registro de Acompanhamento é criado.
+- [ ] Payload de Snapshot de Status é criado.
+- [ ] Payload de Item de Loop é criado.
+- [ ] Payload de Ciclo de Loop é criado.
+- [ ] Payload de Governança Integrada é criado.
+- [ ] Payloads são serializáveis com `json.dumps`.
+- [ ] Payloads são validados.
+- [ ] Payloads com `persistido=True` são bloqueados.
+- [ ] Payloads com `persistencia_habilitada=True` são bloqueados.
+- [ ] Estruturas originais não são alteradas.
+- [ ] Nenhum banco é criado.
+- [ ] Nenhuma tabela é criada.
+- [ ] Nenhum schema SQLite é alterado.
+- [ ] Nenhum JSON funcional é criado.
+- [ ] Nenhum repositório é criado.
+- [ ] Nenhum `app.py` é alterado.
+- [ ] Nenhum arquivo `star_core` é alterado.
+- [ ] Nenhum arquivo `star_ingestion` é alterado.
+- [ ] Nenhum arquivo `star_intelligence` é alterado.
+- [ ] Nenhum arquivo `star_governance` é alterado.
+- [ ] Nenhuma regra STAR é alterada.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma agenda é criada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Testes manuais continuam passando.

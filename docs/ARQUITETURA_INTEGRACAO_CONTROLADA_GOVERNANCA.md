@@ -200,3 +200,10 @@ Sprint 5 (contrato → repositório → Streamlit → fechamento).
 - Não integra ERP.
 - Não integra WhatsApp.
 - Não altera Motor STAR.
+
+## 10. Continuidade — Sprint 7.2
+
+A Sprint 7.2 criou o contrato de persistência da governança
+(`star_persistence/contrato_governanca.py`), mantendo contrato antes de
+banco, repositório e interface (ver
+`docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).
