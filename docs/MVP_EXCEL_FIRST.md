@@ -50,6 +50,11 @@ Desde a Sprint 2.1, cada upload gera um relatório estruturado de ingestão
 saneamento, mapeamento aplicado e erros/avisos — sem alterar nenhuma decisão
 do sistema, apenas documentando o que já acontece.
 
+Desde a Sprint 2.2, um diagnóstico determinístico de mapeamento
+(`star_ingestion/diagnostico_mapeamento.py`) explica, antes do bloqueio, qual
+campo (cliente, vendedor, cidade ou meses) não foi reconhecido e sugere como
+corrigir a planilha.
+
 ## 5. Decisões de arquitetura preservadas
 
 - Excel-first.

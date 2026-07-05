@@ -39,6 +39,7 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] `cliente_vazio.xlsx` bloqueia.
 - [ ] `base_vazia.xlsx` bloqueia.
 - [ ] `meses_invalidos.xlsx` bloqueia.
+- [ ] Em planilhas inválidas ou mal mapeadas, verificar se o diagnóstico informa qual campo não foi reconhecido.
 
 ## 5. Teste de formatos reais
 

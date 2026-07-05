@@ -14,10 +14,12 @@ from star_ingestion.relatorio import (
     registrar_estado_final,
     registrar_mapeamento,
     adicionar_saneamento,
+    adicionar_avisos,
     adicionar_erros,
     marcar_processado,
     formatar_relatorio_texto,
 )
+from star_ingestion.diagnostico_mapeamento import diagnosticar_mapeamento
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -638,6 +640,32 @@ if uploaded_file:
         cidade_col=cida_col,
         meses_col=meses_col,
     )
+
+    diagnostico_mapeamento = diagnosticar_mapeamento(
+        df_raw,
+        cliente_col=clie_col,
+        vendedor_col=vend_col,
+        cidade_col=cida_col,
+        meses_col=meses_col,
+    )
+
+    if diagnostico_mapeamento["avisos"]:
+        adicionar_avisos(relatorio_ingestao, diagnostico_mapeamento["avisos"])
+
+    if not diagnostico_mapeamento["ok"]:
+        adicionar_erros(relatorio_ingestao, diagnostico_mapeamento["erros"])
+
+        for erro in diagnostico_mapeamento["erros"]:
+            st.error(erro)
+
+        for sugestao in diagnostico_mapeamento["sugestoes"]:
+            st.warning(sugestao)
+
+        with st.expander("Relatorio de ingestao", expanded=False):
+            for linha in formatar_relatorio_texto(relatorio_ingestao):
+                st.caption(linha)
+
+        st.stop()
 
     campos_estruturais = [clie_col, vend_col]
     if cida_col:
