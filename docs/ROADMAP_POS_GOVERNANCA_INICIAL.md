@@ -52,3 +52,7 @@ sprints próprias:
 - Regressão manual aprovada.
 - Decisão arquitetural explícita antes de persistir ou expor governança
   no Streamlit.
+
+**Atualização:** a Sprint 7.1 iniciou a Arquitetura da Integração
+Controlada da Governança (ver
+`docs/ARQUITETURA_INTEGRACAO_CONTROLADA_GOVERNANCA.md`).

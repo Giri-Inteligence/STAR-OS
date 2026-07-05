@@ -45,3 +45,7 @@ operacional, sem criar execução automática.
 - Nenhuma tarefa automática criada.
 - Nenhum agente acionado.
 - Regressão manual passando.
+
+**Atualização:** a fase seguinte iniciada é a Sprint 7 — Integração
+Controlada da Governança (ver
+`docs/ROADMAP_SPRINT_7_INTEGRACAO_GOVERNANCA.md`).

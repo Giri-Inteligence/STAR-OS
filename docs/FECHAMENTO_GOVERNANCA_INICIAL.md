@@ -136,3 +136,7 @@ O STAR OS só deve avançar para a próxima fase se:
   implementada.
 - Qualquer persistência futura da governança tiver justificativa
   metodológica e técnica.
+
+**Atualização:** a Governança Inicial passa a servir como base para a
+Integração Controlada da Governança (Sprint 7), sem transformar loop em
+execução automática (ver `docs/ARQUITETURA_INTEGRACAO_CONTROLADA_GOVERNANCA.md`).

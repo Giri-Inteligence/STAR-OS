@@ -556,3 +556,31 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA chamada.
 - [ ] Nenhum token consumido.
 - [ ] Testes manuais passam.
+
+## 28. Arquitetura da Integração Controlada da Governança
+
+- [ ] Arquitetura da Integração Controlada da Governança criada.
+- [ ] Modelo Conceitual da Governança Integrada criado.
+- [ ] Decisões Arquiteturais da Integração da Governança criadas.
+- [ ] Roadmap da Sprint 7 criado.
+- [ ] Nenhum código funcional alterado.
+- [ ] Nenhum `app.py` alterado.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhum arquivo `star_governance` alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhum banco criado.
+- [ ] Nenhuma tabela criada.
+- [ ] Nenhum schema SQLite alterado.
+- [ ] Nenhum JSON funcional criado.
+- [ ] Nenhuma tela criada.
+- [ ] Nenhum botão criado.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum calendário criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Testes manuais continuam passando.

@@ -138,3 +138,7 @@
   `star_intelligence` e `star_persistence` permanecem intocados.
 - O GitHub Desktop deve ser usado para push após o commit local ser
   validado (nenhum push é feito automaticamente pelas sprints).
+
+**Atualização:** os módulos `star_governance` inventariados aqui compõem
+a base técnica da Integração Controlada da Governança (Sprint 7, ver
+`docs/ARQUITETURA_INTEGRACAO_CONTROLADA_GOVERNANCA.md`).
