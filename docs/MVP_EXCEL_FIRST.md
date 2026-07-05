@@ -55,6 +55,12 @@ Desde a Sprint 2.2, um diagnóstico determinístico de mapeamento
 campo (cliente, vendedor, cidade ou meses) não foi reconhecido e sugere como
 corrigir a planilha.
 
+Desde a Sprint 2.3, uma normalização avançada de meses
+(`star_ingestion/normalizacao_meses.py`) reconhece formatos variados de
+coluna mensal (texto, numérico, com prefixo, fora de ordem), ordena os meses
+cronologicamente e avisa sobre períodos duplicados, sem alterar valores ou
+nomes de colunas.
+
 ## 5. Decisões de arquitetura preservadas
 
 - Excel-first.

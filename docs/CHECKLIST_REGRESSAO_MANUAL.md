@@ -55,6 +55,14 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] O relatório mostra status PROCESSADO quando a base é aceita.
 - [ ] O relatório mostra status BLOQUEADO e os erros quando a base é rejeitada.
 
+## 5.2 Teste de meses avançados
+
+- [ ] `meses_texto_variado.xlsx` processa.
+- [ ] `meses_numericos_variados.xlsx` processa.
+- [ ] `meses_com_prefixo.xlsx` processa.
+- [ ] `meses_fora_ordem.xlsx` processa com meses ordenados corretamente.
+- [ ] `meses_invalidos_parciais.xlsx` ignora meses inválidos e processa meses válidos.
+
 ## 6. Critério de aprovação
 
 - Nenhuma planilha válida pode quebrar.

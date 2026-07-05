@@ -20,6 +20,7 @@ from star_ingestion.relatorio import (
     formatar_relatorio_texto,
 )
 from star_ingestion.diagnostico_mapeamento import diagnosticar_mapeamento
+from star_ingestion.normalizacao_meses import detectar_colunas_mensais_avancado, ordenar_colunas_mensais
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -632,6 +633,16 @@ if uploaded_file:
     if not meses_col:
         st.error("Nenhuma coluna de faturamento mensal foi selecionada. Selecione pelo menos uma coluna de mes para continuar.")
         st.stop()
+
+    normalizacao_meses = detectar_colunas_mensais_avancado(df_raw)
+
+    if len(normalizacao_meses["meses_col"]) > len(meses_col):
+        meses_col = normalizacao_meses["meses_col"]
+    else:
+        meses_col = ordenar_colunas_mensais(meses_col, normalizacao_meses["metadados"])
+
+    if normalizacao_meses["avisos"]:
+        adicionar_avisos(relatorio_ingestao, normalizacao_meses["avisos"])
 
     registrar_mapeamento(
         relatorio_ingestao,
