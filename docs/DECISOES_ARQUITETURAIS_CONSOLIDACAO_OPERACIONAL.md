@@ -76,3 +76,9 @@ A consolidação operacional não pode alterar:
 
 A Sprint 8.2 executou a decisão de corrigir identidade antes da leitura
 operacional (ver `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).
+
+## 12. Continuidade — Sprint 8.3
+
+A validação visual guiada preservou `app.py` sem alteração e as regras
+nos módulos especializados (ver
+`docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).

@@ -118,3 +118,7 @@ operacional e visual futura (ver
 **Atualização:** a regressão da governança passa a incluir verificação
 de listagem do `CICLO_LOOP` por cliente/sessão (Sprint 8.2, ver
 `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).
+
+**Atualização:** a regressão passa a incluir teste estático da
+Governança no Streamlit (Sprint 8.3, ver
+`docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).

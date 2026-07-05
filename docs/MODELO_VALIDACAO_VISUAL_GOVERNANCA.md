@@ -124,3 +124,11 @@ Checklist visual futura, proposta sem implementação:
 
 A Sprint 8.3 deve validar visualmente o `CICLO_LOOP` já corrigido pela
 Sprint 8.2 (ver `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).
+
+## 10. Continuidade — Sprint 8.3
+
+A Sprint 8.3 criou o roteiro e a validação estática da seção Governança
+investigativa (ver
+`docs/VALIDACAO_VISUAL_GUIADA_GOVERNANCA_STREAMLIT.md`,
+`docs/ROTEIRO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md` e
+`docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).

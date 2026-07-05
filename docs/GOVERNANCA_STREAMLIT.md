@@ -131,3 +131,9 @@ Sprint 7.5 (ver `docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).
 A validação visual guiada será tratada na Sprint 8.3, após decisão e
 correção controlada do `CICLO_LOOP` na Sprint 8.2 (ver
 `docs/MODELO_VALIDACAO_VISUAL_GOVERNANCA.md`).
+
+## 12. Continuidade — Sprint 8.3
+
+A Sprint 8.3 validou estaticamente a seção e documentou roteiro de
+validação visual humana (ver
+`docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).

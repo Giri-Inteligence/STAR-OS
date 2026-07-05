@@ -774,3 +774,36 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum agente é acionado.
 - [ ] Testes manuais continuam passando.
+
+## 35. Validação Visual Guiada da Governança no Streamlit
+
+- [ ] Seção Governança investigativa existe no `app.py`.
+- [ ] Seção está próxima do fluxo de Raio-X/Histórico Investigativo.
+- [ ] Aviso metodológico existe.
+- [ ] Campos permitidos existem.
+- [ ] Não há campo de responsável.
+- [ ] Não há campo de prazo.
+- [ ] Não há campo de tarefa.
+- [ ] Não há campo de plano de ação.
+- [ ] Não há calendário.
+- [ ] Não há agenda.
+- [ ] Botão de salvamento explícito existe.
+- [ ] Botão de consulta read-only existe.
+- [ ] Payloads são criados via `contrato_governanca.py`.
+- [ ] Payloads são salvos via `repositorio_governanca.py`.
+- [ ] Consulta usa `repositorio_governanca.py`.
+- [ ] `CICLO_LOOP` corrigido deve aparecer por cliente/sessão.
+- [ ] Não há gráfico novo.
+- [ ] Não há ranking.
+- [ ] Não há dashboard paralelo.
+- [ ] Não há CRM paralelo.
+- [ ] Não há download novo.
+- [ ] Não há chamada de IA.
+- [ ] Não há agente.
+- [ ] Não há API externa.
+- [ ] Nenhum `app.py` alterado nesta sprint.
+- [ ] Nenhum código funcional alterado nesta sprint.
+- [ ] Nenhum PDF alterado.
+- [ ] Nenhum Excel alterado.
+- [ ] Teste estático passa.
+- [ ] Testes manuais continuam passando.

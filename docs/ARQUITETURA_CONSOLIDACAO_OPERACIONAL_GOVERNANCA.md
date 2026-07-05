@@ -223,3 +223,9 @@ fim fechar e regredir.
 A decisão de corrigir o `CICLO_LOOP` antes da validação visual foi
 executada na Sprint 8.2 (ver
 `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).
+
+## 12. Continuidade — Sprint 8.3
+
+A Sprint 8.3 executou a etapa de validação guiada sem criar nova
+funcionalidade (ver
+`docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).
