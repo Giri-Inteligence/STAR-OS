@@ -71,3 +71,8 @@ A consolidação operacional não pode alterar:
 - Que melhorias de leitura são permitidas sem criar tarefa?
 - Quando IA poderá apoiar leitura?
 - Quando agentes poderão operar?
+
+## 11. Continuidade — Sprint 8.2
+
+A Sprint 8.2 executou a decisão de corrigir identidade antes da leitura
+operacional (ver `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).

@@ -217,3 +217,9 @@ fim fechar e regredir.
 - Não integra ERP.
 - Não integra WhatsApp.
 - Não altera Motor STAR.
+
+## 11. Continuidade — Sprint 8.2
+
+A decisão de corrigir o `CICLO_LOOP` antes da validação visual foi
+executada na Sprint 8.2 (ver
+`docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).

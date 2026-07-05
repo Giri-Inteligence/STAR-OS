@@ -122,6 +122,67 @@ def criar_snapshot_id_deterministico(snapshot_status=None):
     )
 
 
+CHAVES_LISTA_ITENS_CICLO = ("itens", "itens_loop", "itens_governanca", "lista_itens")
+CHAVES_SUBESTRUTURA_ITEM = (
+    "snapshot_status", "dados_snapshot", "dados_item_loop", "item_loop", "contexto", "cliente", "sessao",
+)
+
+
+def _buscar_identificadores_em_item_loop(item):
+    item = obter_dict_seguro_governanca(item)
+
+    cliente_id = item.get("cliente_id", "")
+    sessao_id = item.get("sessao_id", "")
+    nome_cliente = item.get("nome_cliente", "")
+
+    if cliente_id and sessao_id and nome_cliente:
+        return cliente_id, sessao_id, nome_cliente
+
+    for chave in CHAVES_SUBESTRUTURA_ITEM:
+        substrutura = obter_dict_seguro_governanca(item.get(chave))
+
+        if not substrutura:
+            continue
+
+        cliente_id = cliente_id or substrutura.get("cliente_id", "")
+        sessao_id = sessao_id or substrutura.get("sessao_id", "")
+        nome_cliente = nome_cliente or substrutura.get("nome_cliente", "")
+
+    return cliente_id, sessao_id, nome_cliente
+
+
+def _buscar_identificadores_em_ciclo(ciclo):
+    ciclo = obter_dict_seguro_governanca(ciclo)
+
+    cliente_id = ciclo.get("cliente_id", "")
+    sessao_id = ciclo.get("sessao_id", "")
+    nome_cliente = ciclo.get("nome_cliente", "")
+
+    if cliente_id and sessao_id and nome_cliente:
+        return cliente_id, sessao_id, nome_cliente
+
+    for chave_lista in CHAVES_LISTA_ITENS_CICLO:
+        itens = ciclo.get(chave_lista)
+
+        if not isinstance(itens, list):
+            continue
+
+        for item in itens:
+            if not isinstance(item, dict):
+                continue
+
+            cliente_id_item, sessao_id_item, nome_cliente_item = _buscar_identificadores_em_item_loop(item)
+
+            cliente_id = cliente_id or cliente_id_item
+            sessao_id = sessao_id or sessao_id_item
+            nome_cliente = nome_cliente or nome_cliente_item
+
+            if cliente_id and sessao_id and nome_cliente:
+                return cliente_id, sessao_id, nome_cliente
+
+    return cliente_id, sessao_id, nome_cliente
+
+
 def extrair_identificadores_governanca(
     registro_acompanhamento=None, snapshot_status=None, item_loop=None, ciclo_loop=None
 ):
@@ -132,10 +193,19 @@ def extrair_identificadores_governanca(
 
     snapshot_efetivo = snapshot if snapshot else obter_dict_seguro_governanca(item.get("snapshot_status"))
 
-    cliente_id = item.get("cliente_id") or snapshot_efetivo.get("cliente_id") or registro.get("cliente_id") or ""
-    sessao_id = item.get("sessao_id") or snapshot_efetivo.get("sessao_id") or registro.get("sessao_id") or ""
+    cliente_id_ciclo, sessao_id_ciclo, nome_cliente_ciclo = _buscar_identificadores_em_ciclo(ciclo)
+
+    cliente_id = (
+        item.get("cliente_id") or snapshot_efetivo.get("cliente_id") or registro.get("cliente_id")
+        or cliente_id_ciclo or ""
+    )
+    sessao_id = (
+        item.get("sessao_id") or snapshot_efetivo.get("sessao_id") or registro.get("sessao_id")
+        or sessao_id_ciclo or ""
+    )
     nome_cliente = (
-        item.get("nome_cliente") or snapshot_efetivo.get("nome_cliente") or registro.get("nome_cliente") or ""
+        item.get("nome_cliente") or snapshot_efetivo.get("nome_cliente") or registro.get("nome_cliente")
+        or nome_cliente_ciclo or ""
     )
     status_star = item.get("status_star") or snapshot_efetivo.get("status_star") or ""
     status_conclusivo_geral = (
@@ -235,6 +305,9 @@ def criar_payload_ciclo_loop_persistivel(ciclo_loop=None, metadados=None):
         "tipo_payload_governanca": "CICLO_LOOP",
         "versao_payload_governanca": VERSAO_PAYLOAD_GOVERNANCA,
         "ciclo_id": identificadores["ciclo_id"],
+        "cliente_id": identificadores["cliente_id"],
+        "sessao_id": identificadores["sessao_id"],
+        "nome_cliente": identificadores["nome_cliente"],
         "tipo_ciclo": str(ciclo.get("tipo_ciclo", "") or ""),
         "periodo_referencia": str(ciclo.get("periodo_referencia", "") or ""),
         "origem": str(ciclo.get("origem", "") or ""),

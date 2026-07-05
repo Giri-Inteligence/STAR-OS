@@ -114,3 +114,7 @@ A validação visual futura deve confirmar:
 **Atualização:** a Sprint 8.1 iniciou a organização da regressão
 operacional e visual futura (ver
 `docs/MODELO_VALIDACAO_VISUAL_GOVERNANCA.md`).
+
+**Atualização:** a regressão da governança passa a incluir verificação
+de listagem do `CICLO_LOOP` por cliente/sessão (Sprint 8.2, ver
+`docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).

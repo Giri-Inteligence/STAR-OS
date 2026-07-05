@@ -137,3 +137,9 @@ forma controlada (ver `docs/GOVERNANCA_STREAMLIT.md`).
 
 O repositório local compõe a Governança Integrada fechada na Sprint 7.5
 (ver `docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).
+
+## 11. Continuidade — Sprint 8.2
+
+Após a Sprint 8.2, o repositório pode listar `CICLO_LOOP` por
+cliente/sessão quando o payload foi gerado pelo contrato corrigido, sem
+alteração de schema (ver `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).

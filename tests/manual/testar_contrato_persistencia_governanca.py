@@ -282,14 +282,61 @@ def testar_criar_payload_ciclo_loop_persistivel(ciclo_loop):
     assert "dados_ciclo_loop" in payload
     assert "metadados_persistencia" in payload
 
+    assert payload["cliente_id"] != "", "CICLO_LOOP deveria carregar cliente_id extraido dos itens"
+    assert payload["sessao_id"] != "", "CICLO_LOOP deveria carregar sessao_id extraido dos itens"
+    assert payload["nome_cliente"] != "", "CICLO_LOOP deveria carregar nome_cliente extraido dos itens"
+
     json.dumps(payload)
 
     resultado = validar_payload_governanca(payload)
     assert resultado["valido"] is True
+    assert resultado["avisos"] == [], "nao deveria haver aviso de cliente_id/sessao_id ausente"
 
-    print("10. criar_payload_ciclo_loop_persistivel: OK")
+    print("10. criar_payload_ciclo_loop_persistivel (com identificadores): OK")
 
     return payload
+
+
+def testar_criar_payload_ciclo_loop_persistivel_sem_identificadores():
+    ciclo_sem_identificadores = {
+        "versao_ciclo_loop_governanca": "6.4",
+        "ciclo_id": "CICLO_SEM_ID",
+        "tipo_ciclo": "SEMANAL",
+        "periodo_referencia": "2026-W01",
+        "origem": "GOVERNANCA_MANUAL",
+        "criado_em": "2026-01-01T00:00:00+00:00",
+        "total_itens": 0,
+        "itens": [],
+        "resumo_loop": {},
+    }
+    ciclo_copia = copy.deepcopy(ciclo_sem_identificadores)
+
+    payload = criar_payload_ciclo_loop_persistivel(ciclo_sem_identificadores)
+
+    assert ciclo_sem_identificadores == ciclo_copia, "ciclo original nao deveria ser alterado"
+    assert payload["cliente_id"] == ""
+    assert payload["sessao_id"] == ""
+
+    resultado = validar_payload_governanca(payload)
+    assert resultado["valido"] is True, "payload sem identificadores deveria continuar valido"
+    assert "cliente_id ausente." in resultado["avisos"]
+    assert "sessao_id ausente." in resultado["avisos"]
+
+    print("10.1. criar_payload_ciclo_loop_persistivel (sem identificadores, aviso e nao erro): OK")
+
+
+def testar_extrair_identificadores_governanca_apenas_ciclo(ciclo_loop):
+    ciclo_copia = copy.deepcopy(ciclo_loop)
+
+    identificadores = extrair_identificadores_governanca(ciclo_loop=ciclo_loop)
+
+    assert ciclo_loop == ciclo_copia, "ciclo_loop nao deveria ser alterado"
+    assert identificadores["cliente_id"] != ""
+    assert identificadores["sessao_id"] != ""
+    assert identificadores["nome_cliente"] != ""
+    assert identificadores["ciclo_id"] == ciclo_loop["ciclo_id"]
+
+    print("10.2. extrair_identificadores_governanca (apenas ciclo_loop): OK")
 
 
 def testar_criar_payload_governanca_integrada(registro, snapshot, item_loop, ciclo_loop):
@@ -460,6 +507,8 @@ if __name__ == "__main__":
     payload_snapshot = testar_criar_payload_snapshot_status_persistivel(snapshot_teste)
     payload_item = testar_criar_payload_item_loop_persistivel(item_loop_teste)
     payload_ciclo = testar_criar_payload_ciclo_loop_persistivel(ciclo_loop_teste)
+    testar_criar_payload_ciclo_loop_persistivel_sem_identificadores()
+    testar_extrair_identificadores_governanca_apenas_ciclo(ciclo_loop_teste)
     payload_integrado = testar_criar_payload_governanca_integrada(
         registro_teste, snapshot_teste, item_loop_teste, ciclo_loop_teste
     )

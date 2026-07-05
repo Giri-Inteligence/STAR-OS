@@ -78,18 +78,21 @@ continuidade investigativa de forma controlada.
 - Governança não altera o histórico investigativo original.
 - Governança não altera o schema SQLite do histórico investigativo.
 
-## 7. Limite conhecido do payload de Ciclo de Loop
+## 7. Limitação do payload de Ciclo de Loop (corrigida na Sprint 8.2)
 
-O payload `CICLO_LOOP` (gerado por
-`criar_payload_ciclo_loop_persistivel`, Sprint 7.2) não carrega
-`cliente_id`/`sessao_id` próprios — o contrato da Sprint 7.2 só extrai
-esses campos a partir de registro, snapshot ou item de loop, não do
-ciclo isoladamente. Por isso, a consulta filtrada por cliente/sessão
-pode não retornar o payload `CICLO_LOOP` salvo, mesmo que ele exista no
-repositório (visível na contagem total). Isso é uma característica
-herdada do contrato, não uma falha da integração — nenhuma alteração foi
-feita em `contrato_governanca.py` ou `repositorio_governanca.py` para
-contornar isso nesta sprint.
+O payload `CICLO_LOOP` (gerado por `criar_payload_ciclo_loop_persistivel`)
+antes não carregava `cliente_id`/`sessao_id` próprios — o contrato da
+Sprint 7.2 só extraía esses campos a partir de registro, snapshot ou
+item de loop, não do ciclo isoladamente. Por isso, a consulta filtrada
+por cliente/sessão podia não retornar o payload `CICLO_LOOP` salvo,
+mesmo que ele existisse no repositório.
+
+Essa limitação foi tratada de forma controlada no contrato de governança
+na Sprint 8.2 (ver `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`) — o
+`CICLO_LOOP` passou a extrair `cliente_id`/`sessao_id`/`nome_cliente` a
+partir dos itens do ciclo, sem alterar `app.py`, `repositorio_governanca.py`
+ou o schema SQLite. A validação visual da Sprint 8.3 deve confirmar esse
+comportamento na interface.
 
 ## 8. Limites atuais
 

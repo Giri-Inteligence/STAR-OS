@@ -205,3 +205,10 @@ Streamlit (ver `docs/GOVERNANCA_STREAMLIT.md`).
 
 Este contrato compõe a Governança Integrada fechada na Sprint 7.5 (ver
 `docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).
+
+## 16. Continuidade — Sprint 8.2
+
+A Sprint 8.2 corrigiu a exposição de `cliente_id`/`sessao_id`/`nome_cliente`
+no payload `CICLO_LOOP` quando disponíveis, preservando compatibilidade
+com payloads antigos sem identificadores (ver
+`docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).

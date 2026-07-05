@@ -150,3 +150,7 @@ O STAR OS só deve avançar para a próxima fase se:
 **Atualização:** a Governança Integrada passa a servir como base para a
 Consolidação Operacional e Validação Visual Controlada (Sprint 8, ver
 `docs/ARQUITETURA_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).
+
+**Atualização:** a limitação do `CICLO_LOOP` foi encaminhada para
+correção controlada na Sprint 8.2 (ver
+`docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).

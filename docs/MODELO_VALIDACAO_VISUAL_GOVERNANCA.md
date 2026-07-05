@@ -119,3 +119,8 @@ Checklist visual futura, proposta sem implementação:
 - Sprint 8.1 não altera interface.
 - Sprint 8.1 não corrige `CICLO_LOOP`.
 - Sprint 8.1 apenas cria o modelo de validação futura.
+
+## 9. Continuidade — Sprint 8.2
+
+A Sprint 8.3 deve validar visualmente o `CICLO_LOOP` já corrigido pela
+Sprint 8.2 (ver `docs/CORRECAO_IDENTIFICADORES_CICLO_LOOP.md`).

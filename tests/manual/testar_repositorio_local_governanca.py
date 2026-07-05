@@ -253,6 +253,26 @@ def testar_salvar_lote_payloads_governanca(db_path, payloads_governanca):
     print("8. salvar_lote_payloads_governanca: OK")
 
 
+def testar_listar_ciclo_loop_por_cliente_sessao(db_path, payloads_governanca):
+    payload_ciclo = payloads_governanca["payload_ciclo"]
+
+    assert payload_ciclo["cliente_id"] != "", "payload_ciclo deveria ter cliente_id apos a correcao da Sprint 8.2"
+    assert payload_ciclo["sessao_id"] != "", "payload_ciclo deveria ter sessao_id apos a correcao da Sprint 8.2"
+
+    listagem_ciclo_por_cliente = listar_payloads_governanca(
+        db_path, tipo_payload_governanca="CICLO_LOOP", cliente_id=payload_ciclo["cliente_id"]
+    )
+    assert len(listagem_ciclo_por_cliente) >= 1, "CICLO_LOOP deveria aparecer na listagem filtrada por cliente_id"
+    assert listagem_ciclo_por_cliente[0]["payload"]["ciclo_id"] == payload_ciclo["ciclo_id"]
+
+    listagem_ciclo_por_sessao = listar_payloads_governanca(
+        db_path, tipo_payload_governanca="CICLO_LOOP", sessao_id=payload_ciclo["sessao_id"]
+    )
+    assert len(listagem_ciclo_por_sessao) >= 1, "CICLO_LOOP deveria aparecer na listagem filtrada por sessao_id"
+
+    print("8.1. listar CICLO_LOOP por cliente_id/sessao_id (Sprint 8.2): OK")
+
+
 def testar_contar_registros_repositorio_governanca(db_path, db_path_inexistente):
     contagem = contar_registros_repositorio_governanca(db_path)
 
@@ -365,6 +385,7 @@ if __name__ == "__main__":
         testar_carregar_payload_governanca(caminho_banco, payloads_teste["payload_registro"])
         testar_listar_payloads_governanca(caminho_banco, payloads_teste["payload_registro"])
         testar_salvar_lote_payloads_governanca(caminho_banco, payloads_teste)
+        testar_listar_ciclo_loop_por_cliente_sessao(caminho_banco, payloads_teste)
 
         contagem_teste = testar_contar_registros_repositorio_governanca(caminho_banco, caminho_banco_inexistente)
         resultado_integridade_teste = testar_validar_integridade_repositorio_governanca(

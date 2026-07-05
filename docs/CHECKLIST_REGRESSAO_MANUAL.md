@@ -751,3 +751,26 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum token consumido.
 - [ ] Nenhum agente acionado.
 - [ ] Testes manuais continuam passando.
+
+## 34. Correção Controlada de Identificadores do CICLO_LOOP
+
+- [ ] `CICLO_LOOP` passa a carregar `cliente_id` quando disponível.
+- [ ] `CICLO_LOOP` passa a carregar `sessao_id` quando disponível.
+- [ ] `CICLO_LOOP` passa a carregar `nome_cliente` quando disponível.
+- [ ] `CICLO_LOOP` sem identificadores continua válido com aviso.
+- [ ] Payload antigo sem `cliente_id`/`sessao_id` não quebra validação.
+- [ ] Repositório lista `CICLO_LOOP` por `cliente_id`.
+- [ ] Repositório lista `CICLO_LOOP` por `sessao_id`.
+- [ ] Schema SQLite de governança não muda.
+- [ ] `app.py` não é alterado.
+- [ ] `star_governance` não é alterado.
+- [ ] `repositorio_governanca.py` não é alterado.
+- [ ] Motor STAR não é alterado.
+- [ ] Nenhum PDF é alterado.
+- [ ] Nenhum Excel é alterado.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma agenda é criada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum agente é acionado.
+- [ ] Testes manuais continuam passando.
