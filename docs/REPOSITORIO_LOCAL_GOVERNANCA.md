@@ -127,3 +127,8 @@ governança no Streamlit de forma discreta e controlada.
 - Não há MCP.
 - Não há agente.
 - Não há IA.
+
+## 9. Continuidade — Sprint 7.4
+
+A Sprint 7.4 passou a usar este repositório na interface Streamlit de
+forma controlada (ver `docs/GOVERNANCA_STREAMLIT.md`).

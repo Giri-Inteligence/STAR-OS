@@ -195,3 +195,8 @@ Governança.
 
 A Sprint 7.3 passou a usar este contrato como base do Repositório Local
 de Governança (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
+
+## 14. Continuidade — Sprint 7.4
+
+A Sprint 7.4 passou a gerar payloads pelo contrato a partir da interface
+Streamlit (ver `docs/GOVERNANCA_STREAMLIT.md`).

@@ -213,3 +213,8 @@ banco, repositório e interface (ver
 A Sprint 7.3 materializou a etapa de persistência local controlada antes
 da interface (`star_persistence/repositorio_governanca.py`, ver
 `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
+
+## 12. Continuidade — Sprint 7.4
+
+A Sprint 7.4 materializou a primeira exposição controlada da governança
+na experiência do usuário (ver `docs/GOVERNANCA_STREAMLIT.md`).

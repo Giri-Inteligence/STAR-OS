@@ -64,3 +64,6 @@ governança, ainda sem salvar dados (ver
 **Atualização:** a Sprint 7.3 avançou para o Repositório Local de
 Governança, ainda sem Streamlit (ver
 `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
+
+**Atualização:** a Sprint 7.4 avançou para exposição controlada da
+governança no Streamlit (ver `docs/GOVERNANCA_STREAMLIT.md`).

@@ -85,3 +85,8 @@ A Sprint 7.2 preservou a decisão de contrato antes de persistência (ver
 
 A Sprint 7.3 preservou contrato antes de persistência e interface depois
 de persistência (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
+
+## 14. Continuidade — Sprint 7.4
+
+A Sprint 7.4 preservou `app.py` como orquestrador e manteve as regras
+nos módulos especializados (ver `docs/GOVERNANCA_STREAMLIT.md`).

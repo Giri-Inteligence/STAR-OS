@@ -11,8 +11,8 @@ execução automática.
 - Sprint 7.1 — Arquitetura da Integração Controlada da Governança — **CONCLUÍDA**.
 - Sprint 7.2 — Contrato de Persistência da Governança — **CONCLUÍDA** (payloads canônicos de governança em memória, sem banco, sem tabela e sem repositório — ver `docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).
 - Sprint 7.3 — Repositório Local de Governança — **CONCLUÍDA** (persistência SQLite local controlada, usando o contrato da Sprint 7.2, sem Streamlit e sem execução automática — ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
-- Sprint 7.4 — Governança no Streamlit — próxima etapa recomendada.
-- Sprint 7.5 — Fechamento da Governança Integrada.
+- Sprint 7.4 — Governança no Streamlit — **CONCLUÍDA** (governança exposta no Streamlit de forma controlada, sem dashboard paralelo, sem CRM, sem tarefa, sem plano de ação, sem agenda, sem IA e sem agente — ver `docs/GOVERNANCA_STREAMLIT.md`).
+- Sprint 7.5 — Fechamento da Governança Integrada — próxima etapa recomendada.
 
 ## 3. Objetivo de cada sub-sprint
 

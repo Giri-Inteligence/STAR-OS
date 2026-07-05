@@ -71,6 +71,41 @@ from star_persistence.configuracao import (
     validar_caminho_db_historico,
     formatar_validacao_caminho_db,
 )
+from star_governance.acompanhamento import (
+    criar_registro_acompanhamento,
+    formatar_registro_acompanhamento_texto,
+)
+from star_governance.status_acompanhamento import (
+    criar_snapshot_status_acompanhamento,
+    formatar_snapshot_status_texto,
+)
+from star_governance.loop_semanal import (
+    criar_item_loop_governanca,
+    criar_ciclo_loop_semanal,
+    formatar_item_loop_texto,
+    formatar_resumo_loop_texto,
+)
+from star_persistence.contrato_governanca import (
+    criar_payload_registro_acompanhamento_persistivel,
+    criar_payload_snapshot_status_persistivel,
+    criar_payload_item_loop_persistivel,
+    criar_payload_ciclo_loop_persistivel,
+    criar_payload_governanca_integrada,
+    validar_payloads_governanca,
+    formatar_validacao_payload_governanca_texto,
+    formatar_payload_governanca_resumo_texto,
+)
+from star_persistence.repositorio_governanca import (
+    salvar_lote_payloads_governanca,
+    listar_payloads_governanca,
+    contar_registros_repositorio_governanca,
+    formatar_resumo_repositorio_governanca,
+)
+from star_persistence.configuracao_governanca import (
+    obter_caminho_banco_governanca,
+    gerar_resumo_configuracao_governanca,
+    formatar_configuracao_governanca_texto,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -1120,6 +1155,152 @@ if uploaded_file:
                     contagens_repositorio_historico = contar_registros_repositorio(db_path_historico)
                     for linha_resumo_repositorio in formatar_resumo_repositorio(contagens_repositorio_historico):
                         st.caption(linha_resumo_repositorio)
+
+            st.markdown("**Governança investigativa**")
+            st.caption(
+                "Governança organiza continuidade investigativa. Não cria tarefa, não cria "
+                "plano de ação, não cria agenda e não executa ações automaticamente."
+            )
+
+            db_path_governanca = obter_caminho_banco_governanca()
+            resumo_config_governanca = gerar_resumo_configuracao_governanca()
+
+            for linha_config_governanca in formatar_configuracao_governanca_texto(resumo_config_governanca):
+                st.caption(linha_config_governanca)
+
+            tipo_acompanhamento_escolhido = st.selectbox(
+                "Tipo de acompanhamento",
+                [
+                    "OBSERVACAO", "RETORNO", "COMPLEMENTO_EVIDENCIA",
+                    "REVISAO", "DECISAO_OPERACIONAL", "PENDENCIA_INVESTIGATIVA",
+                ],
+                key=f"governanca_tipo_{cliente_raio_x}",
+            )
+            status_acompanhamento_escolhido = st.selectbox(
+                "Status de acompanhamento",
+                [
+                    "NAO_INICIADO", "EM_ACOMPANHAMENTO", "AGUARDANDO_EVIDENCIA",
+                    "AGUARDANDO_DECISAO", "DECISAO_REGISTRADA", "ENCERRADO", "SUSPENSO",
+                ],
+                key=f"governanca_status_{cliente_raio_x}",
+            )
+            observacao_acompanhamento_escolhida = st.text_area(
+                "Observação de acompanhamento", key=f"governanca_observacao_{cliente_raio_x}"
+            )
+            usuario_registro_governanca = st.text_input(
+                "Usuário do registro (opcional)", key=f"governanca_usuario_{cliente_raio_x}"
+            )
+
+            if st.button("Salvar governança desta investigação", key=f"governanca_salvar_{cliente_raio_x}"):
+                if not payload_historico:
+                    st.warning(
+                        "Governança depende de uma investigação atual — nenhum dado foi salvo."
+                    )
+                else:
+                    registro_governanca = criar_registro_acompanhamento(
+                        payload_historico=payload_historico,
+                        tipo_acompanhamento=tipo_acompanhamento_escolhido,
+                        status_acompanhamento=status_acompanhamento_escolhido,
+                        observacao_acompanhamento=observacao_acompanhamento_escolhida,
+                        usuario_registro=usuario_registro_governanca,
+                    )
+                    snapshot_governanca = criar_snapshot_status_acompanhamento(
+                        payload_historico=payload_historico, registros=[registro_governanca]
+                    )
+                    item_loop_governanca = criar_item_loop_governanca(
+                        payload_historico=payload_historico, registros_acompanhamento=[registro_governanca]
+                    )
+                    ciclo_loop_governanca = criar_ciclo_loop_semanal(
+                        entradas=[{
+                            "payload_historico": payload_historico,
+                            "registros_acompanhamento": [registro_governanca],
+                        }],
+                        periodo_referencia=date.today().isoformat(),
+                    )
+
+                    payload_registro_persistivel = criar_payload_registro_acompanhamento_persistivel(
+                        registro_governanca
+                    )
+                    payload_snapshot_persistivel = criar_payload_snapshot_status_persistivel(snapshot_governanca)
+                    payload_item_persistivel = criar_payload_item_loop_persistivel(item_loop_governanca)
+                    payload_ciclo_persistivel = criar_payload_ciclo_loop_persistivel(ciclo_loop_governanca)
+                    payload_integrado_persistivel = criar_payload_governanca_integrada(
+                        registro_acompanhamento=registro_governanca,
+                        snapshot_status=snapshot_governanca,
+                        item_loop=item_loop_governanca,
+                        ciclo_loop=ciclo_loop_governanca,
+                    )
+
+                    payloads_governanca_para_salvar = [
+                        payload_registro_persistivel,
+                        payload_snapshot_persistivel,
+                        payload_item_persistivel,
+                        payload_ciclo_persistivel,
+                        payload_integrado_persistivel,
+                    ]
+
+                    validacao_payloads_governanca = validar_payloads_governanca(payloads_governanca_para_salvar)
+
+                    if not validacao_payloads_governanca["valido"]:
+                        st.error("Payloads de governança inválidos — nada foi salvo.")
+                        for linha_validacao_governanca in formatar_validacao_payload_governanca_texto(
+                            validacao_payloads_governanca
+                        ):
+                            st.caption(linha_validacao_governanca)
+                    else:
+                        resultado_lote_governanca = salvar_lote_payloads_governanca(
+                            db_path_governanca, payloads_governanca_para_salvar, sobrescrever=True
+                        )
+
+                        st.success(
+                            f"Governança salva: {resultado_lote_governanca['salvos']} payload(s) gravado(s)."
+                        )
+
+                        for linha_erro_lote in resultado_lote_governanca["erros"]:
+                            st.caption(f"Aviso técnico: {linha_erro_lote}")
+
+                        with st.expander("Resultado detalhado do registro de acompanhamento", expanded=False):
+                            for linha_registro_texto in formatar_registro_acompanhamento_texto(registro_governanca):
+                                st.caption(linha_registro_texto)
+                            for linha_snapshot_texto in formatar_snapshot_status_texto(snapshot_governanca):
+                                st.caption(linha_snapshot_texto)
+                            for linha_item_texto in formatar_item_loop_texto(item_loop_governanca):
+                                st.caption(linha_item_texto)
+                            for linha_resumo_loop_texto in formatar_resumo_loop_texto(
+                                ciclo_loop_governanca["resumo_loop"]
+                            ):
+                                st.caption(linha_resumo_loop_texto)
+                            for linha_payload_resumo in formatar_payload_governanca_resumo_texto(
+                                payload_integrado_persistivel
+                            ):
+                                st.caption(linha_payload_resumo)
+
+            if st.button("Consultar governança salva deste cliente", key=f"governanca_consultar_{cliente_raio_x}"):
+                if not os.path.exists(db_path_governanca):
+                    st.caption("Nenhum banco de governança encontrado ainda para consulta.")
+                else:
+                    payloads_salvos_governanca = listar_payloads_governanca(
+                        db_path_governanca,
+                        cliente_id=payload_historico.get("cliente", {}).get("cliente_id", ""),
+                        sessao_id=payload_historico.get("sessao", {}).get("sessao_id", ""),
+                    )
+
+                    if not payloads_salvos_governanca:
+                        st.caption("Nenhum payload de governança encontrado para este cliente/sessão.")
+                    else:
+                        st.write("Payloads de governança salvos:")
+                        for registro_salvo_governanca in payloads_salvos_governanca:
+                            st.caption(
+                                f"- {registro_salvo_governanca['tipo_payload_governanca']} "
+                                f"({registro_salvo_governanca['payload_id']}) em "
+                                f"{registro_salvo_governanca['criado_em_repositorio']}"
+                            )
+
+                    contagens_governanca = contar_registros_repositorio_governanca(db_path_governanca)
+
+                    with st.expander("Resumo técnico do repositório de governança", expanded=False):
+                        for linha_resumo_governanca in formatar_resumo_repositorio_governanca(contagens_governanca):
+                            st.caption(linha_resumo_governanca)
         else:
             st.caption("Nenhum cliente disponivel para Raio-X.")
 

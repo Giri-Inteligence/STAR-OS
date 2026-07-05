@@ -179,3 +179,8 @@ integrada (ver `docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).
 
 A Sprint 7.3 criou o repositório local que permite recuperar payloads de
 governança (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
+
+## 12. Continuidade — Sprint 7.4
+
+A Sprint 7.4 conectou a camada de experiência à governança integrada
+(ver `docs/GOVERNANCA_STREAMLIT.md`).

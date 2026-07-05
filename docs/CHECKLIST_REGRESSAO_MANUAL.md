@@ -652,3 +652,33 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum token é consumido.
 - [ ] Testes manuais continuam passando.
+
+## 31. Governança no Streamlit
+
+- [ ] Configuração de banco de governança criada.
+- [ ] Configuração não cria banco automaticamente.
+- [ ] Seção de governança aparece no Streamlit.
+- [ ] Seção fica próxima do fluxo de investigação/histórico.
+- [ ] Interface informa que governança não é tarefa.
+- [ ] Interface informa que governança não é plano de ação.
+- [ ] Interface informa que governança não é agenda.
+- [ ] Campos permitidos são apenas tipo, status, observação e usuário opcional.
+- [ ] Não há campo de responsável.
+- [ ] Não há campo de prazo.
+- [ ] Não há campo de tarefa.
+- [ ] Não há campo de plano de ação.
+- [ ] Não há calendário.
+- [ ] Não há agenda.
+- [ ] Salvamento exige botão explícito.
+- [ ] Payloads são criados via `contrato_governanca.py`.
+- [ ] Payloads são salvos via `repositorio_governanca.py`.
+- [ ] Consulta é somente leitura.
+- [ ] Nenhum dashboard paralelo é criado.
+- [ ] Nenhum CRM paralelo é criado.
+- [ ] Nenhum gráfico novo é criado.
+- [ ] Nenhum PDF é alterado.
+- [ ] Nenhum Excel é alterado.
+- [ ] Nenhum Motor STAR é alterado.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum agente é acionado.
+- [ ] Testes manuais continuam passando.
