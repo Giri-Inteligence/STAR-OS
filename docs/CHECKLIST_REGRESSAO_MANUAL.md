@@ -333,3 +333,25 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum token é consumido.
 - [ ] Testes manuais continuam passando.
+
+## 20. Repositório Local Controlado do Histórico Investigativo
+
+- [ ] Pacote `star_persistence.repositorio_local` criado.
+- [ ] Decisão técnica por SQLite (stdlib `sqlite3`) registrada.
+- [ ] Schema de 8 tabelas criado apenas mediante chamada explícita.
+- [ ] Nenhum banco criado automaticamente no import.
+- [ ] Salvar payload histórico funciona.
+- [ ] Sobrescrita silenciosa de sessão é bloqueada.
+- [ ] Atualização explícita (`permitir_atualizacao=True`) não duplica sessão.
+- [ ] Consulta de sessões por cliente funciona.
+- [ ] Consulta de clientes investigados funciona.
+- [ ] Remoção de sessão de teste preserva o cliente.
+- [ ] Nenhum arquivo `.db`/`.sqlite`/`.sqlite3` permanente criado no repositório.
+- [ ] Nenhum `app.py` é alterado.
+- [ ] Nenhum arquivo `star_core` é alterado.
+- [ ] Nenhum arquivo `star_ingestion` é alterado.
+- [ ] Nenhum arquivo `star_intelligence` é alterado.
+- [ ] Nenhuma regra STAR é alterada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Testes manuais continuam passando.

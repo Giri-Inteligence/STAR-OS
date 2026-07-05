@@ -10,8 +10,8 @@ execução automática.
 
 - Sprint 5.1 — Arquitetura da Persistência e Histórico Investigativo — **CONCLUÍDA**.
 - Sprint 5.2 — Contrato de Dados e Serialização do Histórico Investigativo — **CONCLUÍDA**.
-- Sprint 5.3 — Repositório Local Controlado — próxima etapa recomendada.
-- Sprint 5.4 — Histórico Investigativo no Streamlit.
+- Sprint 5.3 — Repositório Local Controlado — **CONCLUÍDA** (decisão: SQLite via `sqlite3` da biblioteca padrão).
+- Sprint 5.4 — Histórico Investigativo no Streamlit — próxima etapa recomendada.
 - Sprint 5.5 — Fechamento da Persistência Inicial.
 
 ## 3. Objetivo de cada sub-sprint

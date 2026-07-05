@@ -176,3 +176,10 @@ canônico estar documentado (ver `docs/DECISOES_ARQUITETURAIS_PERSISTENCIA_INVES
 A Sprint 5.2 criou o contrato de dados e a serialização em memória
 (`star_persistence/contrato_historico.py`), ainda sem persistência
 funcional (ver `docs/CONTRATO_DADOS_HISTORICO_INVESTIGATIVO.md`).
+
+## 12. Continuidade — Sprint 5.3
+
+A Sprint 5.3 criou o repositório local controlado
+(`star_persistence/repositorio_local.py`), usando SQLite via `sqlite3` da
+biblioteca padrão, ainda sem integração com o Streamlit (ver
+`docs/REPOSITORIO_LOCAL_HISTORICO_INVESTIGATIVO.md`).

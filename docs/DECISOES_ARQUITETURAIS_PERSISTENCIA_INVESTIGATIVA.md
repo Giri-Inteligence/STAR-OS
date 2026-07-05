@@ -46,6 +46,11 @@
 
 A decisão final deve ser tomada na Sprint 5.2 ou 5.3, não nesta sprint.
 
+**Decisão registrada na Sprint 5.3: SQLite**, via módulo padrão `sqlite3`
+(ver `docs/REPOSITORIO_LOCAL_HISTORICO_INVESTIGATIVO.md`), por ser
+transacional, não exigir pacote novo e reduzir o risco de sobrescrita
+silenciosa em relação a um arquivo JSON solto.
+
 ## 6. Sem IA na persistência inicial
 
 - Persistência inicial deve ser determinística.

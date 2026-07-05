@@ -66,3 +66,9 @@ contrato como entrada.
 - Se a Sprint 5.3 usar SQLite, este payload será a base para mapeamento em
   tabelas.
 - A decisão técnica ainda não deve ser implementada nesta sprint.
+
+**Atualização:** a Sprint 5.3 decidiu por SQLite e implementou o
+mapeamento deste payload em 8 tabelas relacionais (ver
+`docs/REPOSITORIO_LOCAL_HISTORICO_INVESTIGATIVO.md`). Este contrato
+continua sendo a fronteira de entrada do repositório, e o payload bruto
+também é preservado integralmente na tabela `payloads_historico`.
