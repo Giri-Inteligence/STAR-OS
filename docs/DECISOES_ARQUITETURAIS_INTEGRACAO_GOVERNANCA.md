@@ -90,3 +90,9 @@ de persistência (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
 
 A Sprint 7.4 preservou `app.py` como orquestrador e manteve as regras
 nos módulos especializados (ver `docs/GOVERNANCA_STREAMLIT.md`).
+
+## 15. Fechamento — Sprint 7.5
+
+A Sprint 7 foi fechada preservando determinismo antes de IA, `app.py`
+como orquestrador e o Motor STAR protegido (ver
+`docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).

@@ -184,3 +184,8 @@ governança (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
 
 A Sprint 7.4 conectou a camada de experiência à governança integrada
 (ver `docs/GOVERNANCA_STREAMLIT.md`).
+
+## 13. Fechamento — Sprint 7.5
+
+A Sprint 7.5 consolidou o modelo conceitual da Governança Integrada (ver
+`docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).

@@ -682,3 +682,40 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum agente é acionado.
 - [ ] Testes manuais continuam passando.
+
+## 32. Fechamento da Governança Integrada
+
+- [ ] Arquitetura da Integração Controlada da Governança documentada.
+- [ ] Modelo Conceitual da Governança Integrada documentado.
+- [ ] Decisões Arquiteturais da Integração da Governança documentadas.
+- [ ] Contrato de Persistência da Governança criado.
+- [ ] Repositório Local de Governança criado.
+- [ ] Configuração Local de Governança criada.
+- [ ] Governança no Streamlit criada.
+- [ ] Inventário da Governança Integrada criado.
+- [ ] Regressão da Governança Integrada criada.
+- [ ] Roadmap pós-governança integrada criado.
+- [ ] Limitação do `CICLO_LOOP` documentada.
+- [ ] Nenhum código funcional alterado nesta sprint.
+- [ ] Nenhum `app.py` alterado nesta sprint.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_governance` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhum banco criado.
+- [ ] Nenhuma tabela criada.
+- [ ] Nenhum schema SQLite alterado.
+- [ ] Nenhum JSON funcional criado.
+- [ ] Nenhuma tela nova criada.
+- [ ] Nenhum botão novo criado.
+- [ ] Nenhum gráfico criado.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum calendário criado.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Nenhum agente acionado.
+- [ ] Testes manuais passam.

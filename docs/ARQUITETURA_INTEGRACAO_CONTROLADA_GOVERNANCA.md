@@ -218,3 +218,9 @@ da interface (`star_persistence/repositorio_governanca.py`, ver
 
 A Sprint 7.4 materializou a primeira exposição controlada da governança
 na experiência do usuário (ver `docs/GOVERNANCA_STREAMLIT.md`).
+
+## 13. Fechamento — Sprint 7.5
+
+A Sprint 7.5 fechou formalmente a Governança Integrada, preservando
+separação entre governança, persistência, interface e execução (ver
+`docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).

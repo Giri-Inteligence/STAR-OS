@@ -117,3 +117,8 @@ contornar isso nesta sprint.
   (`Path.home() / ".star_os"`).
 - PDF e Excel não mudam.
 - O Motor STAR não muda.
+
+## 10. Fechamento — Sprint 7.5
+
+A exposição no Streamlit compõe a Governança Integrada fechada na
+Sprint 7.5 (ver `docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).

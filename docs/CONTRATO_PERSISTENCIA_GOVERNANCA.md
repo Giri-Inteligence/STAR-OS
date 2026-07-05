@@ -200,3 +200,8 @@ de Governança (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
 
 A Sprint 7.4 passou a gerar payloads pelo contrato a partir da interface
 Streamlit (ver `docs/GOVERNANCA_STREAMLIT.md`).
+
+## 15. Fechamento — Sprint 7.5
+
+Este contrato compõe a Governança Integrada fechada na Sprint 7.5 (ver
+`docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).

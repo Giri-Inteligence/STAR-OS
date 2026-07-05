@@ -67,3 +67,6 @@ Governança, ainda sem Streamlit (ver
 
 **Atualização:** a Sprint 7.4 avançou para exposição controlada da
 governança no Streamlit (ver `docs/GOVERNANCA_STREAMLIT.md`).
+
+**Atualização:** a Integração Controlada da Governança foi formalmente
+fechada na Sprint 7.5 (ver `docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).

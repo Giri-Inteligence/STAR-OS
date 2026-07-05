@@ -132,3 +132,8 @@ governança no Streamlit de forma discreta e controlada.
 
 A Sprint 7.4 passou a usar este repositório na interface Streamlit de
 forma controlada (ver `docs/GOVERNANCA_STREAMLIT.md`).
+
+## 10. Fechamento — Sprint 7.5
+
+O repositório local compõe a Governança Integrada fechada na Sprint 7.5
+(ver `docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).
