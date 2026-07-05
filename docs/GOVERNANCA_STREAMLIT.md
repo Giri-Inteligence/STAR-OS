@@ -143,3 +143,9 @@ validação visual humana (ver
 A Sprint 8.4 passou a exibir leitura operacional não prescritiva após
 consulta de governança salva (ver
 `docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).
+
+## 14. Fechamento — Sprint 8.5
+
+A seção Governança Investigativa entra na próxima fase (Sprint 9) como
+objeto de validação local real (ver
+`docs/FECHAMENTO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).

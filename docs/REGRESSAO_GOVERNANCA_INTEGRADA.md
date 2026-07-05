@@ -126,3 +126,7 @@ Governança no Streamlit (Sprint 8.3, ver
 **Atualização:** a regressão passa a incluir leitura operacional sem
 tarefas (Sprint 8.4, ver
 `docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).
+
+**Atualização:** a regressão integrada passa a ser complementada pela
+regressão da Consolidação Operacional (Sprint 8.5, ver
+`docs/REGRESSAO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).

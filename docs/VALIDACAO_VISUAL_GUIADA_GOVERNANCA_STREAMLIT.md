@@ -106,3 +106,9 @@ A Sprint 8.3 valida:
 A validação visual futura deve confirmar a leitura operacional
 (Sprint 8.4) sem tarefa, sem agenda e sem recomendação de ação (ver
 `docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).
+
+## 8. Fechamento — Sprint 8.5
+
+A validação guiada compõe o fechamento da Sprint 8, com validação
+visual real ainda pendente de execução local (ver
+`docs/FECHAMENTO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).

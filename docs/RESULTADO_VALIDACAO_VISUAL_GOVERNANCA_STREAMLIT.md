@@ -85,3 +85,8 @@ totalmente validada de ponta a ponta.
 A Sprint 8.4 acrescentou leitura operacional como melhoria posterior à
 validação estática (ver
 `docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).
+
+## 7. Fechamento — Sprint 8.5
+
+O resultado da validação estática compõe o fechamento da Consolidação
+Operacional (ver `docs/FECHAMENTO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).

@@ -840,3 +840,40 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum PDF é alterado.
 - [ ] Nenhum Excel é alterado.
 - [ ] Testes manuais continuam passando.
+
+## 37. Fechamento da Consolidação Operacional da Governança
+
+- [ ] Fechamento da Consolidação Operacional criado.
+- [ ] Inventário da Consolidação Operacional criado.
+- [ ] Regressão da Consolidação Operacional criada.
+- [ ] Roadmap pós-consolidação operacional criado.
+- [ ] Correção do `CICLO_LOOP` inventariada.
+- [ ] Validação estática da Governança inventariada.
+- [ ] Roteiro visual humano inventariado.
+- [ ] Leitura operacional inventariada.
+- [ ] Limite de validação visual real pendente documentado.
+- [ ] Próxima fase recomendada documentada.
+- [ ] Nenhum código funcional alterado nesta sprint.
+- [ ] Nenhum `app.py` alterado nesta sprint.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhum arquivo `star_governance` alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhum banco criado.
+- [ ] Nenhuma tabela criada.
+- [ ] Nenhum schema SQLite alterado.
+- [ ] Nenhum JSON funcional criado.
+- [ ] Nenhuma tela nova criada.
+- [ ] Nenhum botão novo criado.
+- [ ] Nenhum gráfico criado.
+- [ ] Nenhum ranking criado.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum calendário criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Nenhum agente acionado.
+- [ ] Testes manuais passam.

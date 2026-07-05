@@ -235,3 +235,8 @@ funcionalidade (ver
 A Sprint 8.4 executou a etapa de melhoria de leitura sem transformar
 governança em execução (ver
 `docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).
+
+## 14. Fechamento — Sprint 8.5
+
+A Sprint 8.5 fechou formalmente a Consolidação Operacional da
+Governança (ver `docs/FECHAMENTO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).

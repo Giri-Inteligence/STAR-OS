@@ -84,3 +84,7 @@ inventariando:
 - regressão;
 - limites ainda existentes;
 - critérios para futuras evoluções de IA/agentes.
+
+**Atualização:** a leitura operacional compõe a Consolidação Operacional
+fechada na Sprint 8.5 (ver
+`docs/FECHAMENTO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).

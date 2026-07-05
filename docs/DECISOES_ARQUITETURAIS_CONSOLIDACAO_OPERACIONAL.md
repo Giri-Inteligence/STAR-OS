@@ -87,3 +87,9 @@ nos módulos especializados (ver
 
 A leitura operacional foi mantida separada de tarefa, agenda, CRM,
 dashboard e IA (ver `docs/LEITURA_OPERACIONAL_GOVERNANCA_SEM_TAREFAS.md`).
+
+## 14. Fechamento — Sprint 8.5
+
+A Sprint 8 foi fechada preservando determinismo, separação entre
+governança e execução, e bloqueio de IA/agentes antes de validação
+local (ver `docs/FECHAMENTO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).

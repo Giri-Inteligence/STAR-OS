@@ -132,3 +132,9 @@ investigativa (ver
 `docs/VALIDACAO_VISUAL_GUIADA_GOVERNANCA_STREAMLIT.md`,
 `docs/ROTEIRO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md` e
 `docs/RESULTADO_VALIDACAO_VISUAL_GOVERNANCA_STREAMLIT.md`).
+
+## 11. Fechamento — Sprint 8.5
+
+O modelo de validação visual passa a compor o fechamento da
+Consolidação Operacional (ver
+`docs/FECHAMENTO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).
