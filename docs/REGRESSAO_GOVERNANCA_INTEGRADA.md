@@ -110,3 +110,7 @@ A validação visual futura deve confirmar:
 - Decisão operacional exige humano.
 - Agente futuro não deve decidir sozinho.
 - IA futura não deve substituir governança determinística.
+
+**Atualização:** a Sprint 8.1 iniciou a organização da regressão
+operacional e visual futura (ver
+`docs/MODELO_VALIDACAO_VISUAL_GOVERNANCA.md`).

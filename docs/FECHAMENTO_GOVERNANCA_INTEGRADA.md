@@ -146,3 +146,7 @@ O STAR OS só deve avançar para a próxima fase se:
 - Qualquer ajuste no `CICLO_LOOP` for avaliado como sprint própria.
 - Qualquer evolução de IA/agentes for posterior à consolidação de
   governança, rastreabilidade e validação humana.
+
+**Atualização:** a Governança Integrada passa a servir como base para a
+Consolidação Operacional e Validação Visual Controlada (Sprint 8, ver
+`docs/ARQUITETURA_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).

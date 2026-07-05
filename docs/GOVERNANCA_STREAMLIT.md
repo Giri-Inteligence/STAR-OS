@@ -122,3 +122,9 @@ contornar isso nesta sprint.
 
 A exposição no Streamlit compõe a Governança Integrada fechada na
 Sprint 7.5 (ver `docs/FECHAMENTO_GOVERNANCA_INTEGRADA.md`).
+
+## 11. Continuidade — Sprint 8.1
+
+A validação visual guiada será tratada na Sprint 8.3, após decisão e
+correção controlada do `CICLO_LOOP` na Sprint 8.2 (ver
+`docs/MODELO_VALIDACAO_VISUAL_GOVERNANCA.md`).

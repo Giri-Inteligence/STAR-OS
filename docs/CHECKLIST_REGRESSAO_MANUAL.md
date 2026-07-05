@@ -719,3 +719,35 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum token consumido.
 - [ ] Nenhum agente acionado.
 - [ ] Testes manuais passam.
+
+## 33. Arquitetura da Consolidação Operacional da Governança
+
+- [ ] Arquitetura da Consolidação Operacional da Governança criada.
+- [ ] Modelo de Validação Visual da Governança criado.
+- [ ] Decisões Arquiteturais da Consolidação Operacional criadas.
+- [ ] Roadmap da Sprint 8 criado.
+- [ ] Limitação do `CICLO_LOOP` documentada.
+- [ ] Decisão recomendada de corrigir `CICLO_LOOP` antes da validação visual ampla registrada.
+- [ ] Nenhum código funcional alterado.
+- [ ] Nenhum `app.py` alterado.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_governance` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhum banco criado.
+- [ ] Nenhuma tabela criada.
+- [ ] Nenhum schema SQLite alterado.
+- [ ] Nenhum JSON funcional criado.
+- [ ] Nenhuma tela criada.
+- [ ] Nenhum botão criado.
+- [ ] Nenhum gráfico criado.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum calendário criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Nenhum agente acionado.
+- [ ] Testes manuais continuam passando.

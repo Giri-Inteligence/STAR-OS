@@ -54,3 +54,7 @@ sprints próprias:
 - Decisão arquitetural explícita antes de corrigir o `CICLO_LOOP`.
 - Decisão arquitetural explícita antes de qualquer automação, IA ou
   agente.
+
+**Atualização:** a Sprint 8.1 iniciou a Arquitetura da Consolidação
+Operacional da Governança (ver
+`docs/ARQUITETURA_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).
