@@ -116,3 +116,8 @@ que a governança determinística estiver consolidada.
 - Não há agenda.
 - Não há automação.
 - Não há agente.
+
+## 11. Fechamento — Sprint 6.5
+
+O Loop Semanal compõe a Governança Inicial fechada na Sprint 6.5 (ver
+`docs/FECHAMENTO_GOVERNANCA_INICIAL.md`).

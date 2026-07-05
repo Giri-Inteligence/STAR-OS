@@ -96,3 +96,9 @@ A Sprint 6.4 preservou determinismo antes de IA e acompanhamento
 separado de execução: o Loop Semanal de Governança apenas classifica e
 ordena leitura, sem decidir ou executar nada (ver
 `docs/LOOP_SEMANAL_GOVERNANCA.md`).
+
+## 13. Fechamento — Sprint 6.5
+
+A Sprint 6 foi fechada preservando determinismo antes de IA,
+acompanhamento separado de execução e o Motor STAR protegido (ver
+`docs/FECHAMENTO_GOVERNANCA_INICIAL.md`).

@@ -160,3 +160,8 @@ O status de acompanhamento (`star_governance/status_acompanhamento.py`)
 O Loop Semanal de Governança (`star_governance/loop_semanal.py`)
 materializa o ciclo conceitual em memória, ainda sem persistência (ver
 `docs/LOOP_SEMANAL_GOVERNANCA.md`).
+
+## 13. Fechamento — Sprint 6.5
+
+A Sprint 6.5 consolidou o loop operacional inicial em memória (ver
+`docs/FECHAMENTO_GOVERNANCA_INICIAL.md`).

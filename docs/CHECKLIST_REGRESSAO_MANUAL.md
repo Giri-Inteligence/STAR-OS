@@ -523,3 +523,36 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum token é consumido.
 - [ ] Testes manuais continuam passando.
+
+## 27. Fechamento da Governança Inicial
+
+- [ ] Arquitetura da Governança Investigativa documentada.
+- [ ] Modelo Conceitual do Loop Operacional documentado.
+- [ ] Decisões Arquiteturais da Governança documentadas.
+- [ ] Registro de Acompanhamento Operacional criado.
+- [ ] Status de Acompanhamento da Investigação criado.
+- [ ] Loop Semanal de Governança criado.
+- [ ] Inventário da Governança Inicial criado.
+- [ ] Regressão da Governança Inicial criada.
+- [ ] Roadmap pós-governança inicial criado.
+- [ ] Nenhum código funcional alterado.
+- [ ] Nenhum `app.py` alterado.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhum arquivo `star_governance` alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhum banco criado.
+- [ ] Nenhuma tabela criada.
+- [ ] Nenhum schema SQLite alterado.
+- [ ] Nenhum JSON funcional criado.
+- [ ] Nenhuma tela criada.
+- [ ] Nenhum botão criado.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum calendário criado.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Testes manuais passam.

@@ -96,3 +96,8 @@ este contrato (ver `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).
 
 Os registros de acompanhamento alimentam o Loop Semanal de Governança da
 Sprint 6.4 (ver `docs/LOOP_SEMANAL_GOVERNANCA.md`).
+
+## 11. Fechamento — Sprint 6.5
+
+O Registro de Acompanhamento Operacional compõe a Governança Inicial
+fechada na Sprint 6.5 (ver `docs/FECHAMENTO_GOVERNANCA_INICIAL.md`).

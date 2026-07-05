@@ -102,3 +102,8 @@ investigativa que o loop precisará consultar.
 
 A Sprint 6.4 usa este status de acompanhamento como base para o Loop
 Semanal de Governança (ver `docs/LOOP_SEMANAL_GOVERNANCA.md`).
+
+## 10. Fechamento — Sprint 6.5
+
+O Status de Acompanhamento da Investigação compõe a Governança Inicial
+fechada na Sprint 6.5 (ver `docs/FECHAMENTO_GOVERNANCA_INICIAL.md`).
