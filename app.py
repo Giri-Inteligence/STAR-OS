@@ -30,6 +30,11 @@ from star_intelligence.priorizacao import (
 )
 from star_intelligence.raio_x_cliente import gerar_raio_x_cliente, formatar_raio_x_texto
 from star_intelligence.hipoteses import gerar_hipoteses_cliente, formatar_hipoteses_texto
+from star_intelligence.recomendacoes import (
+    gerar_recomendacoes_por_papel,
+    gerar_recomendacoes_multiplos_papeis,
+    formatar_recomendacoes_texto,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -866,6 +871,22 @@ if uploaded_file:
                 st.write("Alertas de investigação:")
                 for alerta in pacote_hipoteses["alertas_investigacao"]:
                     st.caption(f"- {alerta}")
+
+            st.markdown("**Recomendações por Papel**")
+
+            papel_selecionado = st.selectbox(
+                "Selecione o papel",
+                ["VENDEDOR", "GESTOR", "SOCIO", "CONSULTOR", "TODOS"],
+                key="recomendacoes_papel_selectbox",
+            )
+
+            if papel_selecionado == "TODOS":
+                pacote_recomendacoes = gerar_recomendacoes_multiplos_papeis(linha_raio_x, pacote_hipoteses)
+            else:
+                pacote_recomendacoes = gerar_recomendacoes_por_papel(linha_raio_x, papel_selecionado, pacote_hipoteses)
+
+            for linha_texto in formatar_recomendacoes_texto(pacote_recomendacoes):
+                st.caption(linha_texto)
         else:
             st.caption("Nenhum cliente disponivel para Raio-X.")
 

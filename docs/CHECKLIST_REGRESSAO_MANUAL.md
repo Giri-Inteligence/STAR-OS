@@ -152,3 +152,22 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhuma regra STAR foi alterada.
 - [ ] Nenhum arquivo `star_core` foi alterado.
+
+## 12. Recomendações por Papel
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Fila de Prioridade continua aparecendo.
+- [ ] Raio-X Operacional continua aparecendo.
+- [ ] Hipóteses Operacionais continuam aparecendo.
+- [ ] Recomendações por Papel aparecem para o cliente selecionado.
+- [ ] É possível selecionar VENDEDOR.
+- [ ] É possível selecionar GESTOR.
+- [ ] É possível selecionar SOCIO.
+- [ ] É possível selecionar CONSULTOR.
+- [ ] É possível selecionar TODOS.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Nenhuma regra STAR foi alterada.
+- [ ] Nenhum arquivo `star_core` foi alterado.
