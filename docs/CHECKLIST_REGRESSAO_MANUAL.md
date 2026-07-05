@@ -213,3 +213,28 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] PDF baixa.
 - [ ] Nenhum arquivo `star_core` foi alterado.
 - [ ] Nenhuma regra STAR foi alterada.
+
+## 15. Pacote Investigativo do Cliente
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Fila de Prioridade aparece.
+- [ ] Raio-X Operacional aparece.
+- [ ] Hipóteses Operacionais aparecem.
+- [ ] Recomendações por Papel aparecem.
+- [ ] Investigação Operacional aparece.
+- [ ] Pacote Investigativo aparece.
+- [ ] Pacote mostra cliente selecionado.
+- [ ] Pacote mostra status STAR.
+- [ ] Pacote mostra resumo da hipótese.
+- [ ] Pacote mostra resumo da investigação.
+- [ ] Pacote mostra maturidade investigativa.
+- [ ] Pacote mostra leitura consolidada.
+- [ ] Evidências aparecem quando resposta/evidência for preenchida.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Excel baixa.
+- [ ] PDF baixa.
+- [ ] Nenhum arquivo `star_core` foi alterado.
+- [ ] Nenhuma regra STAR foi alterada.

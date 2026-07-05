@@ -42,6 +42,11 @@ from star_intelligence.investigacao import (
     gerar_leitura_investigacao,
     formatar_resumo_investigacao,
 )
+from star_intelligence.pacote_investigativo import (
+    gerar_pacote_investigativo_cliente,
+    formatar_pacote_investigativo_texto,
+    gerar_tabela_evidencias,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -949,6 +954,28 @@ if uploaded_file:
                     key=status_key,
                 )
                 st.text_input("Evidência (opcional)", key=evidencia_key)
+
+            st.markdown("**Pacote Investigativo do Cliente**")
+            st.caption(
+                "Consolidação temporária desta sessão do Streamlit — não é salva em "
+                "arquivo ou banco de dados e pode ser perdida ao recarregar a aplicação."
+            )
+
+            pacote_cliente = gerar_pacote_investigativo_cliente(
+                raio_x=raio_x,
+                pacote_hipoteses=pacote_hipoteses,
+                recomendacoes=pacote_recomendacoes,
+                pacote_investigacao=pacote_investigacao,
+            )
+
+            for linha_texto in formatar_pacote_investigativo_texto(pacote_cliente):
+                st.caption(linha_texto)
+
+            tabela_evidencias = gerar_tabela_evidencias(pacote_cliente)
+
+            if tabela_evidencias:
+                st.write("Evidências registradas:")
+                st.dataframe(tabela_evidencias, hide_index=True)
         else:
             st.caption("Nenhum cliente disponivel para Raio-X.")
 

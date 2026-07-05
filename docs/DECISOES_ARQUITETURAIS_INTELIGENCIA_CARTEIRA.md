@@ -69,3 +69,9 @@ A Sprint 4.1 iniciou o Motor de Investigação como evolução natural da
 Inteligência de Carteira, ainda sem persistência, sem IA e sem execução
 automática — o registro investigativo é temporário, mantido apenas em
 `st.session_state` durante a sessão do Streamlit.
+
+## 9. Continuidade — Sprint 4.2
+
+A Sprint 4.2 consolidou o Pacote Investigativo do Cliente, reunindo Raio-X,
+hipóteses, recomendações e investigação em uma única leitura estruturada —
+ainda determinística, temporária e sem persistência.

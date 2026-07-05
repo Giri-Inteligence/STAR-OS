@@ -65,3 +65,11 @@ resposta e status para cada uma antes de qualquer recomendação virar ação.
 - Evidência vem antes da intervenção.
 - Investigação não é execução.
 - Investigação prepara governança futura.
+
+## 8. Continuidade — Sprint 4.2
+
+A Sprint 4.2 consolida o Pacote Investigativo do Cliente
+(`star_intelligence/pacote_investigativo.py`), reunindo Raio-X, hipóteses,
+recomendações e itens investigativos deste módulo em um único pacote
+legível — ainda como organização temporária e não persistente da
+investigação (ver `docs/PACOTE_INVESTIGATIVO_CLIENTE.md`).
