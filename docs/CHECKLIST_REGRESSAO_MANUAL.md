@@ -189,3 +189,27 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] PDF baixa.
 - [ ] Nenhum arquivo `star_core` foi alterado.
 - [ ] Nenhuma regra STAR foi alterada.
+
+## 14. Motor de Investigação Operacional
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Fila de Prioridade aparece.
+- [ ] Raio-X Operacional aparece.
+- [ ] Hipóteses Operacionais aparecem.
+- [ ] Recomendações por Papel aparecem.
+- [ ] Investigação Operacional aparece.
+- [ ] Perguntas de validação viram itens investigativos.
+- [ ] É possível preencher resposta textual.
+- [ ] É possível selecionar status PENDENTE.
+- [ ] É possível selecionar status CONFIRMADA.
+- [ ] É possível selecionar status DESCARTADA.
+- [ ] É possível selecionar status INCONCLUSIVA.
+- [ ] Resumo da investigação aparece.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Excel baixa.
+- [ ] PDF baixa.
+- [ ] Nenhum arquivo `star_core` foi alterado.
+- [ ] Nenhuma regra STAR foi alterada.

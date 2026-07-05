@@ -47,6 +47,13 @@
 - Sprint 3 encerrada. Próxima fase recomendada: **Sprint 4 — Motor de
   Investigação**.
 
+### Nota de continuidade
+
+A Sprint 4.1 — Motor de Investigação Operacional foi iniciada, criando a
+primeira versão funcional de itens investigativos a partir das perguntas de
+validação, com registro temporário em `st.session_state` (sem persistência,
+sem IA, sem execução automática). Ver `docs/MOTOR_INVESTIGACAO_OPERACIONAL.md`.
+
 ## Critério de não avanço
 
 Não avançar para a próxima sub-sprint se:

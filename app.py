@@ -35,6 +35,13 @@ from star_intelligence.recomendacoes import (
     gerar_recomendacoes_multiplos_papeis,
     formatar_recomendacoes_texto,
 )
+from star_intelligence.investigacao import (
+    criar_pacote_investigacao,
+    normalizar_status_investigacao,
+    resumir_investigacao,
+    gerar_leitura_investigacao,
+    formatar_resumo_investigacao,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -887,6 +894,61 @@ if uploaded_file:
 
             for linha_texto in formatar_recomendacoes_texto(pacote_recomendacoes):
                 st.caption(linha_texto)
+
+            st.markdown("**Investigação Operacional**")
+            st.caption(
+                "Registro temporário desta sessão do Streamlit — as respostas não são "
+                "salvas em arquivo ou banco de dados e podem ser perdidas ao recarregar a aplicação."
+            )
+
+            pacote_investigacao = criar_pacote_investigacao(
+                cliente=raio_x["cliente"],
+                vendedor=raio_x["vendedor"],
+                cidade=raio_x["cidade"],
+                pacote_hipoteses=pacote_hipoteses,
+            )
+
+            for item_investigacao in pacote_investigacao["itens"]:
+                chave_base = f"investigacao_{cliente_raio_x}_{item_investigacao['id_item']}"
+                resposta_key = f"{chave_base}_resposta"
+                status_key = f"{chave_base}_status"
+                evidencia_key = f"{chave_base}_evidencia"
+
+                if resposta_key in st.session_state:
+                    item_investigacao["resposta"] = st.session_state[resposta_key]
+                if status_key in st.session_state:
+                    item_investigacao["status"] = normalizar_status_investigacao(st.session_state[status_key])
+                if evidencia_key in st.session_state:
+                    item_investigacao["evidencia"] = st.session_state[evidencia_key]
+
+            pacote_investigacao["resumo"] = resumir_investigacao(pacote_investigacao)
+
+            for linha_texto in formatar_resumo_investigacao(pacote_investigacao["resumo"]):
+                st.caption(linha_texto)
+
+            st.caption(gerar_leitura_investigacao(pacote_investigacao))
+
+            for item_investigacao in pacote_investigacao["itens"]:
+                chave_base = f"investigacao_{cliente_raio_x}_{item_investigacao['id_item']}"
+                resposta_key = f"{chave_base}_resposta"
+                status_key = f"{chave_base}_status"
+                evidencia_key = f"{chave_base}_evidencia"
+
+                if resposta_key not in st.session_state:
+                    st.session_state[resposta_key] = item_investigacao["resposta"]
+                if status_key not in st.session_state:
+                    st.session_state[status_key] = item_investigacao["status"]
+                if evidencia_key not in st.session_state:
+                    st.session_state[evidencia_key] = item_investigacao["evidencia"]
+
+                st.write(item_investigacao["pergunta"])
+                st.text_area("Resposta", key=resposta_key, label_visibility="collapsed")
+                st.selectbox(
+                    "Status investigativo",
+                    ["PENDENTE", "CONFIRMADA", "DESCARTADA", "INCONCLUSIVA"],
+                    key=status_key,
+                )
+                st.text_input("Evidência (opcional)", key=evidencia_key)
         else:
             st.caption("Nenhum cliente disponivel para Raio-X.")
 

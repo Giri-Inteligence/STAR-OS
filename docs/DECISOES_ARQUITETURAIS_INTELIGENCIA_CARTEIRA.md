@@ -62,3 +62,10 @@ A Inteligência de Carteira não pode alterar:
 - IA assistiva futura.
 - Agentes futuros.
 - Integrações futuras com CRM, ERP, WhatsApp e MCP.
+
+## 8. Transição para o Motor de Investigação (Sprint 4.1)
+
+A Sprint 4.1 iniciou o Motor de Investigação como evolução natural da
+Inteligência de Carteira, ainda sem persistência, sem IA e sem execução
+automática — o registro investigativo é temporário, mantido apenas em
+`st.session_state` durante a sessão do Streamlit.
