@@ -79,3 +79,9 @@ investigação (ver `docs/PACOTE_INVESTIGATIVO_CLIENTE.md`).
 A Sprint 4.3 classifica o estado conclusivo da investigação sem concluir
 causa raiz automaticamente e sem criar execução (ver
 `docs/CONCLUSAO_INVESTIGATIVA.md`).
+
+## 10. Fechamento — Sprint 4.4
+
+Após a Sprint 4.4, o Motor de Investigação foi consolidado com Investigação
+Operacional, Pacote Investigativo e Conclusão Investigativa (ver
+`docs/FECHAMENTO_MOTOR_INVESTIGACAO.md`).

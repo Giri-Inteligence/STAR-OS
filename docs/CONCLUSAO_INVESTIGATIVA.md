@@ -63,3 +63,9 @@ inconclusivos, pendentes ou com resposta sem classificação.
 - Evidência vem antes de intervenção.
 - Conclusão investigativa organiza a leitura, não substitui julgamento
   humano.
+
+## 7. Fechamento — Sprint 4.4
+
+A Conclusão Investigativa compõe o fechamento da Sprint 4 e organiza o
+estado conclusivo sem determinar causa raiz automaticamente (ver
+`docs/FECHAMENTO_MOTOR_INVESTIGACAO.md`).

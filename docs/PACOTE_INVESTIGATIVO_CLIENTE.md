@@ -75,3 +75,8 @@ A Sprint 4.3 classifica o estado conclusivo da investigação
 (`star_intelligence/conclusao_investigativa.py`) a partir dos itens deste
 pacote, sem concluir causa raiz automaticamente e sem criar execução (ver
 `docs/CONCLUSAO_INVESTIGATIVA.md`).
+
+## 8. Fechamento — Sprint 4.4
+
+O Pacote Investigativo compõe o Motor de Investigação consolidado na
+Sprint 4.4 (ver `docs/FECHAMENTO_MOTOR_INVESTIGACAO.md`).

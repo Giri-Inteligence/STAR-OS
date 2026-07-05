@@ -82,3 +82,9 @@ A Sprint 4.3 classifica o estado conclusivo da investigação (confirmada,
 descartada, inconclusiva, pendente ou sem classificação) sem concluir causa
 raiz automaticamente e sem criar execução — permanecendo determinística,
 temporária e sem persistência.
+
+## 11. Fechamento — Sprint 4
+
+A Sprint 4 foi fechada como camada investigativa posterior à Inteligência
+de Carteira, preservando determinismo, ausência de IA e proteção do Motor
+STAR (ver `docs/FECHAMENTO_MOTOR_INVESTIGACAO.md`).

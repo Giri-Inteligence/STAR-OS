@@ -264,3 +264,28 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] PDF baixa.
 - [ ] Nenhum arquivo `star_core` foi alterado.
 - [ ] Nenhuma regra STAR foi alterada.
+
+## 17. Fechamento do Motor de Investigação
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Relatório de ingestão continua funcionando.
+- [ ] Fila de Prioridade aparece.
+- [ ] Raio-X Operacional aparece.
+- [ ] Hipóteses Operacionais aparecem.
+- [ ] Recomendações por Papel aparecem.
+- [ ] Investigação Operacional aparece.
+- [ ] Pacote Investigativo aparece.
+- [ ] Conclusão Investigativa aparece.
+- [ ] Status investigativo funciona.
+- [ ] Classificação conclusiva funciona.
+- [ ] Nenhuma causa raiz é concluída automaticamente.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Nenhum banco de dados é criado.
+- [ ] Nenhum histórico persistente é criado.
+- [ ] Nenhuma tarefa automática é criada.
+- [ ] Nenhum plano de ação formal é criado.
+- [ ] Excel baixa.
+- [ ] PDF baixa.
+- [ ] Nenhum arquivo `star_core` foi alterado.
+- [ ] Nenhuma regra STAR foi alterada.
