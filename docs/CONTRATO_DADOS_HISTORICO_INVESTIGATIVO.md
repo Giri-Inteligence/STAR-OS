@@ -72,3 +72,8 @@ mapeamento deste payload em 8 tabelas relacionais (ver
 `docs/REPOSITORIO_LOCAL_HISTORICO_INVESTIGATIVO.md`). Este contrato
 continua sendo a fronteira de entrada do repositório, e o payload bruto
 também é preservado integralmente na tabela `payloads_historico`.
+
+**Atualização (Sprint 5.4):** o payload canônico passou a ser usado
+diretamente pela interface do Streamlit para salvar o histórico
+investigativo do cliente selecionado, por ação explícita do usuário (ver
+`docs/HISTORICO_INVESTIGATIVO_STREAMLIT.md`).

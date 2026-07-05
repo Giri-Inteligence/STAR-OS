@@ -108,3 +108,7 @@ A Sprint 5.4 deve integrar a consulta de histórico investigativo ao
 Streamlit de forma discreta, permitindo visualizar sessões salvas por
 cliente sem alterar o Motor STAR nem os fluxos de ingestão e investigação
 já existentes.
+
+**Atualização:** a Sprint 5.4 integrou este repositório ao Streamlit, com
+salvamento explícito por botão e consulta somente leitura ao histórico do
+cliente selecionado (ver `docs/HISTORICO_INVESTIGATIVO_STREAMLIT.md`).

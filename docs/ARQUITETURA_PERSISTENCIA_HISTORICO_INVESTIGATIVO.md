@@ -183,3 +183,10 @@ A Sprint 5.3 criou o repositório local controlado
 (`star_persistence/repositorio_local.py`), usando SQLite via `sqlite3` da
 biblioteca padrão, ainda sem integração com o Streamlit (ver
 `docs/REPOSITORIO_LOCAL_HISTORICO_INVESTIGATIVO.md`).
+
+## 13. Continuidade — Sprint 5.4
+
+A Sprint 5.4 implementou a primeira integração controlada entre o
+Streamlit e o repositório local, mantendo a persistência separada do
+Motor STAR — salvamento apenas por ação explícita do usuário e consulta
+somente leitura (ver `docs/HISTORICO_INVESTIGATIVO_STREAMLIT.md`).

@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import html as htmllib
@@ -51,6 +52,24 @@ from star_intelligence.conclusao_investigativa import (
     gerar_conclusao_investigativa,
     formatar_conclusao_investigativa_texto,
     gerar_tabela_conclusao,
+)
+from star_persistence.contrato_historico import (
+    criar_payload_historico_investigativo,
+    validar_payload_historico,
+)
+from star_persistence.repositorio_local import (
+    inicializar_schema,
+    salvar_payload_historico,
+    carregar_payload_por_sessao,
+    listar_sessoes_cliente,
+    contar_registros_repositorio,
+    formatar_resumo_repositorio,
+)
+from star_persistence.configuracao import (
+    obter_caminho_db_historico,
+    preparar_diretorio_db,
+    validar_caminho_db_historico,
+    formatar_validacao_caminho_db,
 )
 from io import BytesIO
 import xlsxwriter
@@ -998,6 +1017,109 @@ if uploaded_file:
             if tabela_conclusao:
                 st.write("Classificação conclusiva por item:")
                 st.dataframe(tabela_conclusao, hide_index=True)
+
+            st.markdown("**Histórico Investigativo**")
+            st.caption(
+                "Histórico local controlado. O salvamento só ocorre quando o botão "
+                "'Salvar histórico investigativo' for acionado."
+            )
+
+            db_path_historico = obter_caminho_db_historico()
+            validacao_caminho_db = validar_caminho_db_historico(db_path_historico)
+
+            st.caption(f"Caminho do banco: {validacao_caminho_db['db_path']}")
+            for aviso_caminho in validacao_caminho_db.get("avisos") or []:
+                st.caption(f"Aviso: {aviso_caminho}")
+
+            payload_historico = criar_payload_historico_investigativo(
+                nome_cliente=raio_x["cliente"],
+                vendedor=raio_x["vendedor"],
+                cidade=raio_x["cidade"],
+                origem_cliente_coluna=clie_col or "",
+                origem_vendedor_coluna=vend_col or "",
+                origem_cidade_coluna=cida_col or "",
+                linha_star=linha_raio_x,
+                itens_investigativos=pacote_investigacao["itens"],
+                pacote_investigativo=pacote_cliente,
+                conclusao_investigativa=conclusao_investigativa,
+                arquivo_origem_nome=fn,
+                usuario_responsavel="",
+            )
+
+            if st.button("Salvar histórico investigativo", key=f"historico_salvar_{cliente_raio_x}"):
+                validacao_payload_historico = validar_payload_historico(payload_historico)
+
+                if not validacao_payload_historico.get("valido"):
+                    st.error("Payload do histórico investigativo é inválido e não foi salvo.")
+                else:
+                    preparar_diretorio_db(db_path_historico)
+                    inicializar_schema(db_path_historico)
+
+                    resultado_salvar_historico = salvar_payload_historico(
+                        db_path_historico, payload_historico, permitir_atualizacao=False
+                    )
+
+                    if resultado_salvar_historico["ok"]:
+                        st.success(
+                            f"Histórico investigativo salvo (sessão {resultado_salvar_historico['sessao_id']})."
+                        )
+                    elif resultado_salvar_historico.get("erro") == "SESSAO_JA_EXISTE":
+                        st.warning("Esta sessão já existe no repositório local e não foi sobrescrita.")
+                    else:
+                        st.error(f"Falha ao salvar histórico: {resultado_salvar_historico.get('erro', '')}")
+
+            st.markdown("**Consulta ao Histórico Investigativo**")
+
+            if not os.path.exists(db_path_historico):
+                st.caption("Nenhum histórico local encontrado para consulta.")
+            else:
+                cliente_id_historico = payload_historico["cliente"]["cliente_id"]
+                sessoes_historicas = listar_sessoes_cliente(db_path_historico, cliente_id_historico)
+
+                if not sessoes_historicas:
+                    st.caption("Nenhuma sessão histórica encontrada para este cliente.")
+                else:
+                    opcoes_sessoes_historicas = [
+                        f"{sessao['sessao_id']} ({sessao.get('data_sessao', '')})"
+                        for sessao in sessoes_historicas
+                    ]
+                    mapa_sessoes_historicas = dict(
+                        zip(opcoes_sessoes_historicas, [s["sessao_id"] for s in sessoes_historicas])
+                    )
+
+                    sessao_historica_escolhida = st.selectbox(
+                        "Selecione uma sessão histórica",
+                        opcoes_sessoes_historicas,
+                        key=f"historico_sessao_selectbox_{cliente_raio_x}",
+                    )
+
+                    resultado_sessao_carregada = carregar_payload_por_sessao(
+                        db_path_historico, mapa_sessoes_historicas[sessao_historica_escolhida]
+                    )
+
+                    if resultado_sessao_carregada["ok"]:
+                        payload_carregado_historico = resultado_sessao_carregada["payload"]
+                        sessao_carregada = payload_carregado_historico.get("sessao", {})
+                        snapshot_carregado = payload_carregado_historico.get("snapshot_star", {})
+                        conclusao_carregada = payload_carregado_historico.get("conclusao_investigativa", {})
+                        itens_carregados = payload_carregado_historico.get("itens_investigativos", [])
+
+                        st.caption(f"Data da sessão: {sessao_carregada.get('data_sessao', '')}")
+                        st.caption(f"Status da sessão: {sessao_carregada.get('status_sessao', '')}")
+                        st.caption(f"Status STAR no momento: {snapshot_carregado.get('status_star', '')}")
+                        st.caption(f"Itens investigativos: {len(itens_carregados)}")
+                        st.caption(
+                            f"Status conclusivo geral: {conclusao_carregada.get('status_conclusivo_geral', '')}"
+                        )
+                        st.caption(f"Leitura conclusiva: {conclusao_carregada.get('leitura_conclusao', '')}")
+                    else:
+                        st.caption("Não foi possível carregar a sessão selecionada.")
+
+            if os.path.exists(db_path_historico):
+                with st.expander("Resumo técnico do repositório local", expanded=False):
+                    contagens_repositorio_historico = contar_registros_repositorio(db_path_historico)
+                    for linha_resumo_repositorio in formatar_resumo_repositorio(contagens_repositorio_historico):
+                        st.caption(linha_resumo_repositorio)
         else:
             st.caption("Nenhum cliente disponivel para Raio-X.")
 

@@ -334,7 +334,36 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum token é consumido.
 - [ ] Testes manuais continuam passando.
 
-## 20. Repositório Local Controlado do Histórico Investigativo
+## 20. Histórico Investigativo no Streamlit
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Fila de Prioridade aparece.
+- [ ] Raio-X Operacional aparece.
+- [ ] Hipóteses Operacionais aparecem.
+- [ ] Recomendações por Papel aparecem.
+- [ ] Investigação Operacional aparece.
+- [ ] Pacote Investigativo aparece.
+- [ ] Conclusão Investigativa aparece.
+- [ ] Histórico Investigativo aparece.
+- [ ] Caminho do banco é exibido discretamente.
+- [ ] Banco não é criado apenas por abrir a tela.
+- [ ] Histórico só é salvo ao clicar no botão.
+- [ ] Payload canônico é gerado.
+- [ ] Schema SQLite é inicializado ao salvar.
+- [ ] Histórico é salvo com sucesso.
+- [ ] Sessão duplicada não é sobrescrita silenciosamente.
+- [ ] Sessões históricas do cliente aparecem para consulta.
+- [ ] Carregar histórico não altera investigação atual.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Excel baixa.
+- [ ] PDF baixa.
+- [ ] Nenhum arquivo `star_core` foi alterado.
+- [ ] Nenhuma regra STAR foi alterada.
+
+## 21. Repositório Local Controlado do Histórico Investigativo
 
 - [ ] Pacote `star_persistence.repositorio_local` criado.
 - [ ] Decisão técnica por SQLite (stdlib `sqlite3`) registrada.

@@ -9,3 +9,8 @@ desktop.ini
 .env
 venv/
 .venv/
+
+.star_os_data/
+*.db
+*.sqlite
+*.sqlite3
