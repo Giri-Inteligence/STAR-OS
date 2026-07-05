@@ -460,3 +460,33 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum token é consumido.
 - [ ] Testes manuais continuam passando.
+
+## 25. Status de Acompanhamento da Investigação
+
+- [ ] Módulo de status de acompanhamento criado.
+- [ ] Status permitidos são listados.
+- [ ] Transições permitidas são listadas.
+- [ ] Status final é identificado.
+- [ ] Dependência de evidência é identificada.
+- [ ] Dependência de decisão é identificada.
+- [ ] Transições são avaliadas.
+- [ ] Reabertura de encerrado é controlada.
+- [ ] Registros são ordenados por `criado_em`.
+- [ ] Status atual é identificado.
+- [ ] Consistência da sequência é validada.
+- [ ] Snapshot de status é criado em memória.
+- [ ] Snapshot é serializável com `json.dumps`.
+- [ ] Nenhum banco é criado.
+- [ ] Nenhuma tabela é criada.
+- [ ] Nenhum JSON funcional é criado.
+- [ ] Nenhum `app.py` é alterado.
+- [ ] Nenhum arquivo `star_core` é alterado.
+- [ ] Nenhum arquivo `star_ingestion` é alterado.
+- [ ] Nenhum arquivo `star_intelligence` é alterado.
+- [ ] Nenhum arquivo `star_persistence` é alterado.
+- [ ] Nenhuma regra STAR é alterada.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Testes manuais continuam passando.

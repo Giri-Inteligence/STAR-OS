@@ -148,3 +148,9 @@ modelo de governança estiver maduro.
 O Registro de Acompanhamento Operacional (`star_governance/acompanhamento.py`)
 é a primeira entidade funcional do loop, ainda sem persistência (ver
 `docs/REGISTRO_ACOMPANHAMENTO_OPERACIONAL.md`).
+
+## 11. Continuidade — Sprint 6.3
+
+O status de acompanhamento (`star_governance/status_acompanhamento.py`)
+é pré-condição para o futuro loop semanal (ver
+`docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).

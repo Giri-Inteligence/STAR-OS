@@ -85,3 +85,9 @@ loop semanal e governança inicial (ver
 - Não há tarefa.
 - Não há automação.
 - Não há agente.
+
+## 9. Continuidade — Sprint 6.3
+
+A Sprint 6.3 criou regras de status e transição sobre estes registros de
+acompanhamento (`star_governance/status_acompanhamento.py`), sem alterar
+este contrato (ver `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).

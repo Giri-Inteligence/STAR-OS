@@ -154,3 +154,9 @@ A Sprint 6.2 criou o contrato de Registro de Acompanhamento Operacional
 em memória (`star_governance/acompanhamento.py`), ainda sem persistência
 e sem integração com o Streamlit (ver
 `docs/REGISTRO_ACOMPANHAMENTO_OPERACIONAL.md`).
+
+## 11. Continuidade — Sprint 6.3
+
+A Sprint 6.3 consolidou o status determinístico de acompanhamento
+(`star_governance/status_acompanhamento.py`), mantendo a governança
+separada de execução (ver `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).

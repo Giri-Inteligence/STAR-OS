@@ -9,8 +9,8 @@ operacional, sem criar execução automática.
 
 - Sprint 6.1 — Arquitetura da Governança Investigativa e Loop Operacional — **CONCLUÍDA**.
 - Sprint 6.2 — Registro de Acompanhamento Operacional — **CONCLUÍDA** (contrato determinístico em memória, sem persistência e sem execução automática — ver `docs/REGISTRO_ACOMPANHAMENTO_OPERACIONAL.md`).
-- Sprint 6.3 — Status de Acompanhamento da Investigação — próxima etapa recomendada.
-- Sprint 6.4 — Loop Semanal de Governança.
+- Sprint 6.3 — Status de Acompanhamento da Investigação — **CONCLUÍDA** (regras determinísticas de status e transição de acompanhamento em memória, sem persistência e sem execução automática — ver `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).
+- Sprint 6.4 — Loop Semanal de Governança — próxima etapa recomendada.
 - Sprint 6.5 — Fechamento da Governança Inicial.
 
 ## 3. Objetivo de cada sub-sprint

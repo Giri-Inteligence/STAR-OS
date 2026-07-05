@@ -83,3 +83,9 @@ A Sprint 6.2 preservou a separação entre acompanhamento e execução: o
 Registro de Acompanhamento Operacional registra evolução, pendência e
 decisão humana, mas não executa tarefa, não envia mensagem e não aciona
 agente (ver `docs/REGISTRO_ACOMPANHAMENTO_OPERACIONAL.md`).
+
+## 11. Continuidade — Sprint 6.3
+
+A Sprint 6.3 preservou a decisão de ser determinística antes de IA: as
+regras de status e transição nascem como código auditável, sem
+inferência probabilística (ver `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).
