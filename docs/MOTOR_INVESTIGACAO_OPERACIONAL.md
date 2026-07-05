@@ -73,3 +73,9 @@ A Sprint 4.2 consolida o Pacote Investigativo do Cliente
 recomendações e itens investigativos deste módulo em um único pacote
 legível — ainda como organização temporária e não persistente da
 investigação (ver `docs/PACOTE_INVESTIGATIVO_CLIENTE.md`).
+
+## 9. Continuidade — Sprint 4.3
+
+A Sprint 4.3 classifica o estado conclusivo da investigação sem concluir
+causa raiz automaticamente e sem criar execução (ver
+`docs/CONCLUSAO_INVESTIGATIVA.md`).

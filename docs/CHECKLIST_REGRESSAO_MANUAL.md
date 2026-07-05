@@ -238,3 +238,29 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] PDF baixa.
 - [ ] Nenhum arquivo `star_core` foi alterado.
 - [ ] Nenhuma regra STAR foi alterada.
+
+## 16. Conclusão Investigativa
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Fila de Prioridade aparece.
+- [ ] Raio-X Operacional aparece.
+- [ ] Hipóteses Operacionais aparecem.
+- [ ] Recomendações por Papel aparecem.
+- [ ] Investigação Operacional aparece.
+- [ ] Pacote Investigativo aparece.
+- [ ] Conclusão Investigativa aparece.
+- [ ] Itens confirmados aparecem como HIPOTESE CONFIRMADA.
+- [ ] Itens descartados aparecem como HIPOTESE DESCARTADA.
+- [ ] Itens inconclusivos aparecem como HIPOTESE INCONCLUSIVA.
+- [ ] Itens pendentes aparecem como PENDENTE DE VALIDACAO.
+- [ ] Respostas sem status conclusivo aparecem como RESPOSTA SEM CLASSIFICACAO.
+- [ ] Status conclusivo geral aparece.
+- [ ] Nenhuma causa raiz é concluída automaticamente.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Excel baixa.
+- [ ] PDF baixa.
+- [ ] Nenhum arquivo `star_core` foi alterado.
+- [ ] Nenhuma regra STAR foi alterada.

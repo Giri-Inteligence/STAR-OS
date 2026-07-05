@@ -47,6 +47,11 @@ from star_intelligence.pacote_investigativo import (
     formatar_pacote_investigativo_texto,
     gerar_tabela_evidencias,
 )
+from star_intelligence.conclusao_investigativa import (
+    gerar_conclusao_investigativa,
+    formatar_conclusao_investigativa_texto,
+    gerar_tabela_conclusao,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -976,6 +981,23 @@ if uploaded_file:
             if tabela_evidencias:
                 st.write("Evidências registradas:")
                 st.dataframe(tabela_evidencias, hide_index=True)
+
+            st.markdown("**Conclusão Investigativa**")
+            st.caption(
+                "Esta classificação organiza o estado da investigação, mas não conclui "
+                "causa raiz automaticamente."
+            )
+
+            conclusao_investigativa = gerar_conclusao_investigativa(pacote_cliente)
+
+            for linha_texto in formatar_conclusao_investigativa_texto(conclusao_investigativa):
+                st.caption(linha_texto)
+
+            tabela_conclusao = gerar_tabela_conclusao(conclusao_investigativa)
+
+            if tabela_conclusao:
+                st.write("Classificação conclusiva por item:")
+                st.dataframe(tabela_conclusao, hide_index=True)
         else:
             st.caption("Nenhum cliente disponivel para Raio-X.")
 

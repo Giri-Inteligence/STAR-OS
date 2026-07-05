@@ -68,3 +68,10 @@ em um único lugar legível e rastreável.
 - Maturidade investigativa não é maturidade STAR.
 - Recomendação não é execução.
 - Investigação prepara governança futura.
+
+## 7. Continuidade — Sprint 4.3
+
+A Sprint 4.3 classifica o estado conclusivo da investigação
+(`star_intelligence/conclusao_investigativa.py`) a partir dos itens deste
+pacote, sem concluir causa raiz automaticamente e sem criar execução (ver
+`docs/CONCLUSAO_INVESTIGATIVA.md`).

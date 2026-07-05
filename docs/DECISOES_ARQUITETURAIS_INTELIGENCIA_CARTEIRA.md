@@ -75,3 +75,10 @@ automática — o registro investigativo é temporário, mantido apenas em
 A Sprint 4.2 consolidou o Pacote Investigativo do Cliente, reunindo Raio-X,
 hipóteses, recomendações e investigação em uma única leitura estruturada —
 ainda determinística, temporária e sem persistência.
+
+## 10. Continuidade — Sprint 4.3
+
+A Sprint 4.3 classifica o estado conclusivo da investigação (confirmada,
+descartada, inconclusiva, pendente ou sem classificação) sem concluir causa
+raiz automaticamente e sem criar execução — permanecendo determinística,
+temporária e sem persistência.
