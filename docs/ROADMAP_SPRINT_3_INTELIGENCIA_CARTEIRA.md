@@ -14,7 +14,7 @@
 - Implementada em `star_intelligence/priorizacao.py`, integrada de forma
   discreta em `app.py` via `st.expander("Fila de Prioridade da Carteira")`.
 
-### Sprint 3.3 — Raio-X Operacional do Cliente — EM IMPLEMENTAÇÃO
+### Sprint 3.3 — Raio-X Operacional do Cliente — CONCLUÍDA
 - Gerar leitura individual por cliente.
 - Exibir dados principais.
 - Não criar IA.
@@ -22,9 +22,12 @@
   discreta em `app.py` via `st.expander("Raio-X Operacional do Cliente")`,
   logo após a Fila de Prioridade.
 
-### Sprint 3.4 — Hipóteses Operacionais por Status
+### Sprint 3.4 — Hipóteses Operacionais por Status — EM IMPLEMENTAÇÃO
 - Criar hipóteses determinísticas por status STAR, curva, recência e erosão.
 - Não substituir diagnóstico humano.
+- Sistema especialista determinístico, sem IA, sem chamada de API externa.
+- Implementada em `star_intelligence/hipoteses.py`, integrada dentro do
+  mesmo expander do Raio-X Operacional do Cliente em `app.py`.
 
 ### Sprint 3.5 — Recomendações por Papel
 - Separar leitura para vendedor, gestor, sócio e consultor.

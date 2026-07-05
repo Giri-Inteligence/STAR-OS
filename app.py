@@ -29,6 +29,7 @@ from star_intelligence.priorizacao import (
     formatar_resumo_fila_prioridade,
 )
 from star_intelligence.raio_x_cliente import gerar_raio_x_cliente, formatar_raio_x_texto
+from star_intelligence.hipoteses import gerar_hipoteses_cliente, formatar_hipoteses_texto
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -839,6 +840,32 @@ if uploaded_file:
                 st.write("Sinais operacionais:")
                 for sinal in raio_x["sinais_operacionais"]:
                     st.caption(f"- {sinal}")
+
+            st.markdown("**Hipóteses Operacionais**")
+
+            pacote_hipoteses = gerar_hipoteses_cliente(linha_raio_x)
+
+            st.write(pacote_hipoteses["resumo_hipotese"])
+
+            if pacote_hipoteses["hipoteses_status"]:
+                st.write("Hipóteses por status:")
+                for hipotese in pacote_hipoteses["hipoteses_status"]:
+                    st.caption(f"- {hipotese}")
+
+            if pacote_hipoteses["hipoteses_sinais"]:
+                st.write("Hipóteses por sinais:")
+                for hipotese in pacote_hipoteses["hipoteses_sinais"]:
+                    st.caption(f"- {hipotese}")
+
+            if pacote_hipoteses["perguntas_validacao"]:
+                st.write("Perguntas de validação:")
+                for pergunta in pacote_hipoteses["perguntas_validacao"]:
+                    st.caption(f"- {pergunta}")
+
+            if pacote_hipoteses["alertas_investigacao"]:
+                st.write("Alertas de investigação:")
+                for alerta in pacote_hipoteses["alertas_investigacao"]:
+                    st.caption(f"- {alerta}")
         else:
             st.caption("Nenhum cliente disponivel para Raio-X.")
 

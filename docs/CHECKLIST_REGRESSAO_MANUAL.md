@@ -136,3 +136,19 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Excel continua baixando.
 - [ ] Nenhuma regra STAR foi alterada.
 - [ ] Nenhum arquivo `star_core` foi alterado.
+
+## 11. Hipóteses Operacionais
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Fila de Prioridade continua aparecendo.
+- [ ] Raio-X Operacional continua aparecendo.
+- [ ] Hipóteses Operacionais aparecem para o cliente selecionado.
+- [ ] Hipóteses por status são exibidas.
+- [ ] Hipóteses por sinais são exibidas.
+- [ ] Perguntas de validação são exibidas.
+- [ ] Alertas de investigação são exibidos.
+- [ ] Nenhuma recomendação completa é criada.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhuma regra STAR foi alterada.
+- [ ] Nenhum arquivo `star_core` foi alterado.
