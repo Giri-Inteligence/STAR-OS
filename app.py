@@ -6,6 +6,8 @@ from star_core.curva import curva_label_fmt, curva_short, calcular_curva_abc_por
 from star_core.recencia import calcular_meses_sem_compra
 from star_ingestion.mapeamento import gerar_sugestoes_mapeamento
 from star_ingestion.abas import listar_abas_excel, escolher_aba_padrao, ler_aba_excel, consolidar_abas_excel, eh_aba_consolidada
+from star_ingestion.saneamento import remover_linhas_colunas_vazias, remover_cabecalhos_repetidos, remover_linhas_total_subtotal
+from star_ingestion.validacao import validar_base_minima
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -526,6 +528,11 @@ if uploaded_file:
         df_raw = pd.read_csv(uploaded_file, sep=None, engine='python')
 
     df_raw.columns = [str(c).strip().upper() for c in df_raw.columns]
+
+    df_raw, relatorio_vazios = remover_linhas_colunas_vazias(df_raw)
+    df_raw, relatorio_cabecalhos = remover_cabecalhos_repetidos(df_raw)
+    mensagens_saneamento = relatorio_vazios + relatorio_cabecalhos
+
     cols = df_raw.columns.tolist()
 
     sugestoes = gerar_sugestoes_mapeamento(df_raw)
@@ -621,6 +628,19 @@ if uploaded_file:
     if clie_col in meses_col or vend_col in meses_col or (cida_col and cida_col in meses_col):
         st.error("Mapeamento invalido: cliente, vendedor e cidade nao podem ser colunas de faturamento mensal.")
         st.stop()
+
+    base_valida, erros_base = validar_base_minima(df_raw, clie_col, vend_col, meses_col)
+
+    if not base_valida:
+        for erro in erros_base:
+            st.error(erro)
+        st.stop()
+
+    df_raw, relatorio_total_subtotal = remover_linhas_total_subtotal(df_raw, clie_col)
+    mensagens_saneamento = mensagens_saneamento + relatorio_total_subtotal
+
+    if mensagens_saneamento:
+        st.info(" ".join(mensagens_saneamento))
 
     for c in meses_col:
         df_raw[c] = pd.to_numeric(df_raw[c],errors='coerce').fillna(0)
