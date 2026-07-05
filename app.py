@@ -8,6 +8,16 @@ from star_ingestion.mapeamento import gerar_sugestoes_mapeamento
 from star_ingestion.abas import listar_abas_excel, escolher_aba_padrao, ler_aba_excel, consolidar_abas_excel, eh_aba_consolidada
 from star_ingestion.saneamento import remover_linhas_colunas_vazias, remover_cabecalhos_repetidos, remover_linhas_total_subtotal
 from star_ingestion.validacao import validar_base_minima
+from star_ingestion.relatorio import (
+    criar_relatorio_ingestao,
+    registrar_estado_inicial,
+    registrar_estado_final,
+    registrar_mapeamento,
+    adicionar_saneamento,
+    adicionar_erros,
+    marcar_processado,
+    formatar_relatorio_texto,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -527,11 +537,15 @@ if uploaded_file:
     else:
         df_raw = pd.read_csv(uploaded_file, sep=None, engine='python')
 
+    relatorio_ingestao = criar_relatorio_ingestao()
+    registrar_estado_inicial(relatorio_ingestao, df_raw)
+
     df_raw.columns = [str(c).strip().upper() for c in df_raw.columns]
 
     df_raw, relatorio_vazios = remover_linhas_colunas_vazias(df_raw)
     df_raw, relatorio_cabecalhos = remover_cabecalhos_repetidos(df_raw)
     mensagens_saneamento = relatorio_vazios + relatorio_cabecalhos
+    adicionar_saneamento(relatorio_ingestao, mensagens_saneamento)
 
     cols = df_raw.columns.tolist()
 
@@ -617,6 +631,14 @@ if uploaded_file:
         st.error("Nenhuma coluna de faturamento mensal foi selecionada. Selecione pelo menos uma coluna de mes para continuar.")
         st.stop()
 
+    registrar_mapeamento(
+        relatorio_ingestao,
+        cliente_col=clie_col,
+        vendedor_col=vend_col,
+        cidade_col=cida_col,
+        meses_col=meses_col,
+    )
+
     campos_estruturais = [clie_col, vend_col]
     if cida_col:
         campos_estruturais.append(cida_col)
@@ -632,15 +654,30 @@ if uploaded_file:
     base_valida, erros_base = validar_base_minima(df_raw, clie_col, vend_col, meses_col)
 
     if not base_valida:
+        adicionar_erros(relatorio_ingestao, erros_base)
+
         for erro in erros_base:
             st.error(erro)
+
+        with st.expander("Relatorio de ingestao", expanded=False):
+            for linha in formatar_relatorio_texto(relatorio_ingestao):
+                st.caption(linha)
+
         st.stop()
 
     df_raw, relatorio_total_subtotal = remover_linhas_total_subtotal(df_raw, clie_col)
     mensagens_saneamento = mensagens_saneamento + relatorio_total_subtotal
+    adicionar_saneamento(relatorio_ingestao, relatorio_total_subtotal)
 
     if mensagens_saneamento:
         st.info(" ".join(mensagens_saneamento))
+
+    registrar_estado_final(relatorio_ingestao, df_raw)
+    marcar_processado(relatorio_ingestao)
+
+    with st.expander("Relatorio de ingestao", expanded=False):
+        for linha in formatar_relatorio_texto(relatorio_ingestao):
+            st.caption(linha)
 
     for c in meses_col:
         df_raw[c] = pd.to_numeric(df_raw[c],errors='coerce').fillna(0)

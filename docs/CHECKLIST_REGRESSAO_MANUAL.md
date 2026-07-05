@@ -48,6 +48,12 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] `meses_numericos.xlsx` processa.
 - [ ] `valores_monetarios.xlsx` processa.
 
+## 5.1 Relatório de ingestão
+
+- [ ] O expander "Relatório de ingestão" aparece após o processamento da base.
+- [ ] O relatório mostra status PROCESSADO quando a base é aceita.
+- [ ] O relatório mostra status BLOQUEADO e os erros quando a base é rejeitada.
+
 ## 6. Critério de aprovação
 
 - Nenhuma planilha válida pode quebrar.

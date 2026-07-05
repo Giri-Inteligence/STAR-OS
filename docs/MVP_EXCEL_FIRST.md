@@ -42,6 +42,14 @@ MVP Excel-first — STAR OS
 - `tests/manual/formatos_reais/meses_numericos.xlsx`
 - `tests/manual/formatos_reais/valores_monetarios.xlsx`
 
+## 4.1 Rastreabilidade da ingestão
+
+Desde a Sprint 2.1, cada upload gera um relatório estruturado de ingestão
+(`star_ingestion/relatorio.py`), exibido de forma discreta no Streamlit em
+"Relatório de ingestão". Ele registra estado inicial/final da base, ações de
+saneamento, mapeamento aplicado e erros/avisos — sem alterar nenhuma decisão
+do sistema, apenas documentando o que já acontece.
+
 ## 5. Decisões de arquitetura preservadas
 
 - Excel-first.
