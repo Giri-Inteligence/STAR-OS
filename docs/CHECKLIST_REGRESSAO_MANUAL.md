@@ -289,3 +289,22 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] PDF baixa.
 - [ ] Nenhum arquivo `star_core` foi alterado.
 - [ ] Nenhuma regra STAR foi alterada.
+
+## 18. Arquitetura da Persistência e Histórico Investigativo
+
+- [ ] Documentação da arquitetura de persistência criada.
+- [ ] Modelo de dados do histórico investigativo criado.
+- [ ] Decisões arquiteturais da persistência registradas.
+- [ ] Roadmap da Sprint 5 criado.
+- [ ] Nenhum banco de dados criado.
+- [ ] Nenhum arquivo de persistência funcional criado.
+- [ ] Nenhum `app.py` alterado.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Excel continua baixando.
+- [ ] PDF continua baixando.
+- [ ] Testes manuais continuam passando.

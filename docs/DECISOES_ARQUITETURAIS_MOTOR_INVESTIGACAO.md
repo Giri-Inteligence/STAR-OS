@@ -73,3 +73,9 @@ O Motor de Investigação não pode alterar:
 - IA assistiva futura.
 - Agentes futuros.
 - Integrações futuras com CRM, ERP, WhatsApp e MCP.
+
+## 9. Nota de transição — Sprint 5
+
+A persistência será tratada como camada própria, sem alterar o Motor STAR,
+sem concluir causa raiz automaticamente e sem criar execução automática
+(ver `docs/DECISOES_ARQUITETURAIS_PERSISTENCIA_INVESTIGATIVA.md`).

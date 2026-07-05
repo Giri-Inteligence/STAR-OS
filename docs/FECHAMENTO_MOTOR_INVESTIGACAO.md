@@ -93,3 +93,9 @@ O STAR OS só deve avançar para a próxima fase se:
 - A persistência futura preservar rastreabilidade.
 - A governança futura preservar a separação entre diagnóstico, hipótese,
   evidência, recomendação, ação e acompanhamento.
+
+## 7. Transição — Sprint 5
+
+A Sprint 5 inicia a arquitetura da persistência e histórico investigativo
+como evolução natural do Motor de Investigação (ver
+`docs/ARQUITETURA_PERSISTENCIA_HISTORICO_INVESTIGATIVO.md`).
