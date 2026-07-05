@@ -7,17 +7,20 @@
 - Mapear componentes.
 - Definir ordem segura.
 
-### Sprint 3.2 — Fila de Prioridade da Carteira — EM IMPLEMENTAÇÃO
+### Sprint 3.2 — Fila de Prioridade da Carteira — CONCLUÍDA
 - Criar regra determinística inicial para ordenar clientes por prioridade.
 - Usar Matriz STAR como entrada.
 - Não alterar cálculo.
 - Implementada em `star_intelligence/priorizacao.py`, integrada de forma
   discreta em `app.py` via `st.expander("Fila de Prioridade da Carteira")`.
 
-### Sprint 3.3 — Raio-X Operacional do Cliente
+### Sprint 3.3 — Raio-X Operacional do Cliente — EM IMPLEMENTAÇÃO
 - Gerar leitura individual por cliente.
 - Exibir dados principais.
 - Não criar IA.
+- Implementada em `star_intelligence/raio_x_cliente.py`, integrada de forma
+  discreta em `app.py` via `st.expander("Raio-X Operacional do Cliente")`,
+  logo após a Fila de Prioridade.
 
 ### Sprint 3.4 — Hipóteses Operacionais por Status
 - Criar hipóteses determinísticas por status STAR, curva, recência e erosão.

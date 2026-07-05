@@ -122,3 +122,17 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Excel continua baixando.
 - [ ] Nenhuma regra STAR foi alterada.
 - [ ] Nenhum arquivo `star_core` foi alterado.
+
+## 10. Raio-X Operacional do Cliente
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Fila de Prioridade continua aparecendo.
+- [ ] Raio-X Operacional aparece após a Fila de Prioridade.
+- [ ] É possível selecionar um cliente.
+- [ ] O cliente selecionado exibe sinais operacionais.
+- [ ] A leitura operacional aparece.
+- [ ] Nenhuma recomendação nova é criada.
+- [ ] PDF continua baixando.
+- [ ] Excel continua baixando.
+- [ ] Nenhuma regra STAR foi alterada.
+- [ ] Nenhum arquivo `star_core` foi alterado.

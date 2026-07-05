@@ -28,6 +28,7 @@ from star_intelligence.priorizacao import (
     resumir_fila_prioridade,
     formatar_resumo_fila_prioridade,
 )
+from star_intelligence.raio_x_cliente import gerar_raio_x_cliente, formatar_raio_x_texto
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -817,6 +818,29 @@ if uploaded_file:
         colunas_fila = [c for c in colunas_fila if c in df_fila_prioridade.columns]
 
         st.dataframe(df_fila_prioridade[colunas_fila], hide_index=True)
+
+    with st.expander("Raio-X Operacional do Cliente", expanded=False):
+        opcoes_raio_x = df_fila_prioridade[clie_col].astype(str).tolist()
+
+        if opcoes_raio_x:
+            cliente_raio_x = st.selectbox(
+                "Selecione um cliente",
+                opcoes_raio_x,
+                key="raio_x_cliente_selectbox",
+            )
+
+            linha_raio_x = df_fila_prioridade[df_fila_prioridade[clie_col].astype(str) == cliente_raio_x].iloc[0]
+            raio_x = gerar_raio_x_cliente(linha_raio_x, clie_col, vend_col, cida_col)
+
+            for linha_texto in formatar_raio_x_texto(raio_x):
+                st.caption(linha_texto)
+
+            if raio_x["sinais_operacionais"]:
+                st.write("Sinais operacionais:")
+                for sinal in raio_x["sinais_operacionais"]:
+                    st.caption(f"- {sinal}")
+        else:
+            st.caption("Nenhum cliente disponivel para Raio-X.")
 
     extra = [cida_col] if cida_col else []
     fo = ['CURVA', clie_col, vend_col] + extra + meses_col + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'EROSAO STAR', 'META', 'ACAO']
