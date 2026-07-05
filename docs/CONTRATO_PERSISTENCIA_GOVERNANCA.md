@@ -190,3 +190,8 @@ Governança.
 - Não há automação.
 - Não há agente.
 - Não há IA.
+
+## 13. Continuidade — Sprint 7.3
+
+A Sprint 7.3 passou a usar este contrato como base do Repositório Local
+de Governança (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).

@@ -60,3 +60,7 @@ Controlada da Governança (ver
 **Atualização:** a Sprint 7.2 avançou para o contrato de persistência da
 governança, ainda sem salvar dados (ver
 `docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).
+
+**Atualização:** a Sprint 7.3 avançou para o Repositório Local de
+Governança, ainda sem Streamlit (ver
+`docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).

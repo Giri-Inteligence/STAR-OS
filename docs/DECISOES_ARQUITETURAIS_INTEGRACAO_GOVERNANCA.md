@@ -80,3 +80,8 @@ regras de governança, persistência ou transições.
 
 A Sprint 7.2 preservou a decisão de contrato antes de persistência (ver
 `docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).
+
+## 13. Continuidade — Sprint 7.3
+
+A Sprint 7.3 preservou contrato antes de persistência e interface depois
+de persistência (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).

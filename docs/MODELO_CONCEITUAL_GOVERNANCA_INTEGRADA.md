@@ -174,3 +174,8 @@ Agentes futuros:
 
 A Sprint 7.2 materializou o contrato canônico dos payloads de governança
 integrada (ver `docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).
+
+## 11. Continuidade — Sprint 7.3
+
+A Sprint 7.3 criou o repositório local que permite recuperar payloads de
+governança (ver `docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).

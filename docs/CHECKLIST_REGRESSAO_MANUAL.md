@@ -618,3 +618,37 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum token é consumido.
 - [ ] Testes manuais continuam passando.
+
+## 30. Repositório Local de Governança
+
+- [ ] Repositório local de governança criado.
+- [ ] Schema local de governança é inicializado.
+- [ ] Schema local de governança é verificado.
+- [ ] Payload válido é salvo.
+- [ ] Payload inválido é bloqueado.
+- [ ] Payload duplicado é bloqueado por padrão.
+- [ ] Sobrescrita explícita funciona.
+- [ ] Payload salvo é carregado.
+- [ ] Payloads são listados.
+- [ ] Filtros por tipo, cliente e sessão funcionam.
+- [ ] Lote de payloads é salvo.
+- [ ] Registros são contados por tipo.
+- [ ] Integridade do repositório é validada.
+- [ ] Payloads originais não são alterados.
+- [ ] Banco temporário de teste é criado fora do repositório.
+- [ ] Nenhum banco permanente é criado dentro do repositório.
+- [ ] Nenhum JSON funcional é criado.
+- [ ] Nenhum `app.py` é alterado.
+- [ ] Nenhum arquivo `star_core` é alterado.
+- [ ] Nenhum arquivo `star_ingestion` é alterado.
+- [ ] Nenhum arquivo `star_intelligence` é alterado.
+- [ ] Nenhum arquivo `star_governance` é alterado.
+- [ ] Nenhum contrato anterior da Sprint 5 é alterado.
+- [ ] Nenhum contrato da Sprint 7.2 é alterado.
+- [ ] Nenhuma regra STAR é alterada.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma agenda é criada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Testes manuais continuam passando.

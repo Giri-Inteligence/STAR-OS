@@ -207,3 +207,9 @@ A Sprint 7.2 criou o contrato de persistência da governança
 (`star_persistence/contrato_governanca.py`), mantendo contrato antes de
 banco, repositório e interface (ver
 `docs/CONTRATO_PERSISTENCIA_GOVERNANCA.md`).
+
+## 11. Continuidade — Sprint 7.3
+
+A Sprint 7.3 materializou a etapa de persistência local controlada antes
+da interface (`star_persistence/repositorio_governanca.py`, ver
+`docs/REPOSITORIO_LOCAL_GOVERNANCA.md`).
