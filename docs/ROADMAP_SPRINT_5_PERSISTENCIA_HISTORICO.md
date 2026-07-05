@@ -49,3 +49,7 @@ execução automática.
 - Nenhuma conclusão de causa raiz automática.
 - Exportações Excel/PDF preservadas.
 - Regressão manual passando.
+
+**Atualização:** a fase seguinte iniciada é a Sprint 6 — Governança
+Investigativa e Loop Operacional (ver
+`docs/ROADMAP_SPRINT_6_GOVERNANCA_LOOP.md`).

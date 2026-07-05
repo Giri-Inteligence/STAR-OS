@@ -412,3 +412,24 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] PDF baixa.
 - [ ] Testes manuais passam.
 - [ ] Validação visual no Streamlit real deve ser executada.
+
+## 23. Arquitetura da Governança Investigativa e Loop Operacional
+
+- [ ] Arquitetura da Governança Investigativa criada.
+- [ ] Modelo Conceitual do Loop Operacional criado.
+- [ ] Decisões Arquiteturais da Governança Investigativa criadas.
+- [ ] Roadmap da Sprint 6 criado.
+- [ ] Nenhum código funcional alterado.
+- [ ] Nenhum `app.py` alterado.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhum banco criado.
+- [ ] Nenhuma tabela criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Testes manuais continuam passando.

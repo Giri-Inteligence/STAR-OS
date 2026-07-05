@@ -114,3 +114,7 @@ O STAR OS só deve avançar para a próxima fase se:
 - A governança futura preservar separação entre hipótese, evidência,
   recomendação, ação e acompanhamento.
 - A validação visual no Streamlit real for realizada.
+
+**Atualização:** a Persistência Inicial passa a servir como base para a
+Governança Investigativa (Sprint 6), sem transformar histórico em
+execução automática (ver `docs/ARQUITETURA_GOVERNANCA_INVESTIGATIVA.md`).

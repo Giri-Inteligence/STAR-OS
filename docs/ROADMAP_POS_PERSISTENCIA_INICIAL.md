@@ -45,3 +45,7 @@ sprints próprias:
 - Nenhuma regra STAR alterada.
 - Nenhum banco commitado.
 - Regressão manual aprovada.
+
+**Atualização:** a Sprint 6.1 iniciou a Arquitetura da Governança
+Investigativa e Loop Operacional (ver
+`docs/ARQUITETURA_GOVERNANCA_INVESTIGATIVA.md`).
