@@ -22,6 +22,7 @@ from star_ingestion.relatorio import (
 from star_ingestion.diagnostico_mapeamento import diagnosticar_mapeamento
 from star_ingestion.normalizacao_meses import detectar_colunas_mensais_avancado, ordenar_colunas_mensais
 from star_ingestion.normalizacao_valores import normalizar_colunas_monetarias
+from star_ingestion.qualidade_linhas import classificar_linhas_base
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -653,6 +654,15 @@ if uploaded_file:
 
     if normalizacao_valores["avisos"]:
         adicionar_avisos(relatorio_ingestao, normalizacao_valores["avisos"])
+
+    qualidade_linhas = classificar_linhas_base(df_raw, clie_col, vend_col, meses_col)
+    df_raw = qualidade_linhas["df"]
+
+    if qualidade_linhas["mensagens"]:
+        adicionar_saneamento(relatorio_ingestao, qualidade_linhas["mensagens"])
+
+    if qualidade_linhas["avisos"]:
+        adicionar_avisos(relatorio_ingestao, qualidade_linhas["avisos"])
 
     registrar_mapeamento(
         relatorio_ingestao,

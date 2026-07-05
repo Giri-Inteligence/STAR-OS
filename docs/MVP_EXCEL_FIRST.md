@@ -67,6 +67,12 @@ americano e mistos (moeda, milhar, decimal, vazio, hífen), convertendo
 valores inválidos ou ausentes para 0.0 e registrando avisos — sem criar
 regra de negócio nova nem alterar o cálculo do Motor STAR.
 
+Desde a Sprint 2.5, uma camada de qualidade de linhas
+(`star_ingestion/qualidade_linhas.py`) remove apenas resíduos evidentes de
+identidade de cliente (vazio, "-", TOTAL, SUBTOTAL, cabeçalho repetido, etc.)
+e preserva sempre clientes reais zerados ou com compra parcial — zero em
+mês é dado comercial válido, nunca motivo de remoção.
+
 ## 5. Decisões de arquitetura preservadas
 
 - Excel-first.

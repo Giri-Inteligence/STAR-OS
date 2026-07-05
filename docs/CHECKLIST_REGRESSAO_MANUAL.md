@@ -71,6 +71,14 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] `valores_vazios_hifen.xlsx` processa.
 - [ ] `valores_invalidos_parciais.xlsx` processa com aviso de valores inválidos.
 
+## 5.4 Teste de qualidade de linhas
+
+- [ ] `clientes_zerados_validos.xlsx` processa e preserva clientes zerados reais.
+- [ ] `linhas_residuais_obvias.xlsx` remove resíduos evidentes.
+- [ ] `misto_zero_residuo.xlsx` preserva cliente real com zero e remove resíduo.
+- [ ] `base_parcial_vendedor_ausente.xlsx` gera aviso ou bloqueia conforme validação atual, sem alteração de regra STAR.
+- [ ] `cliente_compra_parcial.xlsx` preserva clientes reais com compra parcial, baixa frequência ou meses zerados.
+
 ## 6. Critério de aprovação
 
 - Nenhuma planilha válida pode quebrar.
