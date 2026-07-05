@@ -102,3 +102,10 @@ prioridade nem orienta ação por papel.
 8. Recomendações por papel.
 9. Registro futuro de ação.
 10. Governança futura.
+
+## 8. Fechamento da Sprint 3
+
+Após a Sprint 3.6, a primeira versão da Inteligência de Carteira Integrada
+foi consolidada com Fila de Prioridade, Raio-X Operacional, Hipóteses
+Operacionais e Recomendações por Papel (ver
+`docs/FECHAMENTO_INTELIGENCIA_CARTEIRA.md`).

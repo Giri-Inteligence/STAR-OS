@@ -171,3 +171,21 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum token é consumido.
 - [ ] Nenhuma regra STAR foi alterada.
 - [ ] Nenhum arquivo `star_core` foi alterado.
+
+## 13. Fechamento da Inteligência de Carteira
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Relatório de ingestão continua funcionando.
+- [ ] Fila de Prioridade aparece.
+- [ ] Raio-X Operacional aparece.
+- [ ] Hipóteses Operacionais aparecem.
+- [ ] Recomendações por Papel aparecem.
+- [ ] Opção TODOS funciona nas recomendações.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Nenhuma tarefa automática é criada.
+- [ ] Nenhum plano de ação formal é criado.
+- [ ] Excel baixa.
+- [ ] PDF baixa.
+- [ ] Nenhum arquivo `star_core` foi alterado.
+- [ ] Nenhuma regra STAR foi alterada.

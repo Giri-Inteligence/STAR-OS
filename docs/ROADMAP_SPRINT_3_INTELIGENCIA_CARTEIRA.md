@@ -29,7 +29,7 @@
 - Implementada em `star_intelligence/hipoteses.py`, integrada dentro do
   mesmo expander do Raio-X Operacional do Cliente em `app.py`.
 
-### Sprint 3.5 — Recomendações por Papel — EM IMPLEMENTAÇÃO
+### Sprint 3.5 — Recomendações por Papel — CONCLUÍDA
 - Separar leitura para vendedor, gestor, sócio e consultor.
 - Manter baixa carga cognitiva por papel.
 - Sistema especialista determinístico, sem IA, sem chamada de API externa.
@@ -37,10 +37,15 @@
   mesmo expander do Raio-X/Hipóteses em `app.py`, com seletor de papel
   (VENDEDOR/GESTOR/SOCIO/CONSULTOR/TODOS).
 
-### Sprint 3.6 — Fechamento da Inteligência de Carteira
+### Sprint 3.6 — Fechamento da Inteligência de Carteira — CONCLUÍDA
 - Documentar.
 - Regressão.
 - Critérios de aceite.
+- Documentado em `docs/FECHAMENTO_INTELIGENCIA_CARTEIRA.md`,
+  `docs/INVENTARIO_INTELIGENCIA_CARTEIRA.md` e
+  `docs/DECISOES_ARQUITETURAIS_INTELIGENCIA_CARTEIRA.md`.
+- Sprint 3 encerrada. Próxima fase recomendada: **Sprint 4 — Motor de
+  Investigação**.
 
 ## Critério de não avanço
 

@@ -85,6 +85,11 @@ STAR OS é a Inteligência de Carteira Integrada, que deve usar a Matriz STAR
 como entrada e preservar o Motor STAR (ver
 `docs/INTELIGENCIA_CARTEIRA_INTEGRADA.md`).
 
+Sobre o MVP Excel-first e a Robustez de Ingestão, foi consolidada uma
+primeira camada de Inteligência de Carteira Integrada (Fila de Prioridade,
+Raio-X Operacional, Hipóteses Operacionais e Recomendações por Papel — ver
+`docs/FECHAMENTO_INTELIGENCIA_CARTEIRA.md`).
+
 ## 5. Decisões de arquitetura preservadas
 
 - Excel-first.
