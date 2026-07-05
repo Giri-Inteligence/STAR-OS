@@ -23,6 +23,11 @@ from star_ingestion.diagnostico_mapeamento import diagnosticar_mapeamento
 from star_ingestion.normalizacao_meses import detectar_colunas_mensais_avancado, ordenar_colunas_mensais
 from star_ingestion.normalizacao_valores import normalizar_colunas_monetarias
 from star_ingestion.qualidade_linhas import classificar_linhas_base
+from star_intelligence.priorizacao import (
+    gerar_fila_prioridade,
+    resumir_fila_prioridade,
+    formatar_resumo_fila_prioridade,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
@@ -794,6 +799,24 @@ if uploaded_file:
         lambda r: calcular_erosao_star(r['MEDIA LP'], r['MEDIA CP']),
         axis=1
     )
+
+    with st.expander("Fila de Prioridade da Carteira", expanded=False):
+        df_fila_prioridade = gerar_fila_prioridade(df_raw)
+        resumo_prioridade = resumir_fila_prioridade(df_fila_prioridade)
+
+        for linha in formatar_resumo_fila_prioridade(resumo_prioridade):
+            st.caption(linha)
+
+        colunas_fila = [clie_col, vend_col]
+        if cida_col:
+            colunas_fila.append(cida_col)
+        colunas_fila += [
+            'CURVA', 'STATUS', 'MESES_SEM_COMPRA', 'EROSAO STAR',
+            'PONTUACAO_PRIORIDADE', 'NIVEL_PRIORIDADE', 'TIPO_PRIORIDADE', 'MOTIVOS_PRIORIDADE',
+        ]
+        colunas_fila = [c for c in colunas_fila if c in df_fila_prioridade.columns]
+
+        st.dataframe(df_fila_prioridade[colunas_fila], hide_index=True)
 
     extra = [cida_col] if cida_col else []
     fo = ['CURVA', clie_col, vend_col] + extra + meses_col + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'EROSAO STAR', 'META', 'ACAO']

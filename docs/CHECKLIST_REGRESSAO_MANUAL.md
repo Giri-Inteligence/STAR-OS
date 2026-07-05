@@ -109,3 +109,16 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Downloads continuam funcionando.
 - [ ] Nenhuma regra STAR foi alterada.
 - [ ] Nenhum arquivo `star_core` foi alterado.
+
+## 9. Fila de Prioridade da Carteira
+
+- [ ] Matriz STAR gera corretamente.
+- [ ] Fila de Prioridade aparece após a Matriz STAR.
+- [ ] Clientes não são removidos da fila.
+- [ ] PONTUACAO_PRIORIDADE é exibida.
+- [ ] NIVEL_PRIORIDADE é exibido.
+- [ ] TIPO_PRIORIDADE é exibido.
+- [ ] PDF continua baixando.
+- [ ] Excel continua baixando.
+- [ ] Nenhuma regra STAR foi alterada.
+- [ ] Nenhum arquivo `star_core` foi alterado.

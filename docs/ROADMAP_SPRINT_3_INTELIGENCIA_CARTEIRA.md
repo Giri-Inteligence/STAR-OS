@@ -2,15 +2,17 @@
 
 ## Sequência proposta
 
-### Sprint 3.1 — Inventário e Integração Conceitual da Inteligência de Carteira
+### Sprint 3.1 — Inventário e Integração Conceitual da Inteligência de Carteira — CONCLUÍDA
 - Documentar integração.
 - Mapear componentes.
 - Definir ordem segura.
 
-### Sprint 3.2 — Fila de Prioridade da Carteira
+### Sprint 3.2 — Fila de Prioridade da Carteira — EM IMPLEMENTAÇÃO
 - Criar regra determinística inicial para ordenar clientes por prioridade.
 - Usar Matriz STAR como entrada.
 - Não alterar cálculo.
+- Implementada em `star_intelligence/priorizacao.py`, integrada de forma
+  discreta em `app.py` via `st.expander("Fila de Prioridade da Carteira")`.
 
 ### Sprint 3.3 — Raio-X Operacional do Cliente
 - Gerar leitura individual por cliente.
