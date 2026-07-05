@@ -170,3 +170,9 @@ canônico estar documentado (ver `docs/DECISOES_ARQUITETURAIS_PERSISTENCIA_INVES
 - Não cria plano de ação.
 - Não cria automação.
 - Não usa IA.
+
+## 11. Continuidade — Sprint 5.2
+
+A Sprint 5.2 criou o contrato de dados e a serialização em memória
+(`star_persistence/contrato_historico.py`), ainda sem persistência
+funcional (ver `docs/CONTRATO_DADOS_HISTORICO_INVESTIGATIVO.md`).

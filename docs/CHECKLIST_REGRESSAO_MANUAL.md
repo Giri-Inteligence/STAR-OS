@@ -308,3 +308,28 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Excel continua baixando.
 - [ ] PDF continua baixando.
 - [ ] Testes manuais continuam passando.
+
+## 19. Contrato de Dados e Serialização do Histórico Investigativo
+
+- [ ] Pacote `star_persistence` criado.
+- [ ] Contrato de histórico investigativo criado.
+- [ ] Payload canônico é gerado em memória.
+- [ ] Payload é serializável com `json.dumps`.
+- [ ] Payload contém cliente.
+- [ ] Payload contém sessão.
+- [ ] Payload contém snapshot STAR.
+- [ ] Payload contém itens investigativos.
+- [ ] Payload contém pacote investigativo.
+- [ ] Payload contém conclusão investigativa.
+- [ ] Payload contém metadados da execução.
+- [ ] Validação estrutural do payload funciona.
+- [ ] Nenhum banco de dados é criado.
+- [ ] Nenhum JSON funcional de persistência é criado.
+- [ ] Nenhum `app.py` é alterado.
+- [ ] Nenhum arquivo `star_core` é alterado.
+- [ ] Nenhum arquivo `star_ingestion` é alterado.
+- [ ] Nenhum arquivo `star_intelligence` é alterado.
+- [ ] Nenhuma regra STAR é alterada.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Testes manuais continuam passando.

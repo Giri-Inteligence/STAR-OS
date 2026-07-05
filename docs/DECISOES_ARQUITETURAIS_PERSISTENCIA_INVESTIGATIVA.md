@@ -69,3 +69,9 @@ A decisão final deve ser tomada na Sprint 5.2 ou 5.3, não nesta sprint.
 - Histórico confiável exige separação entre hipótese, evidência,
   recomendação, ação e acompanhamento.
 - Registro de ações futuras deve ser sprint própria.
+
+## 9. Continuidade — Sprint 5.2
+
+O payload canônico (`star_persistence/contrato_historico.py`) passa a ser a
+fronteira entre o Motor de Investigação e a futura camada de repositório —
+sem salvamento nesta sprint.
