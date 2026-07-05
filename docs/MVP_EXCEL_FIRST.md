@@ -61,6 +61,12 @@ coluna mensal (texto, numérico, com prefixo, fora de ordem), ordena os meses
 cronologicamente e avisa sobre períodos duplicados, sem alterar valores ou
 nomes de colunas.
 
+Desde a Sprint 2.4, uma normalização avançada de valores monetários
+(`star_ingestion/normalizacao_valores.py`) reconhece formatos brasileiro,
+americano e mistos (moeda, milhar, decimal, vazio, hífen), convertendo
+valores inválidos ou ausentes para 0.0 e registrando avisos — sem criar
+regra de negócio nova nem alterar o cálculo do Motor STAR.
+
 ## 5. Decisões de arquitetura preservadas
 
 - Excel-first.

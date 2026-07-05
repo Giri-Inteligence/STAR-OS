@@ -1,26 +1,13 @@
-import re
-
 import pandas as pd
+
+from star_ingestion.normalizacao_valores import normalizar_valor_monetario
 
 
 def _limpar_valor_monetario(valor):
     if pd.isna(valor):
         return None
 
-    texto = str(valor).strip()
-
-    if texto == "":
-        return None
-
-    texto = re.sub(r"[Rr]\$", "", texto).strip()
-    texto = texto.replace(" ", "")
-
-    if "," in texto and "." in texto:
-        texto = texto.replace(".", "").replace(",", ".")
-    elif "," in texto:
-        texto = texto.replace(",", ".")
-
-    return texto
+    return normalizar_valor_monetario(valor)
 
 
 def validar_colunas_obrigatorias(clie_col, vend_col, meses_col, df):

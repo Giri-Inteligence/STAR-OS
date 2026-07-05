@@ -63,6 +63,14 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] `meses_fora_ordem.xlsx` processa com meses ordenados corretamente.
 - [ ] `meses_invalidos_parciais.xlsx` ignora meses inválidos e processa meses válidos.
 
+## 5.3 Teste de valores monetários avançados
+
+- [ ] `valores_brasileiros.xlsx` processa.
+- [ ] `valores_americanos.xlsx` processa.
+- [ ] `valores_mistos.xlsx` processa.
+- [ ] `valores_vazios_hifen.xlsx` processa.
+- [ ] `valores_invalidos_parciais.xlsx` processa com aviso de valores inválidos.
+
 ## 6. Critério de aprovação
 
 - Nenhuma planilha válida pode quebrar.
