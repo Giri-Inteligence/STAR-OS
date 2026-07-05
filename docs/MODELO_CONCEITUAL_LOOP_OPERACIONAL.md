@@ -154,3 +154,9 @@ O Registro de Acompanhamento Operacional (`star_governance/acompanhamento.py`)
 O status de acompanhamento (`star_governance/status_acompanhamento.py`)
 é pré-condição para o futuro loop semanal (ver
 `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).
+
+## 12. Continuidade — Sprint 6.4
+
+O Loop Semanal de Governança (`star_governance/loop_semanal.py`)
+materializa o ciclo conceitual em memória, ainda sem persistência (ver
+`docs/LOOP_SEMANAL_GOVERNANCA.md`).

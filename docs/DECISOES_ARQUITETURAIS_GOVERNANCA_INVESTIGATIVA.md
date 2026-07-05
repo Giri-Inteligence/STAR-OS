@@ -89,3 +89,10 @@ agente (ver `docs/REGISTRO_ACOMPANHAMENTO_OPERACIONAL.md`).
 A Sprint 6.3 preservou a decisão de ser determinística antes de IA: as
 regras de status e transição nascem como código auditável, sem
 inferência probabilística (ver `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).
+
+## 12. Continuidade — Sprint 6.4
+
+A Sprint 6.4 preservou determinismo antes de IA e acompanhamento
+separado de execução: o Loop Semanal de Governança apenas classifica e
+ordena leitura, sem decidir ou executar nada (ver
+`docs/LOOP_SEMANAL_GOVERNANCA.md`).

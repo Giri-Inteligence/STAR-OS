@@ -160,3 +160,9 @@ e sem integração com o Streamlit (ver
 A Sprint 6.3 consolidou o status determinístico de acompanhamento
 (`star_governance/status_acompanhamento.py`), mantendo a governança
 separada de execução (ver `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).
+
+## 12. Continuidade — Sprint 6.4
+
+A Sprint 6.4 consolidou o primeiro ciclo semanal em memória
+(`star_governance/loop_semanal.py`), mantendo governança separada de
+execução (ver `docs/LOOP_SEMANAL_GOVERNANCA.md`).

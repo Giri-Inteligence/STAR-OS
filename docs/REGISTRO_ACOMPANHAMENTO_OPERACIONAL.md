@@ -91,3 +91,8 @@ loop semanal e governança inicial (ver
 A Sprint 6.3 criou regras de status e transição sobre estes registros de
 acompanhamento (`star_governance/status_acompanhamento.py`), sem alterar
 este contrato (ver `docs/STATUS_ACOMPANHAMENTO_INVESTIGACAO.md`).
+
+## 10. Continuidade — Sprint 6.4
+
+Os registros de acompanhamento alimentam o Loop Semanal de Governança da
+Sprint 6.4 (ver `docs/LOOP_SEMANAL_GOVERNANCA.md`).

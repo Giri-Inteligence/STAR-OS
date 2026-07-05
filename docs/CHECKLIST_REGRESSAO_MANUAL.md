@@ -490,3 +490,36 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum token é consumido.
 - [ ] Testes manuais continuam passando.
+
+## 26. Loop Semanal de Governança
+
+- [ ] Módulo de loop semanal criado.
+- [ ] Classificações permitidas são listadas.
+- [ ] Pesos técnicos de leitura são listados.
+- [ ] Item de loop é criado em memória.
+- [ ] Item de loop é serializável com `json.dumps`.
+- [ ] Item de loop preserva payload original.
+- [ ] Item de loop preserva registros originais.
+- [ ] Classificação do loop funciona.
+- [ ] Itens são ordenados por leitura técnica.
+- [ ] Resumo do loop é gerado.
+- [ ] Ciclo semanal é criado em memória.
+- [ ] Ciclo semanal é serializável com `json.dumps`.
+- [ ] Validação de item funciona.
+- [ ] Validação de ciclo funciona.
+- [ ] Nenhum banco é criado.
+- [ ] Nenhuma tabela é criada.
+- [ ] Nenhum JSON funcional é criado.
+- [ ] Nenhum `app.py` é alterado.
+- [ ] Nenhum arquivo `star_core` é alterado.
+- [ ] Nenhum arquivo `star_ingestion` é alterado.
+- [ ] Nenhum arquivo `star_intelligence` é alterado.
+- [ ] Nenhum arquivo `star_persistence` é alterado.
+- [ ] Nenhum arquivo `star_governance/acompanhamento.py` é alterado.
+- [ ] Nenhum arquivo `star_governance/status_acompanhamento.py` é alterado.
+- [ ] Nenhuma regra STAR é alterada.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Testes manuais continuam passando.

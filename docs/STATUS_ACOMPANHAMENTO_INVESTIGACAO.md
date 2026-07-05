@@ -97,3 +97,8 @@ investigativa que o loop precisará consultar.
 - Não há tarefa.
 - Não há automação.
 - Não há agente.
+
+## 9. Continuidade — Sprint 6.4
+
+A Sprint 6.4 usa este status de acompanhamento como base para o Loop
+Semanal de Governança (ver `docs/LOOP_SEMANAL_GOVERNANCA.md`).
