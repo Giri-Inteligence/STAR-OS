@@ -85,3 +85,18 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - Nenhuma planilha inválida pode passar silenciosamente.
 - Nenhuma regra STAR pode ser alterada para corrigir problema de ingestão.
 - Nenhum arquivo `star_core` pode ser alterado em sprint de ingestão sem autorização explícita.
+
+## 7. Fechamento da robustez de ingestão
+
+- [ ] Relatório de ingestão aparece.
+- [ ] Diagnóstico de mapeamento explica falhas.
+- [ ] Meses avançados processam.
+- [ ] Valores avançados processam.
+- [ ] Clientes zerados reais permanecem.
+- [ ] Linhas residuais evidentes são removidas.
+- [ ] Planilhas inválidas continuam bloqueando.
+- [ ] Planilhas válidas continuam processando.
+- [ ] Excel baixa.
+- [ ] PDF baixa.
+- [ ] Nenhum arquivo `star_core` foi alterado.
+- [ ] Nenhuma regra STAR foi alterada.

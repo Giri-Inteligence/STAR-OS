@@ -73,6 +73,13 @@ identidade de cliente (vazio, "-", TOTAL, SUBTOTAL, cabeçalho repetido, etc.)
 e preserva sempre clientes reais zerados ou com compra parcial — zero em
 mês é dado comercial válido, nunca motivo de remoção.
 
+Com a Sprint 2.6, a robustez avançada de ingestão (saneamento, validação,
+relatório, diagnóstico de mapeamento, normalização de meses, normalização de
+valores e qualidade de linhas) foi formalmente documentada em
+`docs/ROBUSTEZ_INGESTAO.md`, `docs/INVENTARIO_TESTES_INGESTAO.md` e
+`docs/DECISOES_ARQUITETURAIS_INGESTAO.md`, fechando a Sprint 2 antes de
+avançar para a Inteligência de Carteira.
+
 ## 5. Decisões de arquitetura preservadas
 
 - Excel-first.
