@@ -85,3 +85,7 @@ logo após a Conclusão Investigativa.
 A Sprint 5.5 — Fechamento da Persistência Inicial — deve documentar o
 fechamento, o inventário, as decisões e os limites da persistência
 inicial, além de consolidar a regressão manual de toda a Sprint 5.
+
+**Atualização:** a Sprint 5.5 consolidou esta integração como parte do
+fechamento formal da Persistência Inicial (ver
+`docs/FECHAMENTO_PERSISTENCIA_INICIAL.md`).

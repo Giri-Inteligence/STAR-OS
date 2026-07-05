@@ -12,7 +12,7 @@ execução automática.
 - Sprint 5.2 — Contrato de Dados e Serialização do Histórico Investigativo — **CONCLUÍDA**.
 - Sprint 5.3 — Repositório Local Controlado — **CONCLUÍDA** (decisão: SQLite via `sqlite3` da biblioteca padrão).
 - Sprint 5.4 — Histórico Investigativo no Streamlit — **CONCLUÍDA** (salvamento explícito e consulta local somente leitura integrados ao Raio-X).
-- Sprint 5.5 — Fechamento da Persistência Inicial — próxima etapa recomendada.
+- Sprint 5.5 — Fechamento da Persistência Inicial — **CONCLUÍDA**. A Sprint 5 foi formalmente fechada (ver `docs/FECHAMENTO_PERSISTENCIA_INICIAL.md`). Próxima fase recomendada: Sprint 6 — Governança Investigativa e Loop Operacional (ver `docs/ROADMAP_POS_PERSISTENCIA_INICIAL.md`).
 
 ## 3. Objetivo de cada sub-sprint
 

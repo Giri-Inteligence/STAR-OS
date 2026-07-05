@@ -190,3 +190,9 @@ A Sprint 5.4 implementou a primeira integração controlada entre o
 Streamlit e o repositório local, mantendo a persistência separada do
 Motor STAR — salvamento apenas por ação explícita do usuário e consulta
 somente leitura (ver `docs/HISTORICO_INVESTIGATIVO_STREAMLIT.md`).
+
+## 14. Fechamento — Sprint 5.5
+
+A Sprint 5.5 fechou formalmente a Persistência Inicial, mantendo a
+persistência separada do Motor STAR (ver
+`docs/FECHAMENTO_PERSISTENCIA_INICIAL.md`).

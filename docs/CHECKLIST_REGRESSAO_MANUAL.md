@@ -384,3 +384,31 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhuma IA é chamada.
 - [ ] Nenhum token é consumido.
 - [ ] Testes manuais continuam passando.
+
+## 22. Fechamento da Persistência Inicial
+
+- [ ] Arquitetura da persistência documentada.
+- [ ] Modelo de dados documentado.
+- [ ] Contrato de dados criado.
+- [ ] Repositório local criado.
+- [ ] Configuração do caminho do banco criada.
+- [ ] Integração no Streamlit criada.
+- [ ] Histórico Investigativo aparece.
+- [ ] Histórico salva somente por clique explícito.
+- [ ] Consulta histórica é somente leitura.
+- [ ] Carregar histórico não altera investigação atual.
+- [ ] Sessão duplicada não é sobrescrita silenciosamente.
+- [ ] Banco padrão fica fora do repositório.
+- [ ] `.gitignore` protege arquivos `.db`, `.sqlite` e `.sqlite3`.
+- [ ] Nenhum banco permanente é commitado.
+- [ ] Nenhum JSON funcional é commitado.
+- [ ] Nenhuma IA é chamada.
+- [ ] Nenhum token é consumido.
+- [ ] Nenhum plano de ação é criado.
+- [ ] Nenhuma tarefa é criada.
+- [ ] Nenhum arquivo `star_core` foi alterado.
+- [ ] Nenhuma regra STAR foi alterada.
+- [ ] Excel baixa.
+- [ ] PDF baixa.
+- [ ] Testes manuais passam.
+- [ ] Validação visual no Streamlit real deve ser executada.

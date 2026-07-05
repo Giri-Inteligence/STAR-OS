@@ -112,3 +112,7 @@ já existentes.
 **Atualização:** a Sprint 5.4 integrou este repositório ao Streamlit, com
 salvamento explícito por botão e consulta somente leitura ao histórico do
 cliente selecionado (ver `docs/HISTORICO_INVESTIGATIVO_STREAMLIT.md`).
+
+**Atualização (Sprint 5.5):** este repositório compõe a Persistência
+Inicial fechada formalmente na Sprint 5.5 (ver
+`docs/FECHAMENTO_PERSISTENCIA_INICIAL.md`).

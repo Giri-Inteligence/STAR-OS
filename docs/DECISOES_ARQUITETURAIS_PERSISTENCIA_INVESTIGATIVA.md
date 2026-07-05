@@ -80,3 +80,9 @@ silenciosa em relação a um arquivo JSON solto.
 O payload canônico (`star_persistence/contrato_historico.py`) passa a ser a
 fronteira entre o Motor de Investigação e a futura camada de repositório —
 sem salvamento nesta sprint.
+
+## 10. Fechamento — Sprint 5.5
+
+A Sprint 5 foi fechada preservando a decisão de SQLite local controlado,
+o payload canônico e o salvamento explícito por ação do usuário (ver
+`docs/FECHAMENTO_PERSISTENCIA_INICIAL.md`).

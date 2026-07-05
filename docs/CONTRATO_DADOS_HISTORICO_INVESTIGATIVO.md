@@ -77,3 +77,7 @@ também é preservado integralmente na tabela `payloads_historico`.
 diretamente pela interface do Streamlit para salvar o histórico
 investigativo do cliente selecionado, por ação explícita do usuário (ver
 `docs/HISTORICO_INVESTIGATIVO_STREAMLIT.md`).
+
+**Atualização (Sprint 5.5):** este contrato de dados compõe a
+Persistência Inicial fechada formalmente na Sprint 5.5 (ver
+`docs/FECHAMENTO_PERSISTENCIA_INICIAL.md`).
