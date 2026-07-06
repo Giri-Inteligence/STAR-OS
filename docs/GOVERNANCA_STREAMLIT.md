@@ -169,3 +169,11 @@ de permanecer estável durante a investigação (ver
 `docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`). O contrato e o
 repositório de governança não são afetados por este achado — a causa
 raiz está isolada em `app.py`.
+
+## 17. Continuidade — Sprint 9.3
+
+A identidade da sessão investigativa usada pela Governança foi
+estabilizada na Sprint 9.3 via `st.session_state` em `app.py`,
+corrigindo o ACHADO-9-2-001. Consulta e salvamento passam a usar o
+mesmo `sessao_id` durante a investigação do mesmo cliente (ver
+`docs/CORRECAO_IDENTIDADE_SESSAO_GOVERNANCA.md`).

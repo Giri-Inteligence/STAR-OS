@@ -114,7 +114,7 @@ from star_governance.leitura_operacional import (
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
-from datetime import date
+from datetime import date, datetime, timezone
 
 try:
     from reportlab.lib.pagesizes import A4
@@ -1071,6 +1071,11 @@ if uploaded_file:
             for aviso_caminho in validacao_caminho_db.get("avisos") or []:
                 st.caption(f"Aviso: {aviso_caminho}")
 
+            chave_sessao_investigativa = f"sessao_investigativa::{cliente_raio_x}::{raio_x['vendedor']}::{fn}"
+            if chave_sessao_investigativa not in st.session_state:
+                st.session_state[chave_sessao_investigativa] = datetime.now(timezone.utc).isoformat()
+            criado_em_sessao_investigativa = st.session_state[chave_sessao_investigativa]
+
             payload_historico = criar_payload_historico_investigativo(
                 nome_cliente=raio_x["cliente"],
                 vendedor=raio_x["vendedor"],
@@ -1084,6 +1089,7 @@ if uploaded_file:
                 conclusao_investigativa=conclusao_investigativa,
                 arquivo_origem_nome=fn,
                 usuario_responsavel="",
+                criado_em=criado_em_sessao_investigativa,
             )
 
             if st.button("Salvar histórico investigativo", key=f"historico_salvar_{cliente_raio_x}"):

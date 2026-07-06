@@ -941,3 +941,31 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum banco criado dentro do repositório.
 - [ ] IA/agentes seguem bloqueados até correção do achado funcional.
 - [ ] Testes manuais continuam passando.
+
+## 40. Correção Controlada da Identidade de Sessão da Governança
+
+- [ ] ACHADO-9-2-001 tratado.
+- [ ] `sessao_id` estabilizado durante reruns.
+- [ ] Salvamento usa `sessao_id` estável.
+- [ ] Consulta usa `sessao_id` estável.
+- [ ] Consulta encontra payloads recém-salvos.
+- [ ] `CICLO_LOOP` aparece após consulta.
+- [ ] Leitura operacional aparece após consulta.
+- [ ] `app.py` alterado apenas como orquestrador.
+- [ ] `contrato_governanca.py` não alterado.
+- [ ] `repositorio_governanca.py` não alterado.
+- [ ] Schema SQLite não alterado.
+- [ ] `star_governance` não alterado.
+- [ ] Motor STAR não alterado.
+- [ ] PDF não alterado.
+- [ ] Excel não alterado.
+- [ ] Nenhum botão novo criado.
+- [ ] Nenhuma tela nova criada.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum agente acionado.
+- [ ] Teste de identidade de sessão passa.
+- [ ] Teste estático da Governança passa.
+- [ ] Regressão geral passa.

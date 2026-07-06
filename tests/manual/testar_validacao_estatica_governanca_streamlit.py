@@ -161,6 +161,22 @@ def testar_ausencia_metric_no_bloco_governanca(bloco_governanca):
     print("9.2. Ausencia de st.metric no bloco de governanca (Sprint 8.4): OK")
 
 
+def testar_identidade_sessao_estabilizada(codigo_fonte):
+    assert "st.session_state" in codigo_fonte, "st.session_state nao encontrado em app.py"
+    assert "sessao_investigativa" in codigo_fonte, "chave de sessao investigativa nao encontrada em app.py"
+
+    print("9.3. Identidade de sessao investigativa estabilizada via st.session_state (Sprint 9.3): OK")
+
+
+def testar_ausencia_novos_elementos_no_bloco_governanca(bloco_governanca):
+    assert "st.download_button" not in bloco_governanca
+    assert "st.metric" not in bloco_governanca
+    for chamada in CHAMADAS_GRAFICO_PROIBIDAS:
+        assert chamada not in bloco_governanca, f"chamada de grafico proibida encontrada: {chamada}"
+
+    print("9.4. Ausencia de novos botoes, graficos, metricas ou downloads no bloco de governanca (Sprint 9.3): OK")
+
+
 def testar_arquivo_nao_alterado():
     tamanho_arquivo = os.path.getsize(CAMINHO_APP)
     assert tamanho_arquivo > 0
@@ -183,6 +199,8 @@ if __name__ == "__main__":
     testar_ausencia_chamadas_externas(bloco_governanca_extraido)
     testar_leitura_operacional_presente(bloco_governanca_extraido)
     testar_ausencia_metric_no_bloco_governanca(bloco_governanca_extraido)
+    testar_identidade_sessao_estabilizada(codigo_fonte_app)
+    testar_ausencia_novos_elementos_no_bloco_governanca(bloco_governanca_extraido)
     testar_arquivo_nao_alterado()
 
     print("VALIDACAO_ESTATICA_GOVERNANCA_STREAMLIT_OK")

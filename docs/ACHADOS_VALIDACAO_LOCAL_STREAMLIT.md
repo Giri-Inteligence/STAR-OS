@@ -83,6 +83,12 @@ execução da Sprint 9.2, descrita em
 - **Observações:** este achado aciona o critério de bloqueio previsto
   em `docs/ARQUITETURA_VALIDACAO_OPERACIONAL_LOCAL.md`, Seção 7
   ("`CICLO_LOOP` não aparecendo por cliente/sessão após salvamento").
+- **Status de tratamento:** **CORRIGIDO NA SPRINT 9.3** — estabilização
+  do `sessao_id` via `st.session_state` em `app.py`, revalidada em
+  navegador real com resultado aprovado. Ver
+  `docs/CORRECAO_IDENTIDADE_SESSAO_GOVERNANCA.md` e
+  `docs/RESULTADO_REVALIDACAO_SESSAO_GOVERNANCA_STREAMLIT.md`. Este
+  registro original é preservado para histórico e não foi apagado.
 
 ### ACHADO-9-2-002
 

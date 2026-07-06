@@ -80,6 +80,11 @@ estável entre reruns, afetando a consulta de governança salva) — ver
 `docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`. IA/agentes seguem
 bloqueados até correção e reconfirmação.
 
+**Atualização — Sprint 9.3:** a regressão passa a incluir
+`tests/manual/testar_identidade_sessao_governanca_streamlit.py`,
+protegendo a estabilização de `sessao_id` que corrigiu o
+ACHADO-9-2-001 (ver `docs/CORRECAO_IDENTIDADE_SESSAO_GOVERNANCA.md`).
+
 ## 6. Regressão de artefatos
 
 - Não deve haver `.db`, `.sqlite` ou `.sqlite3` dentro do repositório.

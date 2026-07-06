@@ -10,11 +10,12 @@ estabilizar a experiência antes de IA/agentes.
 
 - Sprint 9.1 — Arquitetura da Validação Operacional Local — **CONCLUÍDA**.
 - Sprint 9.2 — Execução Guiada da Validação Visual Local — **CONCLUÍDA
-  COM ACHADO FUNCIONAL CONFIRMADO** (ver
+  COM BUG FUNCIONAL** (ver
   `docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`).
 - Sprint 9.3 — Correção Controlada da Identidade de Sessão da
-  Investigação para Consulta de Governança (escopo redefinido pela
-  Sprint 9.2 — prioridade sobre a correção de UX genérica original).
+  Investigação para Consulta de Governança — **CONCLUÍDA** (correção
+  aplicada e revalidada em navegador real, resultado CORREÇÃO APROVADA
+  — ver `docs/RESULTADO_REVALIDACAO_SESSAO_GOVERNANCA_STREAMLIT.md`).
 - Sprint 9.4 — Estabilização da Experiência de Governança.
 - Sprint 9.5 — Fechamento da Validação Operacional Local.
 
@@ -65,3 +66,13 @@ registrados em `docs/RESULTADO_VALIDACAO_LOCAL_STREAMLIT.md`,
 `docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`. Um achado de bug
 funcional (identidade de sessão da investigação) foi confirmado e
 redefine o escopo da Sprint 9.3.
+
+## 7. Atualização — Sprint 9.3
+
+O ACHADO-9-2-001 foi corrigido (estabilização do `sessao_id` via
+`st.session_state` em `app.py`) e revalidado em navegador real, com
+resultado CORREÇÃO APROVADA (ver
+`docs/CORRECAO_IDENTIDADE_SESSAO_GOVERNANCA.md` e
+`docs/RESULTADO_REVALIDACAO_SESSAO_GOVERNANCA_STREAMLIT.md`). Próxima
+sprint recomendada: **Sprint 9.4 — Estabilização da Experiência de
+Governança.**

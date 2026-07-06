@@ -100,3 +100,24 @@ registrada em `docs/ROADMAP_POS_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`
 **Sprint 9.3 — Correção Controlada da Identidade de Sessão da
 Investigação para Consulta de Governança**, com escopo estrito
 definido em `docs/RESULTADO_VALIDACAO_LOCAL_STREAMLIT.md`, Seção 7.
+
+## 8. Atualização — Sprint 9.3
+
+A Sprint 9.3 corrigiu o ACHADO-9-2-001 (estabilização do `sessao_id` em
+`st.session_state`, dentro de `app.py`) e revalidou o fluxo em
+navegador real: consulta encontrou os 5 payloads recém-salvos,
+`CICLO_LOOP` apareceu corretamente, leitura operacional apareceu de
+forma coerente. Resultado: **CORREÇÃO APROVADA** (ver
+`docs/RESULTADO_REVALIDACAO_SESSAO_GOVERNANCA_STREAMLIT.md`).
+
+**Decisão atualizada:** o bloqueio de IA/agentes motivado
+especificamente pelo ACHADO-9-2-001 é removido. IA e agentes continuam
+bloqueados pela condição geral já registrada nas Seções 3 e 6 deste
+documento (fechamento completo da Sprint 9 e decisão arquitetural
+específica), não mais pelo achado funcional agora corrigido. Os achados
+ACHADO-9-2-002 (risco metodológico, não confirmado) e ACHADO-9-2-003
+(ajuste visual, baixa severidade) permanecem em aberto e não bloqueiam
+o avanço para a Sprint 9.4.
+
+Próxima sprint recomendada: **Sprint 9.4 — Estabilização da Experiência
+de Governança.**
