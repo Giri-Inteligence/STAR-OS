@@ -154,3 +154,18 @@ objeto de validação local real (ver
 
 A seção Governança Investigativa será objeto de validação local real na
 Sprint 9 (ver `docs/PROTOCOLO_VALIDACAO_LOCAL_STREAMLIT.md`).
+
+## 16. Continuidade — Sprint 9.2
+
+A validação local real, executada em navegador contra um servidor
+Streamlit local, confirmou que o salvamento explícito, o aviso
+metodológico e os campos permitidos funcionam corretamente. Também
+confirmou um achado de bug funcional: o botão "Consultar governança
+salva deste cliente" pode não localizar payloads recém-salvos para o
+mesmo cliente, porque o identificador de sessão da investigação
+(`sessao_id`) é recalculado a cada execução do script Streamlit em vez
+de permanecer estável durante a investigação (ver
+`docs/ACHADOS_VALIDACAO_LOCAL_STREAMLIT.md`, ACHADO-9-2-001, e
+`docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`). O contrato e o
+repositório de governança não são afetados por este achado — a causa
+raiz está isolada em `app.py`.

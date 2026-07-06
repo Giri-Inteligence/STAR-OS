@@ -9,8 +9,12 @@ estabilizar a experiência antes de IA/agentes.
 ## 2. Sub-sprints planejadas
 
 - Sprint 9.1 — Arquitetura da Validação Operacional Local — **CONCLUÍDA**.
-- Sprint 9.2 — Execução Guiada da Validação Visual Local.
-- Sprint 9.3 — Correções Controladas de UX sem Nova Capacidade.
+- Sprint 9.2 — Execução Guiada da Validação Visual Local — **CONCLUÍDA
+  COM ACHADO FUNCIONAL CONFIRMADO** (ver
+  `docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`).
+- Sprint 9.3 — Correção Controlada da Identidade de Sessão da
+  Investigação para Consulta de Governança (escopo redefinido pela
+  Sprint 9.2 — prioridade sobre a correção de UX genérica original).
 - Sprint 9.4 — Estabilização da Experiência de Governança.
 - Sprint 9.5 — Fechamento da Validação Operacional Local.
 
@@ -51,3 +55,13 @@ estabilizar a experiência antes de IA/agentes.
 - Motor STAR protegido.
 - Regressão passando.
 - Decisão clara sobre possibilidade ou bloqueio de IA/agentes.
+
+## 6. Atualização — Sprint 9.2
+
+A validação visual local real foi executada (não estática, não
+simulada). O resultado, os achados e a decisão de avanço estão
+registrados em `docs/RESULTADO_VALIDACAO_LOCAL_STREAMLIT.md`,
+`docs/ACHADOS_VALIDACAO_LOCAL_STREAMLIT.md` e
+`docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`. Um achado de bug
+funcional (identidade de sessão da investigação) foi confirmado e
+redefine o escopo da Sprint 9.3.

@@ -913,3 +913,31 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum token consumido.
 - [ ] Nenhum agente acionado.
 - [ ] Testes manuais continuam passando.
+
+## 39. Execução Guiada da Validação Visual Local
+
+- [ ] Streamlit executado localmente contra planilha válida real.
+- [ ] Upload processado com sucesso.
+- [ ] Matriz STAR gerada corretamente.
+- [ ] Cliente selecionado no Raio-X.
+- [ ] Seção Governança investigativa localizada.
+- [ ] Aviso metodológico íntegro.
+- [ ] Campos permitidos corretos (tipo, status, observação, usuário opcional).
+- [ ] Nenhum campo proibido encontrado como elemento funcional.
+- [ ] Salvamento explícito funciona e cria banco fora do repositório.
+- [ ] Achado de bug funcional na consulta de governança registrado (identidade de sessão instável entre reruns).
+- [ ] Achado classificado como RISCO METODOLÓGICO registrado (campo de observação, não confirmado como defeito real).
+- [ ] Achado classificado como AJUSTE VISUAL registrado (legenda de configuração desatualizada no mesmo rerun).
+- [ ] Nenhum gráfico/ranking/dashboard/CRM encontrado na seção de governança.
+- [ ] PDF/Excel permaneceram inalterados.
+- [ ] Nenhum código funcional alterado durante a validação.
+- [ ] Nenhum `app.py` alterado.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhum arquivo `star_governance` alterado.
+- [ ] Nenhum arquivo `tests/manual` alterado.
+- [ ] Nenhum banco criado dentro do repositório.
+- [ ] IA/agentes seguem bloqueados até correção do achado funcional.
+- [ ] Testes manuais continuam passando.

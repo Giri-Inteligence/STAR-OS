@@ -71,6 +71,15 @@ python tests/manual/testar_qualidade_linhas.py
 - Antes de IA/agentes, a validação visual real deve ser executada ou
   formalmente registrada como pendente aceita.
 
+**Atualização — Sprint 9.2:** a validação visual real foi executada em
+navegador contra um servidor Streamlit local. Um achado de bug
+funcional foi confirmado (identidade de sessão da investigação não
+estável entre reruns, afetando a consulta de governança salva) — ver
+`docs/RESULTADO_VALIDACAO_LOCAL_STREAMLIT.md`,
+`docs/ACHADOS_VALIDACAO_LOCAL_STREAMLIT.md` e
+`docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`. IA/agentes seguem
+bloqueados até correção e reconfirmação.
+
 ## 6. Regressão de artefatos
 
 - Não deve haver `.db`, `.sqlite` ou `.sqlite3` dentro do repositório.

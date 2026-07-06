@@ -77,3 +77,9 @@ Não devem ser tratados como achado:
 - desejo de agente;
 - desejo de agenda;
 - expectativa comercial fora do escopo metodológico.
+
+## 8. Aplicação — Sprint 9.2
+
+Este modelo foi aplicado na prática pela primeira vez na Sprint 9.2 —
+ver `docs/ACHADOS_VALIDACAO_LOCAL_STREAMLIT.md` (4 achados
+registrados: ACHADO-9-2-001 a ACHADO-9-2-004).

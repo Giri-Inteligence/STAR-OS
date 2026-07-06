@@ -108,3 +108,11 @@ A validação deve coletar:
 - Classificar achados.
 - Decidir se a próxima sprint é correção de UX, correção funcional ou
   estabilização.
+
+## 10. Execução — Sprint 9.2
+
+Este protocolo foi executado de fato na Sprint 9.2, em navegador real,
+contra um servidor Streamlit local. Resultado, achados e decisão em
+`docs/RESULTADO_VALIDACAO_LOCAL_STREAMLIT.md`,
+`docs/ACHADOS_VALIDACAO_LOCAL_STREAMLIT.md` e
+`docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`.
