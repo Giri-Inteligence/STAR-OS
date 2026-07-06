@@ -999,3 +999,41 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Teste de identidade de sessão passa.
 - [ ] Teste estático da Governança passa.
 - [ ] Regressão geral passa.
+
+## 42. Fechamento da Validação Operacional Local
+
+- [ ] Fechamento da Validação Operacional Local criado.
+- [ ] Inventário da Validação Operacional Local criado.
+- [ ] Regressão da Validação Operacional Local criada.
+- [ ] Gate da Governança Operacional Local criado.
+- [ ] Roadmap pós-validação operacional local criado.
+- [ ] ACHADO-9-2-001 inventariado como corrigido.
+- [ ] ACHADO-9-2-002 inventariado como limitação de automação sintética.
+- [ ] ACHADO-9-2-003 inventariado como ajuste visual tratado.
+- [ ] Gate aprovado com restrição arquitetural.
+- [ ] Próxima macrofase recomendada documentada.
+- [ ] Nenhum código funcional alterado nesta sprint.
+- [ ] Nenhum `app.py` alterado nesta sprint.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhum arquivo `star_governance` alterado.
+- [ ] Nenhum teste alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhum banco criado.
+- [ ] Nenhuma tabela criada.
+- [ ] Nenhum schema SQLite alterado.
+- [ ] Nenhum JSON funcional criado.
+- [ ] Nenhuma tela nova criada.
+- [ ] Nenhum botão novo criado.
+- [ ] Nenhum gráfico criado.
+- [ ] Nenhum ranking criado.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum calendário criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Nenhum agente acionado.
+- [ ] Testes manuais passam.

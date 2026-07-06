@@ -70,3 +70,9 @@ IA e agentes permanecem bloqueados até:
 - Quais ajustes entram na Sprint 9.3?
 - Quando IA poderá entrar como apoio de leitura?
 - Quando agentes poderão operar sobre contratos validados?
+
+## 11. Fechamento — Sprint 9.5
+
+As decisões acima foram preservadas no fechamento da Sprint 9,
+especialmente o bloqueio de IA/agentes sem arquitetura própria (ver
+`docs/GATE_GOVERNANCA_OPERACIONAL_LOCAL_VALIDADA.md`).

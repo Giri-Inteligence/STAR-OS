@@ -128,3 +128,8 @@ metodológico aberto pendente de tratamento imediato. A próxima sprint
 recomendada é a **Sprint 9.5 — Fechamento da Validação Operacional
 Local** (ver
 `docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`).
+
+## 7. Fechamento — Sprint 9.5
+
+Esta estabilização integrou o fechamento da Sprint 9 (ver
+`docs/FECHAMENTO_VALIDACAO_OPERACIONAL_LOCAL.md`).

@@ -20,7 +20,9 @@ estabilizar a experiência antes de IA/agentes.
   (ACHADO-9-2-002 não reproduzido/limitação de automação; ACHADO-9-2-003
   corrigido; resultado ESTABILIZAÇÃO APROVADA — ver
   `docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`).
-- Sprint 9.5 — Fechamento da Validação Operacional Local.
+- Sprint 9.5 — Fechamento da Validação Operacional Local — **CONCLUÍDA**
+  (Gate 1 aprovado com restrição arquitetural — ver
+  `docs/GATE_GOVERNANCA_OPERACIONAL_LOCAL_VALIDADA.md`).
 
 ## 3. Objetivo de cada sub-sprint
 
@@ -90,3 +92,13 @@ ESTABILIZAÇÃO APROVADA (ver
 `docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`).
 Próxima sprint recomendada: **Sprint 9.5 — Fechamento da Validação
 Operacional Local.**
+
+## 9. Atualização — Sprint 9.5 — Fechamento formal da Sprint 9
+
+A Sprint 9 — Validação Operacional Local e Estabilização da Experiência
+está **formalmente fechada.** Todas as sub-sprints (9.1 a 9.5) estão
+concluídas. O Gate 1 — Governança Operacional Local Validada foi
+aprovado com restrição arquitetural (ver
+`docs/GATE_GOVERNANCA_OPERACIONAL_LOCAL_VALIDADA.md`). Próxima
+macrofase recomendada: **Sprint 10 — Governança Avançada, Estados e
+Auditoria** (ver `docs/ROADMAP_POS_VALIDACAO_OPERACIONAL_LOCAL.md`).

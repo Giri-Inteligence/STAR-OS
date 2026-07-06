@@ -98,3 +98,9 @@ Nenhum efeito colateral foi observado no restante do fluxo.
 ## 7. Próxima sprint recomendada
 
 **Sprint 9.5 — Fechamento da Validação Operacional Local.**
+
+## 8. Fechamento — Sprint 9.5
+
+Este resultado de estabilização integrou o Gate 1 — Governança
+Operacional Local Validada (ver
+`docs/GATE_GOVERNANCA_OPERACIONAL_LOCAL_VALIDADA.md`).

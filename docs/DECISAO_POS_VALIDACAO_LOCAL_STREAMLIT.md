@@ -137,3 +137,10 @@ permanece aberto sobre a Governança Investigativa. Próxima sprint
 recomendada: **Sprint 9.5 — Fechamento da Validação Operacional
 Local.** IA e agentes continuam bloqueados até o fechamento completo
 da Sprint 9 e decisão arquitetural específica.
+
+## 10. Atualização — Sprint 9.5
+
+Esta decisão foi atualizada pelo Gate 1 — Governança Operacional Local
+Validada, aprovado com restrição arquitetural (ver
+`docs/GATE_GOVERNANCA_OPERACIONAL_LOCAL_VALIDADA.md`). IA e agentes
+continuam bloqueados até arquitetura própria (Sprint 10).

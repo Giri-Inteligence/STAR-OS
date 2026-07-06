@@ -156,3 +156,8 @@ O ACHADO-9-2-001 foi tratado na Sprint 9.3 por estabilização do
 revalidada em navegador real e aprovada — ver
 `docs/CORRECAO_IDENTIDADE_SESSAO_GOVERNANCA.md` e
 `docs/RESULTADO_REVALIDACAO_SESSAO_GOVERNANCA_STREAMLIT.md`.
+
+## 9. Fechamento — Sprint 9.5
+
+Estes resultados foram consolidados no fechamento da Sprint 9 (ver
+`docs/FECHAMENTO_VALIDACAO_OPERACIONAL_LOCAL.md`).

@@ -247,3 +247,8 @@ Nenhum outro bloqueio arquitetural foi identificado. Nenhum achado
 desta validação exige mudança de contrato, persistência, governança ou
 Motor STAR — a causa raiz do ACHADO-9-2-001 está isolada em `app.py`
 (orquestração), não nos módulos protegidos.
+
+## 5. Fechamento — Sprint 9.5
+
+O histórico de achados acima foi consolidado no fechamento da Sprint 9
+(ver `docs/FECHAMENTO_VALIDACAO_OPERACIONAL_LOCAL.md`).

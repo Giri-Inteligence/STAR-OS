@@ -116,3 +116,8 @@ contra um servidor Streamlit local. Resultado, achados e decisão em
 `docs/RESULTADO_VALIDACAO_LOCAL_STREAMLIT.md`,
 `docs/ACHADOS_VALIDACAO_LOCAL_STREAMLIT.md` e
 `docs/DECISAO_POS_VALIDACAO_LOCAL_STREAMLIT.md`.
+
+## 11. Fechamento — Sprint 9.5
+
+Este protocolo foi executado e consolidado no fechamento da Sprint 9
+(ver `docs/FECHAMENTO_VALIDACAO_OPERACIONAL_LOCAL.md`).

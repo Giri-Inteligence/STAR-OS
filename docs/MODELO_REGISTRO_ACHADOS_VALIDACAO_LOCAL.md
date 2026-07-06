@@ -83,3 +83,8 @@ Não devem ser tratados como achado:
 Este modelo foi aplicado na prática pela primeira vez na Sprint 9.2 —
 ver `docs/ACHADOS_VALIDACAO_LOCAL_STREAMLIT.md` (4 achados
 registrados: ACHADO-9-2-001 a ACHADO-9-2-004).
+
+## 9. Fechamento — Sprint 9.5
+
+O modelo de achados foi utilizado ao longo da Sprint 9 e consolidado no
+fechamento (ver `docs/FECHAMENTO_VALIDACAO_OPERACIONAL_LOCAL.md`).

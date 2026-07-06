@@ -159,3 +159,9 @@ A Sprint 9 não deve avançar para IA/agentes se houver:
 - Não integra ERP.
 - Não integra WhatsApp.
 - Não altera Motor STAR.
+
+## 10. Fechamento — Sprint 9.5
+
+A Sprint 9.5 fechou formalmente a Validação Operacional Local (ver
+`docs/FECHAMENTO_VALIDACAO_OPERACIONAL_LOCAL.md` e
+`docs/GATE_GOVERNANCA_OPERACIONAL_LOCAL_VALIDADA.md`).

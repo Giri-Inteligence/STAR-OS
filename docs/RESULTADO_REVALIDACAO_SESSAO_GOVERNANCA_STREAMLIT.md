@@ -102,3 +102,8 @@ ACHADO-9-2-002 não se reproduziu com clique real em navegador (via
 ferramenta de preview) e permanece sem alteração em `app.py`. O
 ACHADO-9-2-003 foi corrigido com um ajuste visual mínimo. Ver
 `docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`.
+
+## 8. Fechamento — Sprint 9.5
+
+Esta revalidação da sessão integrou o fechamento da Sprint 9 (ver
+`docs/FECHAMENTO_VALIDACAO_OPERACIONAL_LOCAL.md`).

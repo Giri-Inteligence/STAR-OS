@@ -146,3 +146,8 @@ do STAR OS — ver `docs/RESULTADO_REVALIDACAO_SESSAO_GOVERNANCA_STREAMLIT.md`.
 Se a revalidação desta sprint for aprovada, a próxima sprint
 recomendada é a **Sprint 9.4 — Estabilização da Experiência de
 Governança**.
+
+## 8. Fechamento — Sprint 9.5
+
+Esta correção integrou o fechamento da Validação Operacional Local
+(ver `docs/FECHAMENTO_VALIDACAO_OPERACIONAL_LOCAL.md`).

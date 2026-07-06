@@ -118,3 +118,7 @@ Observação reavaliado, legenda de configuração corrigida) — ver
 **Atualização:** a Sprint 9.1 iniciou a organização da regressão
 operacional local futura (ver
 `docs/PROTOCOLO_VALIDACAO_LOCAL_STREAMLIT.md`).
+
+**Atualização — Sprint 9.5:** a regressão da Consolidação Operacional
+passa a ser complementada pela regressão da Validação Operacional Local
+(ver `docs/REGRESSAO_VALIDACAO_OPERACIONAL_LOCAL.md`).

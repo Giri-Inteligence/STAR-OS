@@ -185,3 +185,10 @@ configuração ("Diretório/Arquivo existe") passou a ser recalculada e
 exibida também logo após o salvamento, e o campo Observação foi
 reavaliado sem necessidade de alteração de código (ver
 `docs/ESTABILIZACAO_EXPERIENCIA_GOVERNANCA.md`).
+
+## 19. Fechamento — Sprint 9.5
+
+A seção Governança Investigativa entra na próxima macrofase como fluxo
+validado localmente, com restrição arquitetural contra IA/agentes
+automáticos até arquitetura própria (ver
+`docs/GATE_GOVERNANCA_OPERACIONAL_LOCAL_VALIDADA.md`).
