@@ -1267,6 +1267,14 @@ if uploaded_file:
                             f"Governança salva: {resultado_lote_governanca['salvos']} payload(s) gravado(s)."
                         )
 
+                        resumo_config_governanca_pos_salvamento = gerar_resumo_configuracao_governanca()
+                        st.caption(
+                            "Após este salvamento — Diretório existe: "
+                            f"{'SIM' if resumo_config_governanca_pos_salvamento['diretorio_existe'] else 'NAO'}, "
+                            "Arquivo existe: "
+                            f"{'SIM' if resumo_config_governanca_pos_salvamento['arquivo_existe'] else 'NAO'}."
+                        )
+
                         for linha_erro_lote in resultado_lote_governanca["erros"]:
                             st.caption(f"Aviso técnico: {linha_erro_lote}")
 

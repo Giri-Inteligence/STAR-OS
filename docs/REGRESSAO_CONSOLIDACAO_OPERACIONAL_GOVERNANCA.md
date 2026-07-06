@@ -85,6 +85,12 @@ bloqueados até correção e reconfirmação.
 protegendo a estabilização de `sessao_id` que corrigiu o
 ACHADO-9-2-001 (ver `docs/CORRECAO_IDENTIDADE_SESSAO_GOVERNANCA.md`).
 
+**Atualização — Sprint 9.4:** a regressão passa a incluir
+`tests/manual/testar_estabilizacao_experiencia_governanca_streamlit.py`,
+protegendo a estabilização da experiência da Governança (campo
+Observação reavaliado, legenda de configuração corrigida) — ver
+`docs/ESTABILIZACAO_EXPERIENCIA_GOVERNANCA.md`.
+
 ## 6. Regressão de artefatos
 
 - Não deve haver `.db`, `.sqlite` ou `.sqlite3` dentro do repositório.

@@ -121,3 +121,19 @@ o avanço para a Sprint 9.4.
 
 Próxima sprint recomendada: **Sprint 9.4 — Estabilização da Experiência
 de Governança.**
+
+## 9. Atualização — Sprint 9.4
+
+A Sprint 9.4 reavaliou os dois achados remanescentes. O ACHADO-9-2-002
+não se confirmou como defeito real (limitação da automação anterior;
+revalidado com sucesso via clique real em navegador) e não exigiu
+alteração de código. O ACHADO-9-2-003 foi corrigido com um ajuste
+mínimo e puramente visual em `app.py` (recálculo da legenda de
+configuração após o salvamento). Resultado: **ESTABILIZAÇÃO APROVADA**
+(ver `docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`).
+
+**Decisão atualizada:** nenhum bug funcional ou risco metodológico
+permanece aberto sobre a Governança Investigativa. Próxima sprint
+recomendada: **Sprint 9.5 — Fechamento da Validação Operacional
+Local.** IA e agentes continuam bloqueados até o fechamento completo
+da Sprint 9 e decisão arquitetural específica.

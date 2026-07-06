@@ -143,6 +143,14 @@ execução da Sprint 9.2, descrita em
 - **Observações:** este achado não deve ser tratado como confirmado —
   registrado por transparência metodológica, não como acusação de
   defeito do STAR OS.
+- **Status após Sprint 9.4:** **NÃO REPRODUZIDO EM REVALIDAÇÃO LOCAL /
+  LIMITAÇÃO DA AUTOMAÇÃO SINTÉTICA.** Revalidado em navegador real com
+  clique nativo da ferramenta de preview (em vez do clique sintético
+  via JavaScript usado nas Sprints 9.2/9.3): o valor digitado foi salvo
+  corretamente no payload, em duas tentativas. `app.py` não foi
+  alterado por causa deste achado. Ver
+  `docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`.
+  Este registro original é preservado para histórico.
 
 ### ACHADO-9-2-003
 
@@ -183,6 +191,13 @@ execução da Sprint 9.2, descrita em
 - **Sprint sugerida para tratamento:** Sprint 9.4 — Estabilização da
   Experiência de Governança (opcional, baixa prioridade).
 - **Observações:** nenhuma.
+- **Status após Sprint 9.4:** **AJUSTE VISUAL TRATADO.** `app.py`
+  passou a exibir, logo após a mensagem de sucesso do salvamento, o
+  estado atualizado da legenda ("Após este salvamento — Diretório
+  existe: SIM, Arquivo existe: SIM."), usando a função já existente
+  `gerar_resumo_configuracao_governanca()`. Nenhum contrato,
+  repositório ou schema foi alterado. Ver
+  `docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`.
 
 ### ACHADO-9-2-004
 

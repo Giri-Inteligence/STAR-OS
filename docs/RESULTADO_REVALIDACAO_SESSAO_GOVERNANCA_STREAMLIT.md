@@ -94,3 +94,11 @@ configuração desatualizada no mesmo rerun) permanecem em aberto,
 classificados como RISCO METODOLÓGICO / MÉDIA e AJUSTE VISUAL / BAIXA
 respectivamente, e podem ser tratados — ou reconfirmados com interação
 humana real — na Sprint 9.4, sem bloquear o avanço desta correção.
+
+## 7. Atualização — Sprint 9.4
+
+A Sprint 9.4 reavaliou os dois achados remanescentes acima. O
+ACHADO-9-2-002 não se reproduziu com clique real em navegador (via
+ferramenta de preview) e permanece sem alteração em `app.py`. O
+ACHADO-9-2-003 foi corrigido com um ajuste visual mínimo. Ver
+`docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`.

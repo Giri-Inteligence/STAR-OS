@@ -177,3 +177,11 @@ estabilizada na Sprint 9.3 via `st.session_state` em `app.py`,
 corrigindo o ACHADO-9-2-001. Consulta e salvamento passam a usar o
 mesmo `sessao_id` durante a investigação do mesmo cliente (ver
 `docs/CORRECAO_IDENTIDADE_SESSAO_GOVERNANCA.md`).
+
+## 18. Continuidade — Sprint 9.4
+
+A experiência da seção foi estabilizada na Sprint 9.4: a legenda de
+configuração ("Diretório/Arquivo existe") passou a ser recalculada e
+exibida também logo após o salvamento, e o campo Observação foi
+reavaliado sem necessidade de alteração de código (ver
+`docs/ESTABILIZACAO_EXPERIENCIA_GOVERNANCA.md`).

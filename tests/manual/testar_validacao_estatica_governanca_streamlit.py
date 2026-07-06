@@ -177,6 +177,17 @@ def testar_ausencia_novos_elementos_no_bloco_governanca(bloco_governanca):
     print("9.4. Ausencia de novos botoes, graficos, metricas ou downloads no bloco de governanca (Sprint 9.3): OK")
 
 
+def testar_legenda_pos_salvamento_presente(bloco_governanca):
+    assert "gerar_resumo_configuracao_governanca()" in bloco_governanca, (
+        "recalculo da legenda apos salvamento nao encontrado (Sprint 9.4)"
+    )
+    assert "Após este salvamento" in bloco_governanca, (
+        "mensagem de estado atualizado apos salvamento nao encontrada (Sprint 9.4)"
+    )
+
+    print("9.5. Legenda Diretório/Arquivo existe é recalculada e exibida após o salvamento (Sprint 9.4): OK")
+
+
 def testar_arquivo_nao_alterado():
     tamanho_arquivo = os.path.getsize(CAMINHO_APP)
     assert tamanho_arquivo > 0
@@ -201,6 +212,7 @@ if __name__ == "__main__":
     testar_ausencia_metric_no_bloco_governanca(bloco_governanca_extraido)
     testar_identidade_sessao_estabilizada(codigo_fonte_app)
     testar_ausencia_novos_elementos_no_bloco_governanca(bloco_governanca_extraido)
+    testar_legenda_pos_salvamento_presente(bloco_governanca_extraido)
     testar_arquivo_nao_alterado()
 
     print("VALIDACAO_ESTATICA_GOVERNANCA_STREAMLIT_OK")

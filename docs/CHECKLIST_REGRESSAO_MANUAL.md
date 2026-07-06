@@ -969,3 +969,33 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Teste de identidade de sessão passa.
 - [ ] Teste estático da Governança passa.
 - [ ] Regressão geral passa.
+
+## 41. Estabilização da Experiência de Governança
+
+- [ ] ACHADO-9-2-002 reavaliado.
+- [ ] ACHADO-9-2-003 reavaliado.
+- [ ] Campo Observação validado.
+- [ ] Legenda Diretório/Arquivo existe avaliada.
+- [ ] Salvamento continua funcionando.
+- [ ] Consulta continua funcionando.
+- [ ] `CICLO_LOOP` continua aparecendo.
+- [ ] Leitura operacional continua aparecendo.
+- [ ] Identidade de sessão continua estável.
+- [ ] Nenhum botão novo criado.
+- [ ] Nenhuma tela nova criada.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhum responsável criado.
+- [ ] Nenhum prazo criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum agente acionado.
+- [ ] Motor STAR preservado.
+- [ ] `star_persistence` preservado.
+- [ ] `star_governance` preservado.
+- [ ] PDF preservado.
+- [ ] Excel preservado.
+- [ ] Teste de estabilização passa.
+- [ ] Teste de identidade de sessão passa.
+- [ ] Teste estático da Governança passa.
+- [ ] Regressão geral passa.

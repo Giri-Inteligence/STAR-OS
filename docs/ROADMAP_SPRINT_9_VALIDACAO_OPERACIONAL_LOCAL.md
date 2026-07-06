@@ -16,7 +16,10 @@ estabilizar a experiência antes de IA/agentes.
   Investigação para Consulta de Governança — **CONCLUÍDA** (correção
   aplicada e revalidada em navegador real, resultado CORREÇÃO APROVADA
   — ver `docs/RESULTADO_REVALIDACAO_SESSAO_GOVERNANCA_STREAMLIT.md`).
-- Sprint 9.4 — Estabilização da Experiência de Governança.
+- Sprint 9.4 — Estabilização da Experiência de Governança — **CONCLUÍDA**
+  (ACHADO-9-2-002 não reproduzido/limitação de automação; ACHADO-9-2-003
+  corrigido; resultado ESTABILIZAÇÃO APROVADA — ver
+  `docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`).
 - Sprint 9.5 — Fechamento da Validação Operacional Local.
 
 ## 3. Objetivo de cada sub-sprint
@@ -76,3 +79,14 @@ resultado CORREÇÃO APROVADA (ver
 `docs/RESULTADO_REVALIDACAO_SESSAO_GOVERNANCA_STREAMLIT.md`). Próxima
 sprint recomendada: **Sprint 9.4 — Estabilização da Experiência de
 Governança.**
+
+## 8. Atualização — Sprint 9.4
+
+O ACHADO-9-2-002 foi reavaliado e classificado como não reproduzido em
+revalidação local (limitação da automação sintética anterior); o
+ACHADO-9-2-003 foi corrigido com ajuste visual mínimo. Resultado:
+ESTABILIZAÇÃO APROVADA (ver
+`docs/ESTABILIZACAO_EXPERIENCIA_GOVERNANCA.md` e
+`docs/RESULTADO_ESTABILIZACAO_EXPERIENCIA_GOVERNANCA_STREAMLIT.md`).
+Próxima sprint recomendada: **Sprint 9.5 — Fechamento da Validação
+Operacional Local.**
