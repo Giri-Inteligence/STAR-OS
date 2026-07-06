@@ -53,3 +53,7 @@ Qualquer evolução futura para IA ou agentes só deve ocorrer se:
 - não houver ambiguidade entre recomendação e execução;
 - não houver ambiguidade entre leitura e tarefa;
 - não houver ambiguidade entre governança e CRM.
+
+**Atualização:** a Sprint 9.1 iniciou a arquitetura da Validação
+Operacional Local e Estabilização da Experiência (ver
+`docs/ARQUITETURA_VALIDACAO_OPERACIONAL_LOCAL.md`).

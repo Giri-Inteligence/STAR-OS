@@ -94,3 +94,7 @@ python tests/manual/testar_qualidade_linhas.py
 - Decisão operacional exige humano.
 - IA futura não deve substituir governança determinística.
 - Agente futuro não deve decidir sozinho.
+
+**Atualização:** a Sprint 9.1 iniciou a organização da regressão
+operacional local futura (ver
+`docs/PROTOCOLO_VALIDACAO_LOCAL_STREAMLIT.md`).

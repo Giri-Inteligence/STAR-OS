@@ -149,3 +149,8 @@ consulta de governança salva (ver
 A seção Governança Investigativa entra na próxima fase (Sprint 9) como
 objeto de validação local real (ver
 `docs/FECHAMENTO_CONSOLIDACAO_OPERACIONAL_GOVERNANCA.md`).
+
+## 15. Continuidade — Sprint 9.1
+
+A seção Governança Investigativa será objeto de validação local real na
+Sprint 9 (ver `docs/PROTOCOLO_VALIDACAO_LOCAL_STREAMLIT.md`).

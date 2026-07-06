@@ -141,3 +141,7 @@ O STAR OS só deve avançar para a próxima fase se:
 A Sprint 9 deve priorizar execução local real, validação humana da
 experiência, registro de achados e ajustes controlados de UX antes de
 qualquer IA, agente ou integração externa.
+
+**Atualização:** a Consolidação Operacional passa a servir como base
+para a Validação Operacional Local (ver
+`docs/ARQUITETURA_VALIDACAO_OPERACIONAL_LOCAL.md`).

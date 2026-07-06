@@ -877,3 +877,39 @@ Use este checklist antes de qualquer evolução futura sobre o MVP Excel-first.
 - [ ] Nenhum token consumido.
 - [ ] Nenhum agente acionado.
 - [ ] Testes manuais passam.
+
+## 38. Arquitetura da Validação Operacional Local
+
+- [ ] Arquitetura da Validação Operacional Local criada.
+- [ ] Protocolo de Validação Local no Streamlit criado.
+- [ ] Modelo de Registro de Achados criado.
+- [ ] Decisões Arquiteturais da Validação Operacional Local criadas.
+- [ ] Roadmap da Sprint 9 criado.
+- [ ] Critérios de achado definidos.
+- [ ] Critérios de aprovação definidos.
+- [ ] Critérios de reprovação definidos.
+- [ ] Bloqueio de IA/agentes antes de validação local registrado.
+- [ ] Nenhum código funcional alterado.
+- [ ] Nenhum `app.py` alterado.
+- [ ] Nenhum arquivo `star_core` alterado.
+- [ ] Nenhum arquivo `star_ingestion` alterado.
+- [ ] Nenhum arquivo `star_intelligence` alterado.
+- [ ] Nenhum arquivo `star_persistence` alterado.
+- [ ] Nenhum arquivo `star_governance` alterado.
+- [ ] Nenhum teste alterado.
+- [ ] Nenhuma regra STAR alterada.
+- [ ] Nenhum banco criado.
+- [ ] Nenhuma tabela criada.
+- [ ] Nenhum schema SQLite alterado.
+- [ ] Nenhum JSON funcional criado.
+- [ ] Nenhuma tela criada.
+- [ ] Nenhum botão criado.
+- [ ] Nenhum gráfico criado.
+- [ ] Nenhuma tarefa criada.
+- [ ] Nenhum plano de ação criado.
+- [ ] Nenhuma agenda criada.
+- [ ] Nenhum calendário criado.
+- [ ] Nenhuma IA chamada.
+- [ ] Nenhum token consumido.
+- [ ] Nenhum agente acionado.
+- [ ] Testes manuais continuam passando.
