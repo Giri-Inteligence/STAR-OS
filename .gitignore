@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+desktop.ini
+.DS_Store
+.streamlit/secrets.toml
+.env
+venv/
+.venv/
+
+.star_os_data/
+*.db
+*.sqlite
+*.sqlite3

@@ -1,10 +1,120 @@
+import os
 import streamlit as st
 import pandas as pd
 import html as htmllib
+from star_core.calculos import calcular_erosao_star, engine_star
+from star_core.curva import curva_label_fmt, curva_short, calcular_curva_abc_por_receita, normalizar_curva_existente
+from star_core.recencia import calcular_meses_sem_compra
+from star_ingestion.mapeamento import gerar_sugestoes_mapeamento
+from star_ingestion.abas import listar_abas_excel, escolher_aba_padrao, ler_aba_excel, consolidar_abas_excel, eh_aba_consolidada
+from star_ingestion.saneamento import remover_linhas_colunas_vazias, remover_cabecalhos_repetidos, remover_linhas_total_subtotal
+from star_ingestion.validacao import validar_base_minima
+from star_ingestion.relatorio import (
+    criar_relatorio_ingestao,
+    registrar_estado_inicial,
+    registrar_estado_final,
+    registrar_mapeamento,
+    adicionar_saneamento,
+    adicionar_avisos,
+    adicionar_erros,
+    marcar_processado,
+    formatar_relatorio_texto,
+)
+from star_ingestion.diagnostico_mapeamento import diagnosticar_mapeamento
+from star_ingestion.normalizacao_meses import detectar_colunas_mensais_avancado, ordenar_colunas_mensais
+from star_ingestion.normalizacao_valores import normalizar_colunas_monetarias
+from star_ingestion.qualidade_linhas import classificar_linhas_base
+from star_intelligence.priorizacao import (
+    gerar_fila_prioridade,
+    resumir_fila_prioridade,
+    formatar_resumo_fila_prioridade,
+)
+from star_intelligence.raio_x_cliente import gerar_raio_x_cliente, formatar_raio_x_texto
+from star_intelligence.hipoteses import gerar_hipoteses_cliente, formatar_hipoteses_texto
+from star_intelligence.recomendacoes import (
+    gerar_recomendacoes_por_papel,
+    gerar_recomendacoes_multiplos_papeis,
+    formatar_recomendacoes_texto,
+)
+from star_intelligence.investigacao import (
+    criar_pacote_investigacao,
+    normalizar_status_investigacao,
+    resumir_investigacao,
+    gerar_leitura_investigacao,
+    formatar_resumo_investigacao,
+)
+from star_intelligence.pacote_investigativo import (
+    gerar_pacote_investigativo_cliente,
+    formatar_pacote_investigativo_texto,
+    gerar_tabela_evidencias,
+)
+from star_intelligence.conclusao_investigativa import (
+    gerar_conclusao_investigativa,
+    formatar_conclusao_investigativa_texto,
+    gerar_tabela_conclusao,
+)
+from star_persistence.contrato_historico import (
+    criar_payload_historico_investigativo,
+    validar_payload_historico,
+)
+from star_persistence.repositorio_local import (
+    inicializar_schema,
+    salvar_payload_historico,
+    carregar_payload_por_sessao,
+    listar_sessoes_cliente,
+    contar_registros_repositorio,
+    formatar_resumo_repositorio,
+)
+from star_persistence.configuracao import (
+    obter_caminho_db_historico,
+    preparar_diretorio_db,
+    validar_caminho_db_historico,
+    formatar_validacao_caminho_db,
+)
+from star_governance.acompanhamento import (
+    criar_registro_acompanhamento,
+    formatar_registro_acompanhamento_texto,
+)
+from star_governance.status_acompanhamento import (
+    criar_snapshot_status_acompanhamento,
+    formatar_snapshot_status_texto,
+)
+from star_governance.loop_semanal import (
+    criar_item_loop_governanca,
+    criar_ciclo_loop_semanal,
+    formatar_item_loop_texto,
+    formatar_resumo_loop_texto,
+)
+from star_persistence.contrato_governanca import (
+    criar_payload_registro_acompanhamento_persistivel,
+    criar_payload_snapshot_status_persistivel,
+    criar_payload_item_loop_persistivel,
+    criar_payload_ciclo_loop_persistivel,
+    criar_payload_governanca_integrada,
+    validar_payloads_governanca,
+    formatar_validacao_payload_governanca_texto,
+    formatar_payload_governanca_resumo_texto,
+)
+from star_persistence.repositorio_governanca import (
+    salvar_lote_payloads_governanca,
+    listar_payloads_governanca,
+    contar_registros_repositorio_governanca,
+    formatar_resumo_repositorio_governanca,
+)
+from star_persistence.configuracao_governanca import (
+    obter_caminho_banco_governanca,
+    gerar_resumo_configuracao_governanca,
+    formatar_configuracao_governanca_texto,
+)
+from star_governance.leitura_operacional import (
+    gerar_leitura_operacional_governanca,
+    formatar_leitura_operacional_governanca_texto,
+    formatar_item_leitura_operacional_texto,
+)
 from io import BytesIO
 import xlsxwriter
 import plotly.graph_objects as go
-from datetime import date
+from datetime import date, datetime, timezone
 
 try:
     from reportlab.lib.pagesizes import A4
@@ -116,24 +226,6 @@ STATUS_CSS     = {
 }
 
 
-def calcular_erosao_star(lp, cp):
-    try: lp_v, cp_v = float(lp), float(cp)
-    except: return 1
-    if lp_v <= 0: return 1
-    if cp_v <= 0: return 10
-    diff = ((lp_v - cp_v) / lp_v) * 100
-    if diff <= 0:  return 1
-    if diff <= 5:  return 1
-    if diff <= 10: return 2
-    if diff <= 15: return 3
-    if diff <= 20: return 4
-    if diff <= 30: return 5
-    if diff <= 40: return 6
-    if diff <= 50: return 7
-    if diff <= 60: return 8
-    if diff <= 70: return 9
-    return 10
-
 
 def erosao_badge_html(n):
     if n >= 8:   bg, fg = '#C00000', '#FFFFFF'
@@ -143,7 +235,6 @@ def erosao_badge_html(n):
     return (f'<span style="background:{bg};color:{fg};font-weight:800;border-radius:6px;'
             f'padding:2px 8px;font-size:0.72rem;white-space:nowrap;display:inline-block;">'
             f'STAR {n}</span>')
-
 
 def fmt_br(v):
     try: return f"{int(v):,}".replace(",", ".")
@@ -155,33 +246,6 @@ def var_html(pct):
     s = "+" if pct >= 0 else ""
     return f'<span style="color:{c};font-weight:700">{s}{pct:.1f}%</span>'
 
-def curva_label_fmt(sel):
-    if not sel: return "NENHUMA"
-    if set(sel) == {'A','B','C'}: return "TODA A CARTEIRA"
-    if len(sel) == 1: return f"CURVA {sel[0]}"
-    return "CURVAS " + " + ".join(sorted(sel))
-
-def curva_short(sel):
-    if not sel: return ""
-    if set(sel) == {'A','B','C'}: return "TOTAL"
-    return "+".join(sorted(sel))
-
-def engine_star(lp, cp):
-    try: lp_v, cp_v = float(lp), float(cp)
-    except: lp_v, cp_v = 0.0, 0.0
-    txt_ina  = "OBJETIVO: Diagnostico de causa\nPRE-CONTATO: Revisar ultimo pedido.\nCONTATO: Contato de diagnostico sem pressao.\nORIENTACAO: Nao ofertar produto na primeira interacao."
-    txt_q_ac = "OBJETIVO: Recuperacao emergencial\nPRE-CONTATO: Revisar historico completo.\nCONTATO: Priorizar visita ou ligacao direta.\nORIENTACAO: Objetivo e entender, nao vender."
-    txt_q    = "OBJETIVO: Estabilizacao\nPRE-CONTATO: Revisar historico de mix.\nCONTATO: Diagnosticar contexto atual.\nORIENTACAO: Registrar causa e propor recomposicao de mix."
-    txt_est  = "OBJETIVO: Blindagem e crescimento incremental\nPRE-CONTATO: Revisar mix. Mapear categorias nao compradas.\nCONTATO: Manter frequencia. Explorar expansao.\nORIENTACAO: Cliente estavel nao e cliente seguro."
-    txt_cre  = "OBJETIVO: Consolidacao\nPRE-CONTATO: Identificar driver do crescimento.\nCONTATO: Reforcar relacionamento.\nORIENTACAO: Proteger o cliente."
-    txt_ca   = "OBJETIVO: Consolidacao e protecao\nPRE-CONTATO: Identificar produtos que puxaram crescimento.\nCONTATO: Reforcar presenca.\nORIENTACAO: Crescimento acentuado atrai concorrencia."
-    if cp_v <= 0:         return "INATIVO", 0, txt_ina
-    if lp_v <= 0:         return "ESTAVEL", int(cp_v*1.05), txt_est
-    if cp_v < lp_v*0.90: return "QUEDA ACENTUADA", int(lp_v), txt_q_ac
-    if cp_v < lp_v*0.98: return "QUEDA", int(lp_v), txt_q
-    if cp_v > lp_v*1.10: return "CRESCIMENTO ACENTUADO", int(cp_v*1.05), txt_ca
-    if cp_v > lp_v*1.02: return "CRESCIMENTO", int(cp_v*1.05), txt_cre
-    return "ESTAVEL", int(lp_v*1.05), txt_est
 
 def get_tab_names(vendors):
     fm = {}
@@ -241,7 +305,6 @@ def gerar_excel(df_raw,fo,cc,vc,mc):
             tab = tn[vend]; dv[fo].to_excel(w,index=False,sheet_name=tab)
             write_sheet(w.sheets[tab],dv,fo,cc,vc,mc,fmts)
     return buf.getvalue()
-
 
 def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
     if not REPORTLAB_OK: return None
@@ -470,7 +533,6 @@ def gerar_pdf(df_sel, df_full, col_config, filters, metrics):
         leftMargin=MARGIN,rightMargin=MARGIN).build(story,onFirstPage=footer,onLaterPages=footer)
     return buf.getvalue()
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="giri-header">
@@ -481,31 +543,288 @@ st.markdown("""
 
 uploaded_file = st.file_uploader("Faca upload da base (XLSX ou CSV)", type=['xlsx','csv'])
 
+
+def detectar_header(file, sheet_name=0):
+    kw = ("JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+    for h in range(6):
+        try:
+            file.seek(0)
+            dt = pd.read_excel(file, sheet_name=sheet_name, header=h, nrows=3)
+
+            if any(any(m in str(c).upper() for m in kw) for c in dt.columns):
+                return h
+
+        except:
+            pass
+
+    return 0
+
+
 if uploaded_file:
-
-    def detectar_header(file):
-        kw = ("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")
-        for h in range(6):
-            try:
-                dt = pd.read_excel(file,header=h,nrows=3)
-                if any(any(m in str(c).upper() for m in kw) for c in dt.columns): return h
-            except: pass
-        return 0
-
     fn = uploaded_file.name
-    if fn.endswith('xlsx'):
-        hr = detectar_header(uploaded_file); uploaded_file.seek(0)
-        df_raw = pd.read_excel(uploaded_file,header=hr)
+
+    if fn.lower().endswith('xlsx'):
+        abas = listar_abas_excel(uploaded_file)
+        aba_padrao = escolher_aba_padrao(abas)
+
+        st.markdown('<div class="section-title">ORGANIZACAO DA PLANILHA</div>', unsafe_allow_html=True)
+        st.caption("Informe como as abas do arquivo devem ser interpretadas antes do mapeamento da base.")
+
+        if len(abas) > 1:
+            tipo_organizacao_abas = st.selectbox(
+                "Como esta planilha esta organizada?",
+                [
+                    "Usar uma unica aba",
+                    "Abas por vendedor",
+                    "Abas por segmento",
+                    "Abas por regiao",
+                    "Abas por cidade",
+                    "Abas por filial"
+                ],
+                index=0
+            )
+
+            if tipo_organizacao_abas == "Usar uma unica aba":
+                aba_index = abas.index(aba_padrao) if aba_padrao in abas else 0
+
+                aba_escolhida = st.selectbox(
+                    "Aba que deve ser analisada",
+                    abas,
+                    index=aba_index
+                )
+
+                df_raw = ler_aba_excel(uploaded_file, aba_escolhida, detectar_header)
+
+            else:
+                abas_selecionadas = st.multiselect(
+                    "Abas que devem entrar na analise",
+                    options=abas,
+                    default=abas
+                )
+
+                if not abas_selecionadas:
+                    st.error("Selecione pelo menos uma aba para continuar.")
+                    st.stop()
+
+                abas_consolidadas_sel = [a for a in abas_selecionadas if eh_aba_consolidada(a)]
+
+                if abas_consolidadas_sel and len(abas_selecionadas) > len(abas_consolidadas_sel):
+                    st.error(
+                        "Nao e possivel combinar uma aba Consolidado com abas individuais "
+                        "(ex.: Joao, Maria, Pedro) nesta consolidacao, pois isso duplicaria os "
+                        "dados. Selecione apenas a aba Consolidado OU apenas as abas individuais."
+                    )
+                    st.stop()
+
+                df_raw = consolidar_abas_excel(
+                    uploaded_file,
+                    abas_selecionadas,
+                    tipo_organizacao_abas,
+                    detectar_header
+                )
+
+        else:
+            df_raw = ler_aba_excel(uploaded_file, abas[0], detectar_header)
+
     else:
-        df_raw = pd.read_csv(uploaded_file,sep=None,engine='python')
+        df_raw = pd.read_csv(uploaded_file, sep=None, engine='python')
+
+    relatorio_ingestao = criar_relatorio_ingestao()
+    registrar_estado_inicial(relatorio_ingestao, df_raw)
 
     df_raw.columns = [str(c).strip().upper() for c in df_raw.columns]
+
+    df_raw, relatorio_vazios = remover_linhas_colunas_vazias(df_raw)
+    df_raw, relatorio_cabecalhos = remover_cabecalhos_repetidos(df_raw)
+    mensagens_saneamento = relatorio_vazios + relatorio_cabecalhos
+    adicionar_saneamento(relatorio_ingestao, mensagens_saneamento)
+
     cols = df_raw.columns.tolist()
 
-    meses_col = [c for c in cols if any(m in c for m in ("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"))]
-    clie_col  = next((c for c in cols if any(x in c for x in ("CLIENTE","NOME","RAZAO"))), cols[0])
-    vend_col  = next((c for c in cols if any(x in c for x in ("VENDEDOR","REP"))), cols[1] if len(cols)>1 else cols[0])
-    cida_col  = next((c for c in cols if any(x in c for x in ("CIDADE","MUNICIPIO","LOCALIDADE","REGIAO"))), None)
+    sugestoes = gerar_sugestoes_mapeamento(df_raw)
+
+    st.markdown('<div class="section-title">MAPEAMENTO DA BASE</div>', unsafe_allow_html=True)
+    st.caption("Confirme como o STAR OS deve interpretar a planilha enviada antes de processar a Matriz STAR.")
+
+    tipo_base = st.selectbox(
+        "Esta planilha representa:",
+        [
+            "Carteira completa da empresa",
+            "Carteira de um vendedor especifico",
+            "Carteira de uma filial ou regiao",
+            "Base parcial ou amostra",
+            "Nao sei"
+        ],
+        index=0
+    )
+
+    opcoes_cliente = sugestoes.get("opcoes_cliente", cols)
+    opcoes_vendedor = sugestoes.get("opcoes_vendedor", ["Nao usar"] + cols)
+    opcoes_cidade = sugestoes.get("opcoes_cidade", ["Nao usar"] + cols)
+
+    if not opcoes_cliente:
+        st.error("Nao foi possivel identificar colunas candidatas para cliente. Ajuste a planilha conforme o modelo padrao.")
+        st.stop()
+
+    cliente_sugerido = sugestoes.get("cliente")
+    cliente_index = opcoes_cliente.index(cliente_sugerido) if cliente_sugerido in opcoes_cliente else 0
+
+    clie_col = st.selectbox(
+        "Coluna de cliente",
+        opcoes_cliente,
+        index=cliente_index
+    )
+
+    vendedor_sugerido = sugestoes.get("vendedor")
+    vendedor_index = opcoes_vendedor.index(vendedor_sugerido) if vendedor_sugerido in opcoes_vendedor else 0
+
+    vend_col_escolhida = st.selectbox(
+        "Coluna de vendedor",
+        opcoes_vendedor,
+        index=vendedor_index
+    )
+
+    if str(vend_col_escolhida).strip().upper() in ("NAO USAR", "NÃO USAR") :
+        vendedor_manual = st.text_input(
+            "Nome do vendedor desta base",
+            value=""
+        )
+
+        if not vendedor_manual.strip():
+            st.warning("Informe o nome do vendedor desta base ou selecione uma coluna de vendedor.")
+            st.stop()
+
+        df_raw["VENDEDOR_STAR"] = vendedor_manual.strip()
+        vend_col = "VENDEDOR_STAR"
+    else:
+        vend_col = vend_col_escolhida
+
+    cidade_sugerida = sugestoes.get("cidade")
+    cidade_index = opcoes_cidade.index(cidade_sugerida) if cidade_sugerida in opcoes_cidade else 0
+
+    cida_col_escolhida = st.selectbox(
+        "Coluna de cidade",
+        opcoes_cidade,
+        index=cidade_index
+    )
+
+    cida_col = None if str(cida_col_escolhida).strip().upper() in ("NAO USAR", "NÃO USAR") else cida_col_escolhida
+
+    meses_sugeridos = sugestoes.get("meses", [])
+    opcoes_meses = meses_sugeridos if meses_sugeridos else cols
+
+    meses_col = st.multiselect(
+        "Colunas de faturamento mensal",
+        options=opcoes_meses,
+        default=meses_sugeridos
+    )
+
+    if not meses_col:
+        st.error("Nenhuma coluna de faturamento mensal foi selecionada. Selecione pelo menos uma coluna de mes para continuar.")
+        st.stop()
+
+    normalizacao_meses = detectar_colunas_mensais_avancado(df_raw)
+
+    if len(normalizacao_meses["meses_col"]) > len(meses_col):
+        meses_col = normalizacao_meses["meses_col"]
+    else:
+        meses_col = ordenar_colunas_mensais(meses_col, normalizacao_meses["metadados"])
+
+    if normalizacao_meses["avisos"]:
+        adicionar_avisos(relatorio_ingestao, normalizacao_meses["avisos"])
+
+    normalizacao_valores = normalizar_colunas_monetarias(df_raw, meses_col)
+    df_raw = normalizacao_valores["df"]
+
+    if normalizacao_valores["mensagens"]:
+        adicionar_saneamento(relatorio_ingestao, normalizacao_valores["mensagens"])
+
+    if normalizacao_valores["avisos"]:
+        adicionar_avisos(relatorio_ingestao, normalizacao_valores["avisos"])
+
+    qualidade_linhas = classificar_linhas_base(df_raw, clie_col, vend_col, meses_col)
+    df_raw = qualidade_linhas["df"]
+
+    if qualidade_linhas["mensagens"]:
+        adicionar_saneamento(relatorio_ingestao, qualidade_linhas["mensagens"])
+
+    if qualidade_linhas["avisos"]:
+        adicionar_avisos(relatorio_ingestao, qualidade_linhas["avisos"])
+
+    registrar_mapeamento(
+        relatorio_ingestao,
+        cliente_col=clie_col,
+        vendedor_col=vend_col,
+        cidade_col=cida_col,
+        meses_col=meses_col,
+    )
+
+    diagnostico_mapeamento = diagnosticar_mapeamento(
+        df_raw,
+        cliente_col=clie_col,
+        vendedor_col=vend_col,
+        cidade_col=cida_col,
+        meses_col=meses_col,
+    )
+
+    if diagnostico_mapeamento["avisos"]:
+        adicionar_avisos(relatorio_ingestao, diagnostico_mapeamento["avisos"])
+
+    if not diagnostico_mapeamento["ok"]:
+        adicionar_erros(relatorio_ingestao, diagnostico_mapeamento["erros"])
+
+        for erro in diagnostico_mapeamento["erros"]:
+            st.error(erro)
+
+        for sugestao in diagnostico_mapeamento["sugestoes"]:
+            st.warning(sugestao)
+
+        with st.expander("Relatorio de ingestao", expanded=False):
+            for linha in formatar_relatorio_texto(relatorio_ingestao):
+                st.caption(linha)
+
+        st.stop()
+
+    campos_estruturais = [clie_col, vend_col]
+    if cida_col:
+        campos_estruturais.append(cida_col)
+
+    if len(campos_estruturais) != len(set(campos_estruturais)):
+        st.error("Mapeamento invalido: cliente, vendedor e cidade nao podem usar a mesma coluna.")
+        st.stop()
+
+    if clie_col in meses_col or vend_col in meses_col or (cida_col and cida_col in meses_col):
+        st.error("Mapeamento invalido: cliente, vendedor e cidade nao podem ser colunas de faturamento mensal.")
+        st.stop()
+
+    base_valida, erros_base = validar_base_minima(df_raw, clie_col, vend_col, meses_col)
+
+    if not base_valida:
+        adicionar_erros(relatorio_ingestao, erros_base)
+
+        for erro in erros_base:
+            st.error(erro)
+
+        with st.expander("Relatorio de ingestao", expanded=False):
+            for linha in formatar_relatorio_texto(relatorio_ingestao):
+                st.caption(linha)
+
+        st.stop()
+
+    df_raw, relatorio_total_subtotal = remover_linhas_total_subtotal(df_raw, clie_col)
+    mensagens_saneamento = mensagens_saneamento + relatorio_total_subtotal
+    adicionar_saneamento(relatorio_ingestao, relatorio_total_subtotal)
+
+    if mensagens_saneamento:
+        st.info(" ".join(mensagens_saneamento))
+
+    registrar_estado_final(relatorio_ingestao, df_raw)
+    marcar_processado(relatorio_ingestao)
+
+    with st.expander("Relatorio de ingestao", expanded=False):
+        for linha in formatar_relatorio_texto(relatorio_ingestao):
+            st.caption(linha)
 
     for c in meses_col:
         df_raw[c] = pd.to_numeric(df_raw[c],errors='coerce').fillna(0)
@@ -518,42 +837,513 @@ if uploaded_file:
     df_raw['MEDIA CP'] = df_raw[meses_col[-3:]].mean(axis=1).astype(int)
 
     import re
+
     curva_detectada = False
+
     if 'CURVA' in cols:
-        vals = df_raw['CURVA'].astype(str).str.upper().str.strip()
-        if vals.isin(['A','B','C']).sum()>0:
-            df_raw['CURVA'] = vals.where(vals.isin(['A','B','C']),other=pd.NA).ffill().fillna('C')
+        vals = normalizar_curva_existente(df_raw['CURVA'])
+
+        if vals.isin(['A', 'B', 'C']).sum() > 0:
+            df_raw['CURVA'] = vals
             curva_detectada = True
+
     if not curva_detectada:
         for col in cols:
             col_vals = df_raw[col].astype(str).str.upper().str.strip()
+
             if col_vals.str.match(r'^CURVA\s*[ABC]$').any():
-                cs2 = col_vals.where(col_vals.str.match(r'^CURVA\s*[ABC]$'),other=pd.NA).ffill()
-                df_raw['CURVA'] = cs2.str.replace(r'^CURVA\s*','',regex=True).str.strip()
-                df_raw['CURVA'] = df_raw['CURVA'].where(df_raw['CURVA'].isin(['A','B','C']),'C')
-                curva_detectada = True; break
+                cs2 = col_vals.where(
+                    col_vals.str.match(r'^CURVA\s*[ABC]$'),
+                    other=pd.NA
+                ).ffill()
+
+                df_raw['CURVA'] = normalizar_curva_existente(
+                    cs2.str.replace(r'^CURVA\s*', '', regex=True).str.strip()
+                )
+
+                curva_detectada = True
+                break
+
     if not curva_detectada:
-        df_raw = df_raw.sort_values('TOTAL LP',ascending=False).reset_index(drop=True)
-        cp2 = df_raw['TOTAL LP'].cumsum()/df_raw['TOTAL LP'].sum()
-        df_raw['CURVA'] = cp2.apply(lambda x: 'A' if x<=0.80 else ('B' if x<=0.95 else 'C'))
+        df_raw = calcular_curva_abc_por_receita(df_raw, 'TOTAL LP')
     else:
-        df_raw = df_raw.sort_values('TOTAL LP',ascending=False).reset_index(drop=True)
+        df_raw = df_raw.sort_values('TOTAL LP', ascending=False).reset_index(drop=True)
 
-    res = df_raw.apply(lambda r: engine_star(r['MEDIA LP'],r['MEDIA CP']),axis=1)
-    df_raw['STATUS'],df_raw['META'],df_raw['ACAO'] = zip(*res)
+    res = df_raw.apply(lambda r: engine_star(r['MEDIA LP'], r['MEDIA CP']), axis=1)
+    df_raw['STATUS'], df_raw['META'], df_raw['ACAO'] = zip(*res)
 
-    def calc_rec(row):
-        for i in range(len(meses_col)-1,-1,-1):
-            if row[meses_col[i]]>0: return len(meses_col)-1-i
-        return len(meses_col)
-    df_raw['MESES_SEM_COMPRA'] = df_raw.apply(calc_rec,axis=1)
+    df_raw['MESES_SEM_COMPRA'] = df_raw.apply(
+        lambda row: calcular_meses_sem_compra(row, meses_col),
+        axis=1
+    )
 
     # CALCULO EROSAO STAR
     df_raw['EROSAO STAR'] = df_raw.apply(
-        lambda r: calcular_erosao_star(r['MEDIA LP'], r['MEDIA CP']), axis=1)
+        lambda r: calcular_erosao_star(r['MEDIA LP'], r['MEDIA CP']),
+        axis=1
+    )
+
+    with st.expander("Fila de Prioridade da Carteira", expanded=False):
+        df_fila_prioridade = gerar_fila_prioridade(df_raw)
+        resumo_prioridade = resumir_fila_prioridade(df_fila_prioridade)
+
+        for linha in formatar_resumo_fila_prioridade(resumo_prioridade):
+            st.caption(linha)
+
+        colunas_fila = [clie_col, vend_col]
+        if cida_col:
+            colunas_fila.append(cida_col)
+        colunas_fila += [
+            'CURVA', 'STATUS', 'MESES_SEM_COMPRA', 'EROSAO STAR',
+            'PONTUACAO_PRIORIDADE', 'NIVEL_PRIORIDADE', 'TIPO_PRIORIDADE', 'MOTIVOS_PRIORIDADE',
+        ]
+        colunas_fila = [c for c in colunas_fila if c in df_fila_prioridade.columns]
+
+        st.dataframe(df_fila_prioridade[colunas_fila], hide_index=True)
+
+    with st.expander("Raio-X Operacional do Cliente", expanded=False):
+        opcoes_raio_x = df_fila_prioridade[clie_col].astype(str).tolist()
+
+        if opcoes_raio_x:
+            cliente_raio_x = st.selectbox(
+                "Selecione um cliente",
+                opcoes_raio_x,
+                key="raio_x_cliente_selectbox",
+            )
+
+            linha_raio_x = df_fila_prioridade[df_fila_prioridade[clie_col].astype(str) == cliente_raio_x].iloc[0]
+            raio_x = gerar_raio_x_cliente(linha_raio_x, clie_col, vend_col, cida_col)
+
+            for linha_texto in formatar_raio_x_texto(raio_x):
+                st.caption(linha_texto)
+
+            if raio_x["sinais_operacionais"]:
+                st.write("Sinais operacionais:")
+                for sinal in raio_x["sinais_operacionais"]:
+                    st.caption(f"- {sinal}")
+
+            st.markdown("**Hipóteses Operacionais**")
+
+            pacote_hipoteses = gerar_hipoteses_cliente(linha_raio_x)
+
+            st.write(pacote_hipoteses["resumo_hipotese"])
+
+            if pacote_hipoteses["hipoteses_status"]:
+                st.write("Hipóteses por status:")
+                for hipotese in pacote_hipoteses["hipoteses_status"]:
+                    st.caption(f"- {hipotese}")
+
+            if pacote_hipoteses["hipoteses_sinais"]:
+                st.write("Hipóteses por sinais:")
+                for hipotese in pacote_hipoteses["hipoteses_sinais"]:
+                    st.caption(f"- {hipotese}")
+
+            if pacote_hipoteses["perguntas_validacao"]:
+                st.write("Perguntas de validação:")
+                for pergunta in pacote_hipoteses["perguntas_validacao"]:
+                    st.caption(f"- {pergunta}")
+
+            if pacote_hipoteses["alertas_investigacao"]:
+                st.write("Alertas de investigação:")
+                for alerta in pacote_hipoteses["alertas_investigacao"]:
+                    st.caption(f"- {alerta}")
+
+            st.markdown("**Recomendações por Papel**")
+
+            papel_selecionado = st.selectbox(
+                "Selecione o papel",
+                ["VENDEDOR", "GESTOR", "SOCIO", "CONSULTOR", "TODOS"],
+                key="recomendacoes_papel_selectbox",
+            )
+
+            if papel_selecionado == "TODOS":
+                pacote_recomendacoes = gerar_recomendacoes_multiplos_papeis(linha_raio_x, pacote_hipoteses)
+            else:
+                pacote_recomendacoes = gerar_recomendacoes_por_papel(linha_raio_x, papel_selecionado, pacote_hipoteses)
+
+            for linha_texto in formatar_recomendacoes_texto(pacote_recomendacoes):
+                st.caption(linha_texto)
+
+            st.markdown("**Investigação Operacional**")
+            st.caption(
+                "Registro temporário desta sessão do Streamlit — as respostas não são "
+                "salvas em arquivo ou banco de dados e podem ser perdidas ao recarregar a aplicação."
+            )
+
+            pacote_investigacao = criar_pacote_investigacao(
+                cliente=raio_x["cliente"],
+                vendedor=raio_x["vendedor"],
+                cidade=raio_x["cidade"],
+                pacote_hipoteses=pacote_hipoteses,
+            )
+
+            for item_investigacao in pacote_investigacao["itens"]:
+                chave_base = f"investigacao_{cliente_raio_x}_{item_investigacao['id_item']}"
+                resposta_key = f"{chave_base}_resposta"
+                status_key = f"{chave_base}_status"
+                evidencia_key = f"{chave_base}_evidencia"
+
+                if resposta_key in st.session_state:
+                    item_investigacao["resposta"] = st.session_state[resposta_key]
+                if status_key in st.session_state:
+                    item_investigacao["status"] = normalizar_status_investigacao(st.session_state[status_key])
+                if evidencia_key in st.session_state:
+                    item_investigacao["evidencia"] = st.session_state[evidencia_key]
+
+            pacote_investigacao["resumo"] = resumir_investigacao(pacote_investigacao)
+
+            for linha_texto in formatar_resumo_investigacao(pacote_investigacao["resumo"]):
+                st.caption(linha_texto)
+
+            st.caption(gerar_leitura_investigacao(pacote_investigacao))
+
+            for item_investigacao in pacote_investigacao["itens"]:
+                chave_base = f"investigacao_{cliente_raio_x}_{item_investigacao['id_item']}"
+                resposta_key = f"{chave_base}_resposta"
+                status_key = f"{chave_base}_status"
+                evidencia_key = f"{chave_base}_evidencia"
+
+                if resposta_key not in st.session_state:
+                    st.session_state[resposta_key] = item_investigacao["resposta"]
+                if status_key not in st.session_state:
+                    st.session_state[status_key] = item_investigacao["status"]
+                if evidencia_key not in st.session_state:
+                    st.session_state[evidencia_key] = item_investigacao["evidencia"]
+
+                st.write(item_investigacao["pergunta"])
+                st.text_area("Resposta", key=resposta_key, label_visibility="collapsed")
+                st.selectbox(
+                    "Status investigativo",
+                    ["PENDENTE", "CONFIRMADA", "DESCARTADA", "INCONCLUSIVA"],
+                    key=status_key,
+                )
+                st.text_input("Evidência (opcional)", key=evidencia_key)
+
+            st.markdown("**Pacote Investigativo do Cliente**")
+            st.caption(
+                "Consolidação temporária desta sessão do Streamlit — não é salva em "
+                "arquivo ou banco de dados e pode ser perdida ao recarregar a aplicação."
+            )
+
+            pacote_cliente = gerar_pacote_investigativo_cliente(
+                raio_x=raio_x,
+                pacote_hipoteses=pacote_hipoteses,
+                recomendacoes=pacote_recomendacoes,
+                pacote_investigacao=pacote_investigacao,
+            )
+
+            for linha_texto in formatar_pacote_investigativo_texto(pacote_cliente):
+                st.caption(linha_texto)
+
+            tabela_evidencias = gerar_tabela_evidencias(pacote_cliente)
+
+            if tabela_evidencias:
+                st.write("Evidências registradas:")
+                st.dataframe(tabela_evidencias, hide_index=True)
+
+            st.markdown("**Conclusão Investigativa**")
+            st.caption(
+                "Esta classificação organiza o estado da investigação, mas não conclui "
+                "causa raiz automaticamente."
+            )
+
+            conclusao_investigativa = gerar_conclusao_investigativa(pacote_cliente)
+
+            for linha_texto in formatar_conclusao_investigativa_texto(conclusao_investigativa):
+                st.caption(linha_texto)
+
+            tabela_conclusao = gerar_tabela_conclusao(conclusao_investigativa)
+
+            if tabela_conclusao:
+                st.write("Classificação conclusiva por item:")
+                st.dataframe(tabela_conclusao, hide_index=True)
+
+            st.markdown("**Histórico Investigativo**")
+            st.caption(
+                "Histórico local controlado. O salvamento só ocorre quando o botão "
+                "'Salvar histórico investigativo' for acionado."
+            )
+
+            db_path_historico = obter_caminho_db_historico()
+            validacao_caminho_db = validar_caminho_db_historico(db_path_historico)
+
+            st.caption(f"Caminho do banco: {validacao_caminho_db['db_path']}")
+            for aviso_caminho in validacao_caminho_db.get("avisos") or []:
+                st.caption(f"Aviso: {aviso_caminho}")
+
+            chave_sessao_investigativa = f"sessao_investigativa::{cliente_raio_x}::{raio_x['vendedor']}::{fn}"
+            if chave_sessao_investigativa not in st.session_state:
+                st.session_state[chave_sessao_investigativa] = datetime.now(timezone.utc).isoformat()
+            criado_em_sessao_investigativa = st.session_state[chave_sessao_investigativa]
+
+            payload_historico = criar_payload_historico_investigativo(
+                nome_cliente=raio_x["cliente"],
+                vendedor=raio_x["vendedor"],
+                cidade=raio_x["cidade"],
+                origem_cliente_coluna=clie_col or "",
+                origem_vendedor_coluna=vend_col or "",
+                origem_cidade_coluna=cida_col or "",
+                linha_star=linha_raio_x,
+                itens_investigativos=pacote_investigacao["itens"],
+                pacote_investigativo=pacote_cliente,
+                conclusao_investigativa=conclusao_investigativa,
+                arquivo_origem_nome=fn,
+                usuario_responsavel="",
+                criado_em=criado_em_sessao_investigativa,
+            )
+
+            if st.button("Salvar histórico investigativo", key=f"historico_salvar_{cliente_raio_x}"):
+                validacao_payload_historico = validar_payload_historico(payload_historico)
+
+                if not validacao_payload_historico.get("valido"):
+                    st.error("Payload do histórico investigativo é inválido e não foi salvo.")
+                else:
+                    preparar_diretorio_db(db_path_historico)
+                    inicializar_schema(db_path_historico)
+
+                    resultado_salvar_historico = salvar_payload_historico(
+                        db_path_historico, payload_historico, permitir_atualizacao=False
+                    )
+
+                    if resultado_salvar_historico["ok"]:
+                        st.success(
+                            f"Histórico investigativo salvo (sessão {resultado_salvar_historico['sessao_id']})."
+                        )
+                    elif resultado_salvar_historico.get("erro") == "SESSAO_JA_EXISTE":
+                        st.warning("Esta sessão já existe no repositório local e não foi sobrescrita.")
+                    else:
+                        st.error(f"Falha ao salvar histórico: {resultado_salvar_historico.get('erro', '')}")
+
+            st.markdown("**Consulta ao Histórico Investigativo**")
+
+            if not os.path.exists(db_path_historico):
+                st.caption("Nenhum histórico local encontrado para consulta.")
+            else:
+                cliente_id_historico = payload_historico["cliente"]["cliente_id"]
+                sessoes_historicas = listar_sessoes_cliente(db_path_historico, cliente_id_historico)
+
+                if not sessoes_historicas:
+                    st.caption("Nenhuma sessão histórica encontrada para este cliente.")
+                else:
+                    opcoes_sessoes_historicas = [
+                        f"{sessao['sessao_id']} ({sessao.get('data_sessao', '')})"
+                        for sessao in sessoes_historicas
+                    ]
+                    mapa_sessoes_historicas = dict(
+                        zip(opcoes_sessoes_historicas, [s["sessao_id"] for s in sessoes_historicas])
+                    )
+
+                    sessao_historica_escolhida = st.selectbox(
+                        "Selecione uma sessão histórica",
+                        opcoes_sessoes_historicas,
+                        key=f"historico_sessao_selectbox_{cliente_raio_x}",
+                    )
+
+                    resultado_sessao_carregada = carregar_payload_por_sessao(
+                        db_path_historico, mapa_sessoes_historicas[sessao_historica_escolhida]
+                    )
+
+                    if resultado_sessao_carregada["ok"]:
+                        payload_carregado_historico = resultado_sessao_carregada["payload"]
+                        sessao_carregada = payload_carregado_historico.get("sessao", {})
+                        snapshot_carregado = payload_carregado_historico.get("snapshot_star", {})
+                        conclusao_carregada = payload_carregado_historico.get("conclusao_investigativa", {})
+                        itens_carregados = payload_carregado_historico.get("itens_investigativos", [])
+
+                        st.caption(f"Data da sessão: {sessao_carregada.get('data_sessao', '')}")
+                        st.caption(f"Status da sessão: {sessao_carregada.get('status_sessao', '')}")
+                        st.caption(f"Status STAR no momento: {snapshot_carregado.get('status_star', '')}")
+                        st.caption(f"Itens investigativos: {len(itens_carregados)}")
+                        st.caption(
+                            f"Status conclusivo geral: {conclusao_carregada.get('status_conclusivo_geral', '')}"
+                        )
+                        st.caption(f"Leitura conclusiva: {conclusao_carregada.get('leitura_conclusao', '')}")
+                    else:
+                        st.caption("Não foi possível carregar a sessão selecionada.")
+
+            if os.path.exists(db_path_historico):
+                with st.expander("Resumo técnico do repositório local", expanded=False):
+                    contagens_repositorio_historico = contar_registros_repositorio(db_path_historico)
+                    for linha_resumo_repositorio in formatar_resumo_repositorio(contagens_repositorio_historico):
+                        st.caption(linha_resumo_repositorio)
+
+            st.markdown("**Governança investigativa**")
+            st.caption(
+                "Governança organiza continuidade investigativa. Não cria tarefa, não cria "
+                "plano de ação, não cria agenda e não executa ações automaticamente."
+            )
+
+            db_path_governanca = obter_caminho_banco_governanca()
+            resumo_config_governanca = gerar_resumo_configuracao_governanca()
+
+            for linha_config_governanca in formatar_configuracao_governanca_texto(resumo_config_governanca):
+                st.caption(linha_config_governanca)
+
+            tipo_acompanhamento_escolhido = st.selectbox(
+                "Tipo de acompanhamento",
+                [
+                    "OBSERVACAO", "RETORNO", "COMPLEMENTO_EVIDENCIA",
+                    "REVISAO", "DECISAO_OPERACIONAL", "PENDENCIA_INVESTIGATIVA",
+                ],
+                key=f"governanca_tipo_{cliente_raio_x}",
+            )
+            status_acompanhamento_escolhido = st.selectbox(
+                "Status de acompanhamento",
+                [
+                    "NAO_INICIADO", "EM_ACOMPANHAMENTO", "AGUARDANDO_EVIDENCIA",
+                    "AGUARDANDO_DECISAO", "DECISAO_REGISTRADA", "ENCERRADO", "SUSPENSO",
+                ],
+                key=f"governanca_status_{cliente_raio_x}",
+            )
+            observacao_acompanhamento_escolhida = st.text_area(
+                "Observação de acompanhamento", key=f"governanca_observacao_{cliente_raio_x}"
+            )
+            usuario_registro_governanca = st.text_input(
+                "Usuário do registro (opcional)", key=f"governanca_usuario_{cliente_raio_x}"
+            )
+
+            if st.button("Salvar governança desta investigação", key=f"governanca_salvar_{cliente_raio_x}"):
+                if not payload_historico:
+                    st.warning(
+                        "Governança depende de uma investigação atual — nenhum dado foi salvo."
+                    )
+                else:
+                    registro_governanca = criar_registro_acompanhamento(
+                        payload_historico=payload_historico,
+                        tipo_acompanhamento=tipo_acompanhamento_escolhido,
+                        status_acompanhamento=status_acompanhamento_escolhido,
+                        observacao_acompanhamento=observacao_acompanhamento_escolhida,
+                        usuario_registro=usuario_registro_governanca,
+                    )
+                    snapshot_governanca = criar_snapshot_status_acompanhamento(
+                        payload_historico=payload_historico, registros=[registro_governanca]
+                    )
+                    item_loop_governanca = criar_item_loop_governanca(
+                        payload_historico=payload_historico, registros_acompanhamento=[registro_governanca]
+                    )
+                    ciclo_loop_governanca = criar_ciclo_loop_semanal(
+                        entradas=[{
+                            "payload_historico": payload_historico,
+                            "registros_acompanhamento": [registro_governanca],
+                        }],
+                        periodo_referencia=date.today().isoformat(),
+                    )
+
+                    payload_registro_persistivel = criar_payload_registro_acompanhamento_persistivel(
+                        registro_governanca
+                    )
+                    payload_snapshot_persistivel = criar_payload_snapshot_status_persistivel(snapshot_governanca)
+                    payload_item_persistivel = criar_payload_item_loop_persistivel(item_loop_governanca)
+                    payload_ciclo_persistivel = criar_payload_ciclo_loop_persistivel(ciclo_loop_governanca)
+                    payload_integrado_persistivel = criar_payload_governanca_integrada(
+                        registro_acompanhamento=registro_governanca,
+                        snapshot_status=snapshot_governanca,
+                        item_loop=item_loop_governanca,
+                        ciclo_loop=ciclo_loop_governanca,
+                    )
+
+                    payloads_governanca_para_salvar = [
+                        payload_registro_persistivel,
+                        payload_snapshot_persistivel,
+                        payload_item_persistivel,
+                        payload_ciclo_persistivel,
+                        payload_integrado_persistivel,
+                    ]
+
+                    validacao_payloads_governanca = validar_payloads_governanca(payloads_governanca_para_salvar)
+
+                    if not validacao_payloads_governanca["valido"]:
+                        st.error("Payloads de governança inválidos — nada foi salvo.")
+                        for linha_validacao_governanca in formatar_validacao_payload_governanca_texto(
+                            validacao_payloads_governanca
+                        ):
+                            st.caption(linha_validacao_governanca)
+                    else:
+                        resultado_lote_governanca = salvar_lote_payloads_governanca(
+                            db_path_governanca, payloads_governanca_para_salvar, sobrescrever=True
+                        )
+
+                        st.success(
+                            f"Governança salva: {resultado_lote_governanca['salvos']} payload(s) gravado(s)."
+                        )
+
+                        resumo_config_governanca_pos_salvamento = gerar_resumo_configuracao_governanca()
+                        st.caption(
+                            "Após este salvamento — Diretório existe: "
+                            f"{'SIM' if resumo_config_governanca_pos_salvamento['diretorio_existe'] else 'NAO'}, "
+                            "Arquivo existe: "
+                            f"{'SIM' if resumo_config_governanca_pos_salvamento['arquivo_existe'] else 'NAO'}."
+                        )
+
+                        for linha_erro_lote in resultado_lote_governanca["erros"]:
+                            st.caption(f"Aviso técnico: {linha_erro_lote}")
+
+                        with st.expander("Resultado detalhado do registro de acompanhamento", expanded=False):
+                            for linha_registro_texto in formatar_registro_acompanhamento_texto(registro_governanca):
+                                st.caption(linha_registro_texto)
+                            for linha_snapshot_texto in formatar_snapshot_status_texto(snapshot_governanca):
+                                st.caption(linha_snapshot_texto)
+                            for linha_item_texto in formatar_item_loop_texto(item_loop_governanca):
+                                st.caption(linha_item_texto)
+                            for linha_resumo_loop_texto in formatar_resumo_loop_texto(
+                                ciclo_loop_governanca["resumo_loop"]
+                            ):
+                                st.caption(linha_resumo_loop_texto)
+                            for linha_payload_resumo in formatar_payload_governanca_resumo_texto(
+                                payload_integrado_persistivel
+                            ):
+                                st.caption(linha_payload_resumo)
+
+            if st.button("Consultar governança salva deste cliente", key=f"governanca_consultar_{cliente_raio_x}"):
+                if not os.path.exists(db_path_governanca):
+                    payloads_salvos_governanca = []
+                    st.caption("Nenhum banco de governança encontrado ainda para consulta.")
+                else:
+                    payloads_salvos_governanca = listar_payloads_governanca(
+                        db_path_governanca,
+                        cliente_id=payload_historico.get("cliente", {}).get("cliente_id", ""),
+                        sessao_id=payload_historico.get("sessao", {}).get("sessao_id", ""),
+                    )
+
+                    if not payloads_salvos_governanca:
+                        st.caption("Nenhum payload de governança encontrado para este cliente/sessão.")
+                    else:
+                        st.write("Payloads de governança salvos:")
+                        for registro_salvo_governanca in payloads_salvos_governanca:
+                            st.caption(
+                                f"- {registro_salvo_governanca['tipo_payload_governanca']} "
+                                f"({registro_salvo_governanca['payload_id']}) em "
+                                f"{registro_salvo_governanca['criado_em_repositorio']}"
+                            )
+
+                    contagens_governanca = contar_registros_repositorio_governanca(db_path_governanca)
+
+                    with st.expander("Resumo técnico do repositório de governança", expanded=False):
+                        for linha_resumo_governanca in formatar_resumo_repositorio_governanca(contagens_governanca):
+                            st.caption(linha_resumo_governanca)
+
+                leitura_operacional_governanca = gerar_leitura_operacional_governanca(payloads_salvos_governanca)
+
+                st.markdown("**Leitura operacional da governança**")
+
+                for linha_leitura_operacional in formatar_leitura_operacional_governanca_texto(
+                    leitura_operacional_governanca
+                ):
+                    st.caption(linha_leitura_operacional)
+
+                if leitura_operacional_governanca["itens"]:
+                    with st.expander("Detalhamento da leitura operacional por payload", expanded=False):
+                        for item_leitura_operacional in leitura_operacional_governanca["itens"]:
+                            for linha_item_leitura in formatar_item_leitura_operacional_texto(
+                                item_leitura_operacional
+                            ):
+                                st.caption(linha_item_leitura)
+                            st.caption("---")
+        else:
+            st.caption("Nenhum cliente disponivel para Raio-X.")
 
     extra = [cida_col] if cida_col else []
-    fo = ['CURVA',clie_col,vend_col]+extra+meses_col+['TOTAL LP','MEDIA LP','MEDIA CP','STATUS','EROSAO STAR','META','ACAO']
+    fo = ['CURVA', clie_col, vend_col] + extra + meses_col + ['TOTAL LP', 'MEDIA LP', 'MEDIA CP', 'STATUS', 'EROSAO STAR', 'META', 'ACAO']
 
     # ── FILTROS ───────────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">FILTROS</div>', unsafe_allow_html=True)
@@ -762,3 +1552,4 @@ if uploaded_file:
                 cells+=f'<td{ac}>{htmllib.escape(str(v))}</td>'
         rc+=f"<tr>{cells}</tr>"
     st.markdown(f'<div class="cart-wrap"><table class="cart-table"><thead><tr>{hc}</tr></thead><tbody>{rc}</tbody></table></div>', unsafe_allow_html=True)
+
